@@ -1,13 +1,10 @@
 # Binary Reverse Engineering **level14_testing1** Write-Up
-Disclaimer:
-- At the time of writing this reverse engineering challenge write-up, I had already solved both this challenge and the teaching version of the challenge, plus all the later pwn.college reverse engineering challenges, so I knew the inner workings of the emulator very well
-- Parts of the solution, such as the GDB script were not written in one go, but were refined over a number of iterations, and the format of the GDB script output borrows heavily from the ouput produced by the teaching version of the ELF binary
 
 ## [Part 0] Setup Challenge
 - If using the Docker container referred to in 00-Setup directory of this repository, a copy of the ELF binary can be found at `/challenges/babyrev/level14_testing1` in the Docker container, so copy ELF binary to root directory of Docker container, then set privileges and setuid:
 > `sudo cp /challenges/babyrev/level14_testing1 / && sudo chmod 4755 /level14_testing1`  
 - The original ELF binary can be found here: [download](https://github.com/pwncollege/challenges/raw/master/babyrev/level14_testing1)
-- A copy of the ELF binary has also been included [here](./level14_testing1)
+- A copy of the ELF binary has also been included here: [download](./level14_testing1)
 - Add a fake flag if necessary:
 > $ `echo pwn_college{a_secret_fake_flag} | sudo tee /flag && sudo chown root:root /flag && sudo chmod 400 /flag`  
 - Test `/flag` file permissions deny access for current `ctf` user:
