@@ -1,0 +1,1566 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Reversing - Level 14 - CTF Write-Ups</title>
+        <!-- Custom HTML head -->
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../../favicon.png">
+        <link rel="stylesheet" href="../../../../css/variables.css">
+        <link rel="stylesheet" href="../../../../css/general.css">
+        <link rel="stylesheet" href="../../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../../css/print.css" media="print">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../../fonts/fonts.css">
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../../../highlight.css">
+        <link rel="stylesheet" href="../../../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../../../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../../../index.html">Introduction</a></li><li class="chapter-item expanded "><a href="../../../../pwn.college/index.html"><strong aria-hidden="true">1.</strong> pwn.college</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../../pwn.college/2020/00-Setup/index.html"><strong aria-hidden="true">1.1.</strong> Docker Setup</a></li><li class="chapter-item expanded "><a href="../../../../pwn.college/2020/04-Rev/14_testing1/index.html" class="active"><strong aria-hidden="true">1.2.</strong> Reversing - Level 14</a></li></ol></li><li class="chapter-item expanded "><a href="../../../../rop_emporium/index.html"><strong aria-hidden="true">2.</strong> ROP Emporium</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../../rop_emporium/solutions/x86_64/01-ret2win/index.html"><strong aria-hidden="true">2.1.</strong> ret2win</a></li><li class="chapter-item expanded "><a href="../../../../rop_emporium/solutions/x86_64/02-split/index.html"><strong aria-hidden="true">2.2.</strong> split</a></li><li class="chapter-item expanded "><a href="../../../../rop_emporium/solutions/x86_64/03-callme/index.html"><strong aria-hidden="true">2.3.</strong> callme</a></li><li class="chapter-item expanded "><a href="../../../../rop_emporium/solutions/x86_64/04-write4/index.html"><strong aria-hidden="true">2.4.</strong> write4</a></li><li class="chapter-item expanded "><a href="../../../../rop_emporium/solutions/x86_64/05-badchars/index.html"><strong aria-hidden="true">2.5.</strong> badchars</a></li><li class="chapter-item expanded "><a href="../../../../rop_emporium/solutions/x86_64/06-fluff/index.html"><strong aria-hidden="true">2.6.</strong> fluff</a></li><li class="chapter-item expanded "><a href="../../../../rop_emporium/solutions/x86_64/07-pivot/index.html"><strong aria-hidden="true">2.7.</strong> pivot</a></li><li class="chapter-item expanded "><a href="../../../../rop_emporium/solutions/x86_64/08-ret2csu/index.html"><strong aria-hidden="true">2.8.</strong> ret2csu</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">CTF Write-Ups</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="pwncollege---binary-reverse-engineering----level14_testing1"><a class="header" href="#pwncollege---binary-reverse-engineering----level14_testing1">pwn.college - Binary Reverse Engineering  - level14_testing1</a></h1>
+<p>Disclaimer:</p>
+<ul>
+<li>At the time of writing this reverse engineering challenge write-up, I had already solved both this challenge and the teaching version of the challenge, plus all the later pwn.college reverse engineering challenges, so I knew the inner workings of the emulator very well. As a result, I may have glossed over some areas that might seem obvious now, but were potentially important when gathering information for the first time.</li>
+<li>Parts of the solution, such as the GDB script were not written in one go, but were refined over a number of iterations, and the format of the GDB script output borrows heavily from the ouput produced by the teaching version of the ELF binary.</li>
+</ul>
+<h2 id="part-0-setup-challenge"><a class="header" href="#part-0-setup-challenge">[Part 0] Setup Challenge</a></h2>
+<ul>
+<li>If using the Docker container setup referred to in <a href="../../00-Setup/index.html">00-Setup</a>, a copy of the ELF binary can be found at <code>/challenges/babyrev/level14_testing1</code> in the Docker container, so copy ELF binary to root directory of Docker container, then set privileges and setuid:</li>
+</ul>
+<blockquote>
+<p><code>sudo cp /challenges/babyrev/level14_testing1 / &amp;&amp; sudo chmod 4755 /level14_testing1</code></p>
+</blockquote>
+<ul>
+<li>The original ELF binary can be found here: <a href="https://github.com/pwncollege/challenges/raw/master/babyrev/level14_testing1">download</a></li>
+<li>A copy of the ELF binary has also been included here: <a href="./level14_testing1">download</a></li>
+<li>Add a fake flag if necessary:</li>
+</ul>
+<blockquote>
+<p>$ <code>echo pwn_college{a_secret_fake_flag} | sudo tee /flag &amp;&amp; sudo chown root:root /flag &amp;&amp; sudo chmod 400 /flag</code></p>
+</blockquote>
+<ul>
+<li>Test <code>/flag</code> file permissions deny access for current <code>ctf</code> user:</li>
+</ul>
+<blockquote>
+<p>$ <code>whoami</code><br />
+<code>ctf</code><br />
+$ <code>ls -al /flag</code><br />
+<code>-r-------- 1 root root 37 Aug 11 04:37 /flag</code><br />
+$ <code>cat /flag</code><br />
+<code>cat: /flag: Permission denied</code></p>
+</blockquote>
+<h3 id="basic-info-on-challenge-binary"><a class="header" href="#basic-info-on-challenge-binary">Basic Info on Challenge Binary</a></h3>
+<blockquote>
+<p><code>rabin2 -I /level14_testing1</code></p>
+</blockquote>
+<pre><code>arch     x86
+baddr    0x0
+binsz    16527
+bintype  elf
+bits     64
+canary   true
+class    ELF64
+compiler GCC: (Ubuntu 9.3.0-10ubuntu2) 9.3.0
+crypto   false
+endian   little
+havecode true
+intrp    /lib64/ld-linux-x86-64.so.2
+laddr    0x0
+lang     c
+linenum  true
+lsyms    true
+machine  AMD x86-64 architecture
+maxopsz  16
+minopsz  1
+nx       true
+os       linux
+pcalign  0
+pic      true
+relocs   true
+relro    full
+rpath    NONE
+sanitiz  false
+static   false
+stripped false
+subsys   linux
+va       true
+</code></pre>
+<ul>
+<li>pic is true, i.e. PIE is enabled</li>
+<li>ELF binary is not stripped</li>
+</ul>
+<h3 id="running-binary"><a class="header" href="#running-binary">Running Binary</a></h3>
+<blockquote>
+<p>$ <code>/level14_testing1</code></p>
+</blockquote>
+<pre><code>[+] Welcome to /level14_testing1!
+[+] This challenge is an custom emulator. It emulates a completely custom
+[+] architecture that we call &quot;Yan85&quot;! You'll have to understand the
+[+] emulator to understand the architecture, and you'll have to understand
+[+] the architecture to understand the code being emulated, and you will
+[+] have to understand that code to get the flag. Good luck!
+[+] Starting interpreter loop! Good luck!
+ENTER KEY: AAAAAAAA
+INCORRECT!
+</code></pre>
+<ul>
+<li>The program is a custom emulator of an unknown architecture called Yan85</li>
+<li>This write-up uses a combination of static and dynamic analysis to determine what instructions emulator supports, if it emulates registers, memory, syscalls, etc, then eventually gets the flag</li>
+</ul>
+<h2 id="part-1-static-analysis-using-a-hrefhttpsradarenradare2htmlradare2a"><a class="header" href="#part-1-static-analysis-using-a-hrefhttpsradarenradare2htmlradare2a">[Part 1] Static Analysis Using <a href="https://rada.re/n/radare2.html">radare2</a></a></h2>
+<ul>
+<li>Open ELF binary in radare2:</li>
+</ul>
+<blockquote>
+<p>$ <code>r2 -A /level14_testing1</code></p>
+</blockquote>
+<ul>
+<li>The ELF binary is not too large, so <code>-A</code> analysis does not take long</li>
+<li>Note: as PIE is enabled, all memory addresses in radare2 should be interpreted <strong>relatively</strong> (i.e. not absolute references)</li>
+<li>List all functions (focus on the interesting ones, e.g. ignore imports <code>sym.imp.*</code>):</li>
+</ul>
+<blockquote>
+<p>[0x00001180]&gt; <code>afl</code></p>
+</blockquote>
+<pre><code>[...]
+0x0000129b   15 194          sym.read_register
+0x00001269    1 50           sym.crash
+[...]
+0x00001a7b   17 257          sym.interpret_instruction
+[...]
+0x000017f5   13 646          sym.interpret_sys
+0x000015e6    1 93           sym.interpret_stm
+0x00001461    1 48           sym.write_memory
+0x00001491    1 51           sym.interpret_imm
+0x0000135d   15 223          sym.write_register
+0x00001527    5 191          sym.interpret_stk
+[...]
+0x00001643    1 85           sym.interpret_ldm
+0x0000143c    1 37           sym.read_memory
+0x00001bff    3 274          main
+[...]
+0x00001b7c    2 131          sym.interpreter_loop
+[...]
+0x00001698   12 260          sym.interpret_cmp
+0x0000179c    4 89           sym.interpret_jmp
+0x000014c4    1 99           sym.interpret_add
+[...]
+</code></pre>
+<h4 id="view-main-function"><a class="header" href="#view-main-function">View main() Function</a></h4>
+<ul>
+<li>Visual Graph mode of <code>main</code> function (navigate using <code>hjkl</code> keys, press colon <code>:</code> to access command line):</li>
+</ul>
+<blockquote>
+<p>[0x00001180]&gt; <code>VV @ main</code> (similar to <code>agfv @ main</code>)<br />
+Press <code>p</code> key once to display additional line info</p>
+</blockquote>
+<p><img src="./img/01-main.png" alt="main function" /></p>
+<h4 id="emulators-bytecode"><a class="header" href="#emulators-bytecode">Emulator's Bytecode</a></h4>
+<ul>
+<li><code>obj.vm_code</code> should be the emulator's own bytecode and this is being memcpy'd on to the stack</li>
+<li>View hex dump of <code>obj.vm_code</code>:</li>
+</ul>
+<blockquote>
+<p><code>V @ obj.vm_code</code></p>
+</blockquote>
+<pre><code>[0x00004020 [Xadvc]0 62% 896 /level14_testing1]&gt; xc @ obj.vm_code    
+- offset -   0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF  comment
+0x00004020  0101 4701 1089 4010 0101 012e 0110 8f40  ..G...@........@  ; obj.vm_code
+0x00004030  1001 0101 4c01 1082 4010 0101 01ab 0110  ....L...@.......
+0x00004040  8540 1001 0101 8601 1083 4010 0101 0157  .@........@....W
+0x00004050  0110 8a40 1001 0101 3401 1086 4010 0101  ...@....4...@...
+0x00004060  0127 0110 8740 1001 0101 3b01 108d 4010  .'...@....;...@.
+0x00004070  0101 01c2 0110 8c40 1001 0400 2004 0008  .......@.... ...
+0x00004080  0400 1001 0801 0208 0201 0145 0400 0101  ...........E....
+0x00004090  014e 0400 0101 0154 0400 0101 0145 0400  .N.....T.....E..
+0x000040a0  0101 0152 0400 0101 0120 0400 0101 014b  ...R..... .....K
+0x000040b0  0400 0101 0145 0400 0101 0159 0400 0101  .....E.....Y....
+0x000040c0  013a 0400 0101 0120 0400 0101 100b 0120  .:..... ....... 
+0x000040d0  0108 0401 0410 0004 0800 0420 0004 0020  ........... ... 
+0x000040e0  0400 0804 0010 0108 4001 100e 0120 0008  ........@.... ..
+0x000040f0  0801 0410 0004 0800 0420 0001 0197 0110  ......... ......
+0x00004100  8840 1001 0101 a801 108b 4010 0101 0190  .@........@.....
+0x00004110  0110 8e40 1001 0101 d201 1084 4010 0101  ...@........@...
+0x00004120  0489 0220 1002 0810 0101 ff02 2001 0208  ... ........ ...
+0x00004130  0104 0020 0400 0880 2020 8008 0820 2008  ... ....  ...  .  ; str._b_b___b
+0x00004140  0408 0004 2000 0101 6a10 0401 0101 ff02  .... ...j.......
+0x00004150  1001 0101 0020 1001 0101 5810 0401 0401  ..... ....X.....
+0x00004160  1004 0400 0108 0102 0802 0101 4904 0001  ............I...
+0x00004170  0101 4e04 0001 0101 4304 0001 0101 4f04  ..N.....C.....O.
+0x00004180  0001 0101 5204 0001 0101 5204 0001 0101  ....R.....R.....
+0x00004190  4504 0001 0101 4304 0001 0101 5404 0001  E.....C.....T...
+0x000041a0  0101 2104 0001 0101 0a04 0001 0110 0b01  ..!.............
+0x000041b0  2001 0804 0101 2001 0802 0001 2040 0108   ..... ..... @..
+0x000041c0  8401 100c 0101 0202 0104 0400 0101 0456  ...............V
+0x000041d0  0110 0020 0110 0101 9610 0201 0101 6c10  ... ..........l.
+0x000041e0  1101 0108 0102 0802 0101 4304 0001 0101  ..........C.....
+0x000041f0  4f04 0001 0101 5204 0001 0101 5204 0001  O.....R.....R...
+0x00004200  0101 4504 0001 0101 4304 0001 0101 5404  ..E.....C.....T.
+0x00004210  0001 0101 2104 0001 0101 2004 0001 0101  ....!..... .....
+0x00004220  4804 0001 0101 6504 0001 0101 7204 0001  H.....e.....r...
+0x00004230  0101 6504 0001 0101 2004 0001 0101 6904  ..e..... .....i.
+0x00004240  0001 0101 7304 0001 0101 2004 0001 0101  ....s..... .....
+0x00004250  7904 0001 0101 6f04 0001 0101 7504 0001  y.....o.....u...
+0x00004260  0101 7204 0001 0101 2004 0001 0101 6604  ..r..... .....f.
+0x00004270  0001 0101 6c04 0001 0101 6104 0001 0101  ....l.....a.....
+0x00004280  6704 0001 0101 3a04 0001 0101 0a04 0001  g.....:.........
+0x00004290  0110 1c01 2001 0804 0101 012f 0110 8040  .... ....../...@
+0x000042a0  1001 0101 6601 1081 4010 0101 016c 0110  ....f...@....l..
+0x000042b0  8240 1001 0101 6101 1083 4010 0101 0167  .@....a...@....g
+0x000042c0  0110 8440 1001 0101 0001 1085 4010 0101  ...@........@...
+0x000042d0  2080 0108 0008 2001 0108 8001 10ff 0120   ..... ........
+0x000042e0  0002 2001 0808 0101 0880 0110 0002 1001  .. .............
+0x000042f0  0120 0108 0401 0120 0008 0200 dc02 0000  . ..... ........  ; obj.vm_code_length
+</code></pre>
+<ul>
+<li>Assuming value @ 0x000042fc is <code>obj.vm_code_length</code>, which is <code>0x02dc</code> in little endian, test assumption:</li>
+</ul>
+<blockquote>
+<p>:&gt; <code>? 0x42fc-0x4020</code><br />
+<code>uint32  732</code><br />
+<code>hex     0x2dc</code></p>
+</blockquote>
+<ul>
+<li>Above vm_code_length assumption seems correct, therefore vm_code is from 0x00004020 to 0x000042fb, inclusive (also recall that PIE is enabled, so these addresses will be different when executing the program, but the relative addresses are still important)</li>
+<li>Some interesting strings are included in the bytecode:</li>
+<li>From 0x00004089 to 0x000040bb &quot;..E.....N.....T.....E.....R..... .....K.....E.....Y.....:&quot;</li>
+<li>From 0x0000416a to 0x000041a2 &quot;..I.....N.....C.....O.....R.....R.....E.....C.....T.....!&quot;</li>
+<li>From 0x000041e8 to 0x00004286 &quot;..C.....O.....R.....R.....E.....C.....T.....!..... .....H.....e.....r.....e..... .....i.....s..... .....y.....o.....u.....r..... .....f.....l.....a.....g.....:&quot;</li>
+<li>Note that the spacing is always the same between the ASCII characters</li>
+<li>Just before the call sym.interpreter_loop, rdi = stack address of the memcpy'd vm_code, rsi = original address of <code>obj.vm_code</code></li>
+</ul>
+<h4 id="view-interpreter_loop-function"><a class="header" href="#view-interpreter_loop-function">View interpreter_loop() Function</a></h4>
+<ul>
+<li>View <code>sym.interpreter_loop</code> function to understand if/how either variables are utilised:</li>
+</ul>
+<blockquote>
+<p>[0x00001180]&gt; <code>VV @ sym.interpreter_loop</code></p>
+</blockquote>
+<ul>
+<li>Looks like rdi (stack address of the memcpy'd vm_code) is used, but rsi isn't:<br />
+<img src="./img/11-interpreter_loop.png" alt="interpreter_loop setup" /></li>
+<li>Last block of code is a loop:<br />
+<img src="./img/12-interpreter_loop.png" alt="interpreter_loop loop" /></li>
+<li>Above loop iterates over 3 bytes at a time</li>
+<li>Each byte is selected individually by doing some <code>shl</code>s (bitwise left shift) and <code>or</code>s then they are moved to the stack and back into registers before calling <code>sym.interpret_instruction</code>, either to sort or jumble the order (TBD: understand how the order is interpreted)</li>
+<li>Each instruction is therefore <strong>size 3 bytes</strong></li>
+</ul>
+<h4 id="view-interpret_instruction-function"><a class="header" href="#view-interpret_instruction-function">View interpret_instruction() Function</a></h4>
+<ul>
+<li>View <code>sym.interpret_instruction</code> to understand what instructions are supported by the emulator (focus on the branching, i.e. what <code>test</code>/<code>cmp</code> conditions are required to either jump or not jump?):</li>
+</ul>
+<blockquote>
+<p>[0x00001180]&gt; <code>VV @ sym.interpret_instruction</code></p>
+</blockquote>
+<ul>
+<li>If opcode==0x01 then call <code>sym.interpret_imm</code>:<br />
+<img src="./img/21-interpret_instruction.png" alt="interpret_instruction imm" /></li>
+<li>If opcode==0x02 then call <code>sym.interpret_add</code>:<br />
+<img src="./img/22-interpret_instruction.png" alt="interpret_instruction add" /></li>
+<li>If opcode==0x04 then call <code>sym.interpret_stk</code>:<br />
+<img src="./img/23-interpret_instruction.png" alt="interpret_instruction stk" /></li>
+<li>If opcode==0x40 then call <code>sym.interpret_stm</code>:<br />
+<img src="./img/24-interpret_instruction.png" alt="interpret_instruction stm" /></li>
+<li><code>test al, al; jns 0x1b1f;</code> means jump if signed bit (most significant bit) of <code>al</code> register is <strong>not</strong> set (i.e. if signed bit <strong>is set</strong> then call <code>sym.interpret_ldm</code> because it <strong>didn't jump</strong>), therefore opcode==0x80 is a possible way to call <code>sym.interpret_ldm</code>:<br />
+<img src="./img/25-interpret_instruction.png" alt="interpret_instruction ldm" /></li>
+<li>If opcode==0x20 then call <code>sym.interpret_cmp</code>:<br />
+<img src="./img/26-interpret_instruction.png" alt="interpret_instruction cmp" /></li>
+<li>If opcode==0x10 then call <code>sym.interpret_jmp</code>:<br />
+<img src="./img/27-interpret_instruction.png" alt="interpret_instruction jmp" /></li>
+<li>If opcode==0x08 then call <code>sym.interpret_sys</code>:<br />
+<img src="./img/28-interpret_instruction.png" alt="interpret_instruction sys" /></li>
+</ul>
+<h4 id="view-write_register-function"><a class="header" href="#view-write_register-function">View write_register() Function</a></h4>
+<ul>
+<li>Remember the <code>sys.write_register</code> from earlier? List functions and perform internal grep for write_register (focus on the branching, i.e. what switch case values are required to reach different registers?):</li>
+</ul>
+<blockquote>
+<p>[0x00001180]&gt; <code>afl~write_register</code></p>
+</blockquote>
+<ul>
+<li>View <code>sys.write_register</code> function to understand the registers:</li>
+</ul>
+<blockquote>
+<p>[0x00001180]&gt; <code>VV @ sym.write_register</code></p>
+</blockquote>
+<p><img src="./img/31-write_register.png" alt="write_register 0x3fc 0x3fd" />
+<img src="./img/32-write_register.png" alt="write_register 0x3fe 0x3ff" />
+<img src="./img/33-write_register.png" alt="write_register 0x400 0x401" />
+<img src="./img/34-write_register.png" alt="write_register 0x402" />
+<img src="./img/35-write_register.png" alt="write_register crash" /></p>
+<ul>
+<li>Register values are stored in memory at offsets 0x3fc to 0x402</li>
+<li>Temporarily name registers by their offsets and note down the switch case lookup refs:</li>
+<li>reg_0x3fc: 0x20 (case 32)</li>
+<li>reg_0x3fd: 0x08 (case 08)</li>
+<li>reg_0x3fe: 0x10 (case 16)</li>
+<li>reg_0x3ff: 0x01 (case 01)</li>
+<li>reg_0x400: 0x02 (case 02)</li>
+<li>reg_0x401: 0x04 (case 04)</li>
+<li>reg_0x402: 0x40 (case 40)</li>
+</ul>
+<h4 id="view-interpret_sys-function"><a class="header" href="#view-interpret_sys-function">View interpret_sys() Function</a></h4>
+<ul>
+<li>View <code>sym.interpret_sys</code> to understand what syscalls can be executed by the emulator (focus on the branching, i.e. what <code>test</code>/<code>cmp</code> conditions are required to either jump or not jump?):</li>
+</ul>
+<blockquote>
+<p>[0x00001180]&gt; <code>VV @ sym.interpret_sys</code></p>
+</blockquote>
+<ul>
+<li>If sys_value==0x20 then call open; int open(const char *path, int oflag):<br />
+<img src="./img/41-interpret_sys.png" alt="interpret_sys open" /></li>
+<li>Below are two code blocks that both make calls to the libc read function. It may not immediately be apparent what the difference between them is, but what is obvious is that they both attempt to read up to count <code>nbyte</code> bytes from file descriptor <code>fildes</code> into the buffer starting at <code>buf</code>. That is actually enough information to solve this challenge, but for later challenges it is worth understanding the difference.</li>
+<li>If sys_value==0x01 then call read; ssize_t read(int fildes, void *buf, size_t nbyte):<br />
+<img src="./img/42-interpret_sys.png" alt="interpret_sys read_code" /></li>
+<li>If sys_value==0x08 then call read; ssize_t read(int fildes, void *buf, size_t nbyte):<br />
+<img src="./img/43-interpret_sys.png" alt="interpret_sys read_memory" /></li>
+<li>If sys_value==0x04 then call write; ssize_t write(int fd, const char *ptr, size_t nbytes):<br />
+<img src="./img/44-interpret_sys.png" alt="interpret_sys write" /></li>
+<li>If sys_value==0x10 then call sleep; int sleep(int s):<br />
+<img src="./img/45-interpret_sys.png" alt="interpret_sys sleep" /></li>
+<li>If sys_value==0x02 then call exit; void exit(int status):<br />
+<img src="./img/46-interpret_sys.png" alt="interpret_sys exit" /></li>
+</ul>
+<h4 id="view-interpret_cmp-function"><a class="header" href="#view-interpret_cmp-function">View interpret_cmp() Function</a></h4>
+<ul>
+<li>View <code>sym.interpret_cmp</code> to understand what values will be set in the emulated flag register (focus on the branching, i.e. what <code>test</code>/<code>cmp</code> conditions are required to either jump or not jump?), and based on the condition we can assign some identifiable characters ('L', 'G', 'E', 'N', 'Z') for reference:</li>
+</ul>
+<blockquote>
+<p>[0x00001180]&gt; <code>VV @ sym.interpret_cmp</code></p>
+</blockquote>
+<ul>
+<li>If cmp_x &lt; cmp_y (i.e. 'L'), then flag_value = flag_value | 0x10:<br />
+<img src="./img/51-interpret_cmp.png" alt="interpret_cmp L" /></li>
+<li>If cmp_x &gt; cmp_y (i.e. 'G'), then flag_value = flag_value | 0x01:<br />
+<img src="./img/52-interpret_cmp.png" alt="interpret_cmp G" /></li>
+<li>If cmp_x == cmp_y (i.e. 'E'), then flag_value = flag_value | 0x02:<br />
+<img src="./img/53-interpret_cmp.png" alt="interpret_cmp E" /></li>
+<li>If cmp_x != cmp_y (i.e. 'N'), then flag_value = flag_value | 0x04:<br />
+<img src="./img/54-interpret_cmp.png" alt="interpret_cmp N" /></li>
+<li>If cmp_x == cmp_y == 0 (i.e. 'Z'), then flag_value = flag_value | 0x08:<br />
+<img src="./img/55-interpret_cmp.png" alt="interpret_cmp Z" /></li>
+</ul>
+<h3 id="summary-of-part-1"><a class="header" href="#summary-of-part-1">Summary of Part 1</a></h3>
+<ul>
+<li>Each instruction is <strong>size 3 bytes</strong> (Note: the instruction order can change for different versions of the ELF binary)</li>
+<li>Register, opcode, syscall, compare lookup values are known (Note: the register, opcode, syscall and cmp mappings can change for different versions of the ELF binary):</li>
+</ul>
+<pre><code># Pseudo Python code for notes purposes only
+registers = {
+    reg_0x3fc: 0x20, # (case 32)
+    reg_0x3fd: 0x08, # (case 08)
+    reg_0x3fe: 0x10, # (case 16)
+    reg_0x3ff: 0x01, # (case 01)
+    reg_0x400: 0x02, # (case 02)
+    reg_0x401: 0x04, # (case 04)
+    reg_0x402: 0x40, # (case 40)
+}
+opcodes = {
+    'imm': 0x01,
+    'add': 0x02,
+    'stk': 0x04,
+    'stm': 0x40,
+    'ldm': 0x80,
+    'cmp': 0x20,
+    'jmp': 0x10,
+    'sys': 0x08,
+}
+syscalls = {
+    'open'          : 0x20,
+    'read_code'     : 0x01,
+    'read_memory'   : 0x08,
+    'write'         : 0x04,
+    'sleep'         : 0x10,
+    'exit'          : 0x02,
+}
+# CMP and JMP are closely linked, so assume that they interpreted in the same way
+jump_description = ''
+if flag_value &amp; 0x10: jump_description += 'L'
+if flag_value &amp; 0x01: jump_description += 'G'
+if flag_value &amp; 0x02: jump_description += 'E'
+if flag_value &amp; 0x04: jump_description += 'N'
+if flag_value &amp; 0x08: jump_description += 'Z'
+</code></pre>
+<h2 id="part-2-dynamic-analysis-using-gdb"><a class="header" href="#part-2-dynamic-analysis-using-gdb">[Part 2] Dynamic Analysis Using GDB</a></h2>
+<blockquote>
+<p>$ <code>gdb -q /level14_testing1</code><br />
+(gdb) <code>disass interpret_instruction</code></p>
+</blockquote>
+<pre><code>Dump of assembler code for function interpret_instruction:
+   [...]
+   0x0000000000001aa8 &lt;+45&gt;:	call   0x1491 &lt;interpret_imm&gt;
+   [...]
+   0x0000000000001ac6 &lt;+75&gt;:	call   0x14c4 &lt;interpret_add&gt;
+   [...]
+   0x0000000000001ae4 &lt;+105&gt;:	call   0x1527 &lt;interpret_stk&gt;
+   [...]
+   0x0000000000001b02 &lt;+135&gt;:	call   0x15e6 &lt;interpret_stm&gt;
+   [...]
+   0x0000000000001b1a &lt;+159&gt;:	call   0x1643 &lt;interpret_ldm&gt;
+   [...]
+   0x0000000000001b38 &lt;+189&gt;:	call   0x1698 &lt;interpret_cmp&gt;
+   [...]
+   0x0000000000001b56 &lt;+219&gt;:	call   0x179c &lt;interpret_jmp&gt;
+   [...]
+   0x0000000000001b74 &lt;+249&gt;:	call   0x17f5 &lt;interpret_sys&gt;
+   [...]
+</code></pre>
+<ul>
+<li>Print some helpful output at every breakpoint (<code>i r</code>==<code>info registers</code>, <code>x/8i $rip</code> displays the next 8 instructions):</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>define hook-stop</code></p>
+</blockquote>
+<pre><code>Type commands for definition of &quot;hook-stop&quot;.
+End with a line saying just &quot;end&quot;.
+&gt;i r
+&gt;x/8i $rip
+&gt;end
+</code></pre>
+<ul>
+<li>Set breakpoint at all <code>interpret_*</code> functions:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>b interpret_imm</code><br />
+(gdb) <code>b interpret_add</code><br />
+(gdb) <code>b interpret_stk</code><br />
+(gdb) <code>b interpret_stm</code><br />
+(gdb) <code>b interpret_ldm</code><br />
+(gdb) <code>b interpret_cmp</code><br />
+(gdb) <code>b interpret_jmp</code><br />
+(gdb) <code>b interpret_sys</code></p>
+</blockquote>
+<ul>
+<li>Run program:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>r</code></p>
+</blockquote>
+<ul>
+<li>1st cycle, interrupted at <code>interpret_imm</code>, <code>info registers</code> shows:</li>
+</ul>
+<blockquote>
+<p>rsi    0x470101    (which is 0x010147 when accounting for endianness)</p>
+</blockquote>
+<ul>
+<li>Continue:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>c</code></p>
+</blockquote>
+<ul>
+<li>2nd cycle, interrupted at <code>interpret_imm</code>, <code>info registers</code> shows:</li>
+</ul>
+<blockquote>
+<p>rsi   0x891001    (which is 0x011089 when accounting for endianness)</p>
+</blockquote>
+<ul>
+<li>These are the first 6 bytes of the <code>obj.vm_code</code> (emulator's bytecode) looked at in radare2 earlier, recall the following in radare2:</li>
+</ul>
+<blockquote>
+<p><code>V @ obj.vm_code</code></p>
+</blockquote>
+<pre><code>[0x00004020 [Xadvc]0 62% 896 /level14_testing1]&gt; xc @ obj.vm_code    
+- offset -   0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF  comment
+0x00004020  0101 4701 1089 4010 0101 012e 0110 8f40  ..G...@........@  ; obj.vm_code
+0x00004030  1001 0101 4c01 1082 4010 0101 01ab 0110  ....L...@.......
+[...]
+</code></pre>
+<ul>
+<li>Split instructions into groups of 3 bytes, then order appears to be [op, arg1, arg2]:</li>
+</ul>
+<pre><code>[0x01, 0x01, 0x47] -&gt; imm reg_0x3ff, 0x47
+[0x01, 0x10, 0x89] -&gt; imm reg_0x3fe, 0x89
+[0x40, 0x10, 0x01] -&gt; guess... stm reg_0x3fe, reg_0x3ff maybe?
+</code></pre>
+<ul>
+<li>Test <code>interpret_stm</code> assumption by continuing and looking at which interpret_??? function we end up breaking at:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>c</code></p>
+</blockquote>
+<ul>
+<li>3rd cycle, interrupted at <code>interpret_stm</code>, <code>info registers</code> appears to corroborate above assumption:</li>
+</ul>
+<blockquote>
+<p>rsi    0x11040    (which is 0x401001 when accounting for endianness)</p>
+</blockquote>
+<ul>
+<li>Keep going through the vm_code to guess the next three instructions:</li>
+</ul>
+<pre><code>[0x01, 0x01, 0x2e] -&gt; imm reg_0x3ff, 0x2e
+[0x01, 0x10, 0x8f] -&gt; imm reg_0x3fe, 0x8f
+[0x40, 0x10, 0x01] -&gt; guess... stm reg_0x3fe, reg_0x3ff again maybe?
+</code></pre>
+<ul>
+<li>Continue again to test assumption:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>c</code></p>
+</blockquote>
+<ul>
+<li>4th cycle, interrupted at <code>interpret_imm</code>, <code>info registers</code> shows:</li>
+</ul>
+<blockquote>
+<p>rsi    0x2e0101    (which is 0x01012e when accounting for endianness)</p>
+</blockquote>
+<ul>
+<li>Continue:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>c</code></p>
+</blockquote>
+<ul>
+<li>5th cycle, interrupted at <code>interpret_imm</code>, <code>info registers</code> shows:</li>
+</ul>
+<blockquote>
+<p>rsi    0x8f1001    (which is 0x01108f when accounting for endianness)</p>
+</blockquote>
+<ul>
+<li>6th cycle, interrupted at <code>interpret_stm</code>, <code>info registers</code> shows:</li>
+</ul>
+<blockquote>
+<p>rsi    0x11040    (which is 0x401001 when accounting for endianness)</p>
+</blockquote>
+<ul>
+<li>Therefore, instruction order when viewing <code>obj.vm_code</code> is [op, arg1, arg2] (Note: the instruction order can change for different versions of the ELF binary)</li>
+<li>At this point (at beginning of 6th cycle, i.e. not yet executed current [0x40, 0x10, 0x01] instruction), based on the instructions executed thus far, the state of the emulator's registers is expected to be:</li>
+</ul>
+<pre><code>reg_0x3fc = 0x00
+reg_0x3fd = 0x00
+reg_0x3fe = 0x8f
+reg_0x3ff = 0x2e
+reg_0x400 = 0x00
+reg_0x401 = 0x00
+reg_0x402 = 0x00
+</code></pre>
+<ul>
+<li>Assuming there is a register for the instruction pointer, one of the above register values is likely <strong>incorrect</strong></li>
+<li>If instruction pointer register holds the value of the <strong>next</strong> instruction, then the value maybe could be 0x06?</li>
+<li>If instruction pointer register holds the value of the <strong>previous</strong> instruction, then the value maybe could be 0x05?</li>
+<li>Examine the stack to have a look for the emulator's stored state on the stack (Note: examine much more than the current function's stack frame, because we need to look for the state of the emulator's registers, which will be stored much earlier in the program's stack):</li>
+</ul>
+<blockquote>
+<p>(gdb) x/150gx $rsp</p>
+</blockquote>
+<pre><code>[...]
+0x7ffe124a57f8:	0x0000000000000000	0x0000000000000000
+0x7ffe124a5808:	0x2e8f000000000000	0x00007ffe12000600 &lt;-- These values look familiar
+0x7ffe124a5818:	0xa957b0f74c9c8000	0x0000000000000000
+0x7ffe124a5828:	0x00007fc32cc8e0b3	0x0000000000000031
+0x7ffe124a5838:	0x00007ffe124a5918	0x000000012ce4f618
+0x7ffe124a5848:	0x000056465be1dbff	0x000056465be1dd20
+</code></pre>
+<ul>
+<li>Note that the memory addresses are likely to be different each time the program is run, so the relative addresses are the important parts to focus on</li>
+<li>Examine 7 bytes where it looks like the state of the registers is stored:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>x/7bx 0x7ffe124a5808 + 0x04</code></p>
+</blockquote>
+<pre><code>0x7ffe124a580c:	0x00	0x00	0x8f	0x2e	0x00	0x06	0x00
+??registers???: 0x3fc   0x3fd   0x3fe   0x3ff   0x400   0x401   0x402
+</code></pre>
+<ul>
+<li>Revise assumption on state of the emulator's registers based on dumped stack values:</li>
+</ul>
+<pre><code>reg_0x3fc = 0x00
+reg_0x3fd = 0x00
+reg_0x3fe = 0x8f
+reg_0x3ff = 0x2e
+reg_0x400 = 0x00
+reg_0x401 = 0x06 &lt;-- Updated value (likely to be value of instruction pointer)
+reg_0x402 = 0x00
+</code></pre>
+<ul>
+<li>Calculate distance emulator's register state is stored on stack <strong>relative</strong> to stack pointer at current breakpoint:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>p $rsp</code><br />
+$1 = (void *) 0x7ffe124a53a8<br />
+(gdb) <code>p 0x7ffe124a580c - 0x7ffe124a53a8</code><br />
+$2 = 1124</p>
+</blockquote>
+<ul>
+<li>Check calculation is correct:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>p/x $rsp + 1124</code>
+$3 = 0x7ffe124a580c</p>
+</blockquote>
+<ul>
+<li>The 1124 (decimal) relative offset from stack pointer should be the same for each of the interpret_* breakpoints, if assumption is wrong it will become apparent in the next section when a GDB script is used to run program in batch mode and print useful info</li>
+</ul>
+<h3 id="dynamic-analysis-using-gdb-scripting"><a class="header" href="#dynamic-analysis-using-gdb-scripting">Dynamic Analysis Using GDB Scripting</a></h3>
+<ul>
+<li>Write a GDB script using the known mappings derived thus far, snippets of the GDB script will be described below:</li>
+</ul>
+<blockquote>
+<p>$ <code>vim /tmp/rev_level14_testing1.gdb</code></p>
+</blockquote>
+<ul>
+<li>Begin script with <code>start</code> so that breakpoint is set at main and process is run:</li>
+</ul>
+<pre><code>start
+</code></pre>
+<ul>
+<li>Set some variables that will used repeatedly</li>
+<li><code>reg_offs</code> is the offset from rsp that was determined in the previous section that locates the emulator's register state</li>
+<li>In the previous section, the instructions were found to be in rsi at the relevant breakpoints, so <code>shift_op</code>, <code>shift_a1</code>, <code>shift_a2</code> are the amounts to shift rsi by to isolate each byte of the instruction</li>
+</ul>
+<pre><code>set $reg_offs = 1124
+set $shift_op = 0x00
+set $shift_a1 = 0x08
+set $shift_a2 = 0x10
+</code></pre>
+<ul>
+<li>Register mappings were determined in the radare2 static analysis performed previously:</li>
+</ul>
+<pre><code>define describe_reg
+    if $arg0 == 0x20
+        printf &quot;reg_0x3fc&quot;
+    end
+    if $arg0 == 0x08
+        printf &quot;reg_0x3fd&quot;
+    end
+    if $arg0 == 0x10
+        printf &quot;reg_0x3fe&quot;
+    end
+    if $arg0 == 0x01
+        printf &quot;reg_0x3ff&quot;
+    end
+    if $arg0 == 0x02
+        printf &quot;reg_0x400&quot;
+    end
+    if $arg0 == 0x04
+        printf &quot;reg_0x401&quot;
+    end
+    if $arg0 == 0x40
+        printf &quot;reg_0x402&quot;
+    end
+    if $arg0 == 0x00
+        printf &quot;NONE&quot;
+    end
+end
+</code></pre>
+<ul>
+<li>Syscall mappings were determined in the radare2 static analysis performed previously:</li>
+</ul>
+<pre><code>define describe_sys
+    if $arg0 == 0x20
+        printf &quot;open&quot;
+    end
+    if $arg0 == 0x01
+        printf &quot;read_code&quot;
+    end
+    if $arg0 == 0x08
+        printf &quot;read_memory&quot;
+    end
+    if $arg0 == 0x04
+        printf &quot;write&quot;
+    end
+    if $arg0 == 0x10
+        printf &quot;sleep&quot;
+    end
+    if $arg0 == 0x02
+        printf &quot;exit&quot;
+    end
+end
+</code></pre>
+<ul>
+<li>Jump mappings were determined in the radare2 static analysis performed previously:</li>
+</ul>
+<pre><code>define describe_jmp
+    if $arg0 &amp; 0x10
+        printf &quot;L&quot;
+    end
+    if $arg0 &amp; 0x01
+        printf &quot;G&quot;
+    end
+    if $arg0 &amp; 0x04
+        printf &quot;N&quot;
+    end
+    if $arg0 &amp; 0x08
+        printf &quot;Z&quot;
+    end
+    if $arg0 &amp; 0x02
+        printf &quot;E&quot;
+    end
+end
+</code></pre>
+<ul>
+<li>Define a function that prints the emulator's register state that can be called at each breakpoint:</li>
+</ul>
+<pre><code>define vm_state
+    set $reg_state = (long long) *(void**) ($rsp + $reg_offs)
+    printf &quot;[V] reg_0x3fc:%#x reg_0x3fd:%#x reg_0x3fe:%#x reg_0x3ff:%#x reg_0x400:%#x reg_0x401:%#x reg_0x402:%#x\n&quot;, $reg_state &gt;&gt; 0x00 &amp; 0xff, $reg_state &gt;&gt; 0x08 &amp; 0xff, $reg_state &gt;&gt; 0x10 &amp; 0xff, $reg_state &gt;&gt; 0x18 &amp; 0xff, $reg_state &gt;&gt; 0x20 &amp; 0xff, $reg_state &gt;&gt; 0x28 &amp; 0xff, $reg_state &gt;&gt; 0x30 &amp; 0xff
+end
+</code></pre>
+<ul>
+<li>Define a function that describes each instruction that can be called at each breakpoint:</li>
+</ul>
+<pre><code>define vm_instruction
+    printf &quot;[I] op:%#x arg1:%#x arg2:%#x\n&quot;, $rsi&gt;&gt;$shift_op&amp;0xff, $rsi&gt;&gt;$shift_a1&amp;0xff, $rsi&gt;&gt;$shift_a2&amp;0xff
+end
+</code></pre>
+<ul>
+<li>Break at all the <code>interpret_*</code> function calls and print some useful info using a combo of previously defined helper functions and <code>printf</code> specific to each breakpoint:</li>
+</ul>
+<pre><code>break interpret_imm
+commands
+    vm_state
+    vm_instruction
+    printf &quot;[s] IMM &quot;
+    describe_reg ($rsi&gt;&gt;$shift_a1&amp;0xff)
+    printf &quot; = %#x\n&quot;, $rsi&gt;&gt;$shift_a2&amp;0xff
+    continue
+end
+
+break interpret_add
+commands
+    vm_state
+    vm_instruction
+    printf &quot;[s] ADD &quot;
+    describe_reg ($rsi&gt;&gt;$shift_a1&amp;0xff)
+    printf &quot; &quot;
+    describe_reg ($rsi&gt;&gt;$shift_a2&amp;0xff)
+    printf &quot; \n&quot;
+    continue
+end
+
+break interpret_stk
+commands
+    vm_state
+    vm_instruction
+    printf &quot;[s] STK &quot;
+    describe_reg ($rsi&gt;&gt;$shift_a1&amp;0xff)
+    printf &quot; &quot;
+    describe_reg ($rsi&gt;&gt;$shift_a2&amp;0xff)
+    printf &quot; \n&quot;
+    printf &quot;[s] ... pushing &quot;
+    describe_reg ($rsi&gt;&gt;$shift_a2&amp;0xff)
+    printf &quot;\n&quot;
+    printf &quot;[s] ... popping &quot;
+    describe_reg ($rsi&gt;&gt;$shift_a1&amp;0xff)
+    printf &quot;\n&quot;
+    continue
+end
+
+break interpret_stm
+commands
+    vm_state
+    vm_instruction
+    printf &quot;[s] STM *&quot;
+    describe_reg ($rsi&gt;&gt;$shift_a1&amp;0xff)
+    printf &quot; = &quot;
+    describe_reg ($rsi&gt;&gt;$shift_a2&amp;0xff)
+    printf &quot; \n&quot;
+    continue
+end
+
+break interpret_ldm
+commands
+    vm_state
+    vm_instruction
+    printf &quot;[s] LDM &quot;
+    describe_reg ($rsi&gt;&gt;$shift_a1&amp;0xff)
+    printf &quot; = *&quot;
+    describe_reg ($rsi&gt;&gt;$shift_a2&amp;0xff)
+    printf &quot; \n&quot;
+    continue
+end
+
+break interpret_cmp
+commands
+    vm_state
+    vm_instruction
+    printf &quot;[s] CMP &quot;
+    describe_reg ($rsi&gt;&gt;$shift_a1&amp;0xff)
+    printf &quot; &quot;
+    describe_reg ($rsi&gt;&gt;$shift_a2&amp;0xff)
+    printf &quot; \n&quot;
+    continue
+end
+
+break interpret_jmp
+commands
+    vm_state
+    vm_instruction
+    printf &quot;[s] JMP &quot;
+    describe_jmp ($rsi&gt;&gt;$shift_a1&amp;0xff)
+    printf &quot; &quot;
+    describe_reg ($rsi&gt;&gt;$shift_a2&amp;0xff)
+    printf &quot; \n&quot;
+    continue
+end
+
+break interpret_sys
+commands
+    vm_state
+    vm_instruction
+    printf &quot;[s] SYS %#x &quot;, $rsi&gt;&gt;$shift_a1&amp;0xff
+    describe_reg ($rsi&gt;&gt;$shift_a2&amp;0xff)
+    printf &quot; \n&quot;
+    printf &quot;[s] ... &quot;
+    describe_sys ($rsi&gt;&gt;$shift_a1&amp;0xff)
+    printf &quot; \n&quot;
+    continue
+end
+
+break crash
+commands
+    vm_instruction
+    printf &quot;[s] CRASH\n&quot;
+    continue
+end
+
+</code></pre>
+<ul>
+<li>Finally, end with <code>continue</code> so that GDB will be able to continue execution of program:</li>
+</ul>
+<pre><code>continue
+</code></pre>
+<ul>
+<li>Run GDB in batch mode with the script just written:</li>
+</ul>
+<blockquote>
+<p>$ <code>gdb /level14_testing1 -batch -x /tmp/rev_level14_testing1.gdb</code></p>
+</blockquote>
+<pre><code>Breakpoint 9, 0x000056246321f7f5 in interpret_sys ()
+[V] reg_0x3fc:0 reg_0x3fd:0x40 reg_0x3fe:0xe reg_0x3ff:0xb reg_0x400:0xe reg_0x401:0x46 reg_0x402:0
+[I] op:0x8 arg1:0x8 arg2:0x1
+[s] SYS 0x8 reg_0x3ff 
+[s] ... read_memory 
+</code></pre>
+<ul>
+<li>It stops and waits for input from STDIN, input <code>AAAAAAAA</code> to see what happens:</li>
+</ul>
+<pre><code>[...]
+Breakpoint 9, 0x000056246321f7f5 in interpret_sys ()
+[V] reg_0x3fc:0x1 reg_0x3fd:0xc reg_0x3fe:0xb reg_0x3ff:0xa reg_0x400:0x16 reg_0x401:0x87 reg_0x402:0x5
+[I] op:0x8 arg1:0x4 arg2:0x1
+[s] SYS 0x4 reg_0x3ff 
+[s] ... write 
+INCORRECT!
+
+Breakpoint 2, 0x000056246321f491 in interpret_imm ()
+[V] reg_0x3fc:0x1 reg_0x3fd:0xc reg_0x3fe:0xb reg_0x3ff:0xb reg_0x400:0x16 reg_0x401:0x88 reg_0x402:0x5
+[I] op:0x1 arg1:0x20 arg2:0x1
+[s] IMM reg_0x3fc = 0x1
+
+Breakpoint 9, 0x000056246321f7f5 in interpret_sys ()
+[V] reg_0x3fc:0x1 reg_0x3fd:0xc reg_0x3fe:0xb reg_0x3ff:0xb reg_0x400:0x16 reg_0x401:0x89 reg_0x402:0x5
+[I] op:0x8 arg1:0x2 arg2:0
+[s] SYS 0x2 NONE 
+[s] ... exit 
+</code></pre>
+<ul>
+<li><code>AAAAAAAA</code> was incorrect</li>
+<li>Different input can be altered and piped in using a simple inline Python command:</li>
+</ul>
+<blockquote>
+<p>$ <code>python -c &quot;import sys; sys.stdout.buffer.write(b'\x41'*20)&quot; | gdb /level14_testing1 -batch -x /tmp/rev_level14_testing1.gdb</code></p>
+</blockquote>
+<pre><code>[...]
+Breakpoint 9, 0x000056246321f7f5 in interpret_sys ()
+[V] reg_0x3fc:0x1 reg_0x3fd:0xc reg_0x3fe:0xb reg_0x3ff:0xa reg_0x400:0x16 reg_0x401:0x87 reg_0x402:0x5
+[I] op:0x8 arg1:0x4 arg2:0x1
+[s] SYS 0x4 reg_0x3ff 
+[s] ... write 
+INCORRECT!
+
+Breakpoint 2, 0x000056246321f491 in interpret_imm ()
+[V] reg_0x3fc:0x1 reg_0x3fd:0xc reg_0x3fe:0xb reg_0x3ff:0xb reg_0x400:0x16 reg_0x401:0x88 reg_0x402:0x5
+[I] op:0x1 arg1:0x20 arg2:0x1
+[s] IMM reg_0x3fc = 0x1
+
+Breakpoint 9, 0x000056246321f7f5 in interpret_sys ()
+[V] reg_0x3fc:0x1 reg_0x3fd:0xc reg_0x3fe:0xb reg_0x3ff:0xb reg_0x400:0x16 reg_0x401:0x89 reg_0x402:0x5
+[I] op:0x8 arg1:0x2 arg2:0
+[s] SYS 0x2 NONE 
+[s] ... exit 
+</code></pre>
+<ul>
+<li>But the above input was still incorrect</li>
+</ul>
+<h4 id="identifying-the-instruction-pointer-register"><a class="header" href="#identifying-the-instruction-pointer-register">Identifying the Instruction Pointer Register</a></h4>
+<ul>
+<li>Analyse the output in more detail by <code>grep</code>ping for the somewhere near the start and selecting the 50 lines after it:</li>
+</ul>
+<blockquote>
+<p>$ <code>python -c &quot;import sys; sys.stdout.buffer.write(b'\x41'*20)&quot; | gdb /level14_testing1 -batch -x /tmp/rev_level14_testing1.gdb | grep -A50 &quot;\[+\] Starting interpreter loop! Good luck!&quot;</code></p>
+</blockquote>
+<pre><code>[+] Starting interpreter loop! Good luck!
+
+Breakpoint 2, 0x000055f95929e491 in interpret_imm ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0 reg_0x3ff:0 reg_0x400:0 reg_0x401:0x1 reg_0x402:0
+[I] op:0x1 arg1:0x1 arg2:0x47
+[s] IMM reg_0x3ff = 0x47
+
+Breakpoint 2, 0x000055f95929e491 in interpret_imm ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0 reg_0x3ff:0x47 reg_0x400:0 reg_0x401:0x2 reg_0x402:0
+[I] op:0x1 arg1:0x10 arg2:0x89
+[s] IMM reg_0x3fe = 0x89
+
+Breakpoint 5, 0x000055f95929e5e6 in interpret_stm ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0x89 reg_0x3ff:0x47 reg_0x400:0 reg_0x401:0x3 reg_0x402:0
+[I] op:0x40 arg1:0x10 arg2:0x1
+[s] STM *reg_0x3fe = reg_0x3ff 
+
+Breakpoint 2, 0x000055f95929e491 in interpret_imm ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0x89 reg_0x3ff:0x47 reg_0x400:0 reg_0x401:0x4 reg_0x402:0
+[I] op:0x1 arg1:0x1 arg2:0x2e
+[s] IMM reg_0x3ff = 0x2e
+
+Breakpoint 2, 0x000055f95929e491 in interpret_imm ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0x89 reg_0x3ff:0x2e reg_0x400:0 reg_0x401:0x5 reg_0x402:0
+[I] op:0x1 arg1:0x10 arg2:0x8f
+[s] IMM reg_0x3fe = 0x8f
+
+Breakpoint 5, 0x000055f95929e5e6 in interpret_stm ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0x8f reg_0x3ff:0x2e reg_0x400:0 reg_0x401:0x6 reg_0x402:0
+[I] op:0x40 arg1:0x10 arg2:0x1
+[s] STM *reg_0x3fe = reg_0x3ff 
+
+Breakpoint 2, 0x000055f95929e491 in interpret_imm ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0x8f reg_0x3ff:0x2e reg_0x400:0 reg_0x401:0x7 reg_0x402:0
+[I] op:0x1 arg1:0x1 arg2:0x4c
+[s] IMM reg_0x3ff = 0x4c
+
+Breakpoint 2, 0x000055f95929e491 in interpret_imm ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0x8f reg_0x3ff:0x4c reg_0x400:0 reg_0x401:0x8 reg_0x402:0
+[I] op:0x1 arg1:0x10 arg2:0x82
+[s] IMM reg_0x3fe = 0x82
+
+Breakpoint 5, 0x000055f95929e5e6 in interpret_stm ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0x82 reg_0x3ff:0x4c reg_0x400:0 reg_0x401:0x9 reg_0x402:0
+[I] op:0x40 arg1:0x10 arg2:0x1
+[s] STM *reg_0x3fe = reg_0x3ff 
+
+Breakpoint 2, 0x000055f95929e491 in interpret_imm ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0x82 reg_0x3ff:0x4c reg_0x400:0 reg_0x401:0xa reg_0x402:0
+[I] op:0x1 arg1:0x1 arg2:0xab
+[s] IMM reg_0x3ff = 0xab
+</code></pre>
+<ul>
+<li><code>reg_0x401</code> is incrementing by 1 at each new instruction, so this again confirms the assumption that this register is keeping track of the instruction pointer</li>
+</ul>
+<h4 id="identifying-the-stack-pointer-register"><a class="header" href="#identifying-the-stack-pointer-register">Identifying the Stack Pointer Register</a></h4>
+<ul>
+<li>Now grep for some specific instructions (starting with <code>STK</code>) and print some lines above and below:</li>
+</ul>
+<blockquote>
+<p>$ <code>python -c &quot;import sys; sys.stdout.buffer.write(b'\x41'*20)&quot; | gdb /level14_testing1 -batch -x /tmp/rev_level14_testing1.gdb | grep -B3 -A5 &quot;STK&quot; | grep -v &quot;... popping NONE&quot; | grep -v &quot;... pushing NONE&quot;</code></p>
+</blockquote>
+<ul>
+<li>Using <code>-v</code> tag, exclude lines that print &quot;... popping NONE&quot; and &quot;... pushing NONE&quot;, as these are a result of the GDB script not being refined enough to work out when an in instruction is a push only or a pop only instruction</li>
+</ul>
+<pre><code>Breakpoint 4, 0x0000562462367527 in interpret_stk ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0x8c reg_0x3ff:0xc2 reg_0x400:0 reg_0x401:0x1f reg_0x402:0
+[I] op:0x4 arg1:0 arg2:0x20
+[s] STK NONE reg_0x3fc 
+[s] ... pushing reg_0x3fc
+
+Breakpoint 4, 0x0000562462367527 in interpret_stk ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0x8c reg_0x3ff:0xc2 reg_0x400:0x1 reg_0x401:0x20 reg_0x402:0
+[I] op:0x4 arg1:0 arg2:0x8
+[s] STK NONE reg_0x3fd 
+[s] ... pushing reg_0x3fd
+
+Breakpoint 4, 0x0000562462367527 in interpret_stk ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0x8c reg_0x3ff:0xc2 reg_0x400:0x2 reg_0x401:0x21 reg_0x402:0
+[I] op:0x4 arg1:0 arg2:0x10
+[s] STK NONE reg_0x3fe 
+[s] ... pushing reg_0x3fe
+
+Breakpoint 2, 0x0000562462367491 in interpret_imm ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0x8c reg_0x3ff:0xc2 reg_0x400:0x3 reg_0x401:0x22 reg_0x402:0
+--
+Breakpoint 4, 0x0000562462367527 in interpret_stk ()
+[V] reg_0x3fc:0 reg_0x3fd:0x4 reg_0x3fe:0x8c reg_0x3ff:0x45 reg_0x400:0x3 reg_0x401:0x25 reg_0x402:0
+[I] op:0x4 arg1:0 arg2:0x1
+[s] STK NONE reg_0x3ff 
+[s] ... pushing reg_0x3ff
+
+Breakpoint 2, 0x0000562462367491 in interpret_imm ()
+[V] reg_0x3fc:0 reg_0x3fd:0x4 reg_0x3fe:0x8c reg_0x3ff:0x45 reg_0x400:0x4 reg_0x401:0x26 reg_0x402:0
+[...]
+</code></pre>
+<ul>
+<li>From the above output, it can be seen that the line showing the register state <strong>after</strong> each <strong>push</strong> instruction, the value of <code>reg_0x400</code> <strong>increases</strong></li>
+<li>If we keep looking through the output, there are some pop instructions:</li>
+</ul>
+<pre><code>[...]
+Breakpoint 4, 0x0000562462367527 in interpret_stk ()
+[V] reg_0x3fc:0 reg_0x3fd:0x40 reg_0x3fe:0xe reg_0x3ff:0xe reg_0x400:0xe reg_0x401:0x47 reg_0x402:0
+[I] op:0x4 arg1:0x10 arg2:0
+[s] STK reg_0x3fe NONE 
+[s] ... popping reg_0x3fe
+
+Breakpoint 4, 0x0000562462367527 in interpret_stk ()
+[V] reg_0x3fc:0 reg_0x3fd:0x40 reg_0x3fe:0x20 reg_0x3ff:0xe reg_0x400:0xd reg_0x401:0x48 reg_0x402:0
+[I] op:0x4 arg1:0x8 arg2:0
+[s] STK reg_0x3fd NONE 
+[s] ... popping reg_0x3fd
+
+Breakpoint 4, 0x0000562462367527 in interpret_stk ()
+[V] reg_0x3fc:0 reg_0x3fd:0x3a reg_0x3fe:0x20 reg_0x3ff:0xe reg_0x400:0xc reg_0x401:0x49 reg_0x402:0
+[I] op:0x4 arg1:0x20 arg2:0
+[s] STK reg_0x3fc NONE 
+[s] ... popping reg_0x3fc
+
+Breakpoint 2, 0x0000562462367491 in interpret_imm ()
+[V] reg_0x3fc:0x59 reg_0x3fd:0x3a reg_0x3fe:0x20 reg_0x3ff:0xe reg_0x400:0xb reg_0x401:0x4a reg_0x402:0
+[...]
+</code></pre>
+<ul>
+<li>From the above output, it can be seen that the line showing the register state <strong>after</strong> each <strong>pop</strong> instruction, the value of <code>reg_0x400</code> <strong>decreases</strong></li>
+<li>Therefore <code>reg_0x400</code> should be the <strong>stack pointer</strong></li>
+<li>Some instructions are a push and a pop in the <strong>same</strong> instruction, e.g.:</li>
+</ul>
+<pre><code>[...]
+Breakpoint 4, 0x0000556ee88bd527 in interpret_stk ()
+[V] reg_0x3fc:0x4b reg_0x3fd:0x8f reg_0x3fe:0xc reg_0x3ff:0x6a reg_0x400:0xc reg_0x401:0x6b reg_0x402:0x5
+[I] op:0x4 arg1:0x1 arg2:0x10
+[s] STK reg_0x3ff reg_0x3fe 
+[s] ... pushing reg_0x3fe
+[s] ... popping reg_0x3ff
+
+Breakpoint 4, 0x0000556ee88bd527 in interpret_stk ()
+[V] reg_0x3fc:0x4b reg_0x3fd:0x8f reg_0x3fe:0xc reg_0x3ff:0xc reg_0x400:0xc reg_0x401:0x6c reg_0x402:0x5
+[...]
+</code></pre>
+<ul>
+<li>The line showing the register state <strong>after</strong> each <strong>push-pop</strong> instruction, the value of <code>reg_0x400</code> stays the <strong>same</strong></li>
+<li>The above output shows that the value in <code>reg_0x3fe</code> is first pushed on to the stack and immediately popped into <code>reg_0x3ff</code></li>
+</ul>
+<h4 id="identifying-the-flag-register"><a class="header" href="#identifying-the-flag-register">Identifying the Flag Register</a></h4>
+<ul>
+<li>Now send forty b'\x41' bytes, grep for <code>CMP</code> instruction and print some lines above and below:</li>
+</ul>
+<blockquote>
+<p>$ <code>python -c &quot;import sys; sys.stdout.buffer.write(b'\x41'*40)&quot; | gdb /level14_testing1 -batch -x /tmp/rev_level14_testing1.gdb | grep -B3 -A3 &quot;CMP&quot;</code></p>
+</blockquote>
+<pre><code>Breakpoint 7, 0x00005628cc387698 in interpret_cmp ()
+[V] reg_0x3fc:0x41 reg_0x3fd:0x2e reg_0x3fe:0xc reg_0x3ff:0xff reg_0x400:0xe reg_0x401:0x60 reg_0x402:0
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP reg_0x3fc reg_0x3fd 
+
+Breakpoint 4, 0x00005628cc387527 in interpret_stk ()
+[V] reg_0x3fc:0x41 reg_0x3fd:0x2e reg_0x3fe:0xc reg_0x3ff:0xff reg_0x400:0xe reg_0x401:0x61 reg_0x402:0x5
+[...]
+</code></pre>
+<ul>
+<li>So the first time the breakpoint hits the <code>interpret_cmp</code> instruction it's comparing <code>reg_0x3fc:0x41</code> vs <code>reg_0x3fd:0x2e</code></li>
+<li><code>reg_0x3fc</code> value is 0x41, which looks like it could be one of our inputted values</li>
+<li>From the previous static analysis using radare2, the <code>interpret_cmp</code> instruction set flags in the following manner:</li>
+</ul>
+<pre><code># Pseudo Python code for notes purposes only
+flag_value = ''
+if cmp_x &lt; cmp_y: flag_value += flag_value | 0x10 # i.e. 'L'
+if cmp_x &gt; cmp_y: flag_value += flag_value | 0x01 # i.e. 'G'
+if cmp_x == cmp_y: flag_value += flag_value | 0x02 # i.e. 'E'
+if cmp_x != cmp_y: flag_value += flag_value | 0x04 # i.e. 'N'
+if cmp_x == cmp_y == 0: flag_value += flag_value | 0x08 # i.e. 'Z'
+</code></pre>
+<ul>
+<li>0x41 &gt; 0x2e and they are not equal, so we expect flag_value to be <code>or</code>'d with both 0x01 and 0x04, which equates to 0x05</li>
+<li>The line showing the register state <strong>after</strong> the <strong>cmp</strong> instruction, the value of <code>reg_0x402</code> changes to 0x05</li>
+<li>Try again with different input (this time, forty null bytes):</li>
+</ul>
+<blockquote>
+<p>$ <code>python -c &quot;import sys; sys.stdout.buffer.write(b'\x00'*40)&quot; | gdb /level14_testing1 -batch -x /tmp/rev_level14_testing1.gdb | grep -B3 -A3 &quot;CMP&quot;</code></p>
+</blockquote>
+<pre><code>Breakpoint 7, 0x000056067b2c8698 in interpret_cmp ()
+[V] reg_0x3fc:0 reg_0x3fd:0x2e reg_0x3fe:0xc reg_0x3ff:0xff reg_0x400:0xe reg_0x401:0x60 reg_0x402:0
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP reg_0x3fc reg_0x3fd 
+
+Breakpoint 4, 0x000056067b2c8527 in interpret_stk ()
+[V] reg_0x3fc:0 reg_0x3fd:0x2e reg_0x3fe:0xc reg_0x3ff:0xff reg_0x400:0xe reg_0x401:0x61 reg_0x402:0x14
+[...]
+</code></pre>
+<ul>
+<li>For the null bytes input, the first time it hits the <code>interpret_cmp</code> breakpoint, it's comparing <code>reg_0x3fc:0x00</code> vs <code>reg_0x3fd:0x2e</code></li>
+<li>Again, <code>reg_0x3fc</code> value (0x00) looks like it's one of our inputted values</li>
+<li>0x00 &lt; 0x2e and they are not equal, so we expect flag_value to be <code>or</code>'d with both 0x10 and 0x04, which equates 0x14</li>
+<li>The line showing the register state <strong>after</strong> the <strong>cmp</strong> instruction, the value of <code>reg_0x402</code> changes to 0x14, so the assumptions on the <code>interpret_cmp</code> instruction appear correct so far</li>
+<li>This time, try a <strong>non-repeating pattern</strong> as input to see which index of our input is used in the comparison:</li>
+</ul>
+<blockquote>
+<p>$ <code>python -c &quot;import sys; sys.stdout.buffer.write(b'\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff')&quot; | gdb /level14_testing1 -batch -x /tmp/rev_level14_testing1.gdb | grep -B3 -A3 &quot;CMP&quot;</code></p>
+</blockquote>
+<pre><code>Breakpoint 7, 0x000055b0ca655698 in interpret_cmp ()
+[V] reg_0x3fc:0xec reg_0x3fd:0x2e reg_0x3fe:0xc reg_0x3ff:0xff reg_0x400:0xe reg_0x401:0x60 reg_0x402:0
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP reg_0x3fc reg_0x3fd 
+
+Breakpoint 4, 0x000055b0ca655527 in interpret_stk ()
+[V] reg_0x3fc:0xec reg_0x3fd:0x2e reg_0x3fe:0xc reg_0x3ff:0xff reg_0x400:0xe reg_0x401:0x61 reg_0x402:0x5
+[...]
+</code></pre>
+<ul>
+<li>From above output, the comparison is now between <code>reg_0x3fc:0xec</code> vs <code>reg_0x3fd:0x2e</code>, so let's summarise, update assumptions and refine the GDB script in the step below</li>
+</ul>
+<h3 id="summary-of-part-2"><a class="header" href="#summary-of-part-2">Summary of Part 2</a></h3>
+<ul>
+<li><code>reg_0x3fc</code>, <code>reg_0x3fd</code>, <code>reg_0x3fe</code>, <code>reg_0x3ff</code> seem to be general purpose registers</li>
+<li><code>reg_0x400</code> is the stack pointer register</li>
+<li><code>reg_0x401</code> is the instruction pointer register</li>
+<li><code>reg_0x402</code> is the flag register that uses bitmasks to set relevant flags</li>
+<li>Sending input of <code>b'\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff'</code> led to first comparison being made by emulator between 0xec and 0x2e</li>
+<li>Each instruction is <strong>size 3 bytes</strong> (Note: the instruction order can change for different versions of the ELF binary)</li>
+<li>Register, opcode, syscall, compare lookup values are known (Note: the register, opcode, syscall and cmp mappings can change for different versions of the ELF binary)</li>
+<li>Rename registers based on new info:</li>
+</ul>
+<pre><code># Pseudo Python code for notes purposes only
+registers = {
+    a: 0x20, # (case 32)
+    b: 0x08, # (case 08)
+    c: 0x10, # (case 16)
+    d: 0x01, # (case 01)
+    s: 0x02, # (case 02)
+    i: 0x04, # (case 04)
+    f: 0x40, # (case 40)
+}
+opcodes = {
+    'imm': 0x01,
+    'add': 0x02,
+    'stk': 0x04,
+    'stm': 0x40,
+    'ldm': 0x80,
+    'cmp': 0x20,
+    'jmp': 0x10,
+    'sys': 0x08,
+}
+syscalls = {
+    'open'          : 0x20,
+    'read_code'     : 0x01,
+    'read_memory'   : 0x08,
+    'write'         : 0x04,
+    'sleep'         : 0x10,
+    'exit'          : 0x02,
+}
+jump_description = ''
+if flag_value &amp; 0x10: jump_description += 'L'
+if flag_value &amp; 0x01: jump_description += 'G'
+if flag_value &amp; 0x02: jump_description += 'E'
+if flag_value &amp; 0x04: jump_description += 'N'
+if flag_value &amp; 0x08: jump_description += 'Z'
+</code></pre>
+<ul>
+<li>Update GDB script with new register names:</li>
+</ul>
+<pre><code>[...]
+define describe_reg
+    if $arg0 == 0x20
+        printf &quot;a&quot;
+    end
+    if $arg0 == 0x08
+        printf &quot;b&quot;
+    end
+    if $arg0 == 0x10
+        printf &quot;c&quot;
+    end
+    if $arg0 == 0x01
+        printf &quot;d&quot;
+    end
+    if $arg0 == 0x02
+        printf &quot;s&quot;
+    end
+    if $arg0 == 0x04
+        printf &quot;i&quot;
+    end
+    if $arg0 == 0x40
+        printf &quot;f&quot;
+    end
+    if $arg0 == 0x00
+        printf &quot;NONE&quot;
+    end
+end
+[...]
+define vm_state
+    set $reg_state = (long long) *(void**) ($rsp + $reg_offs)
+    printf &quot;[V] a:%#x b:%#x c:%#x d:%#x s:%#x i:%#x f:%#x\n&quot;, $reg_state &gt;&gt; 0x00 &amp; 0xff, $reg_state &gt;&gt; 0x08 &amp; 0xff, $reg_state &gt;&gt; 0x10 &amp; 0xff, $reg_state &gt;&gt; 0x18 &amp; 0xff, $reg_state &gt;&gt; 0x20 &amp; 0xff, $reg_state &gt;&gt; 0x28 &amp; 0xff, $reg_state &gt;&gt; 0x30 &amp; 0xff
+end
+[...]
+</code></pre>
+<h2 id="part-3-crafting-the-solution"><a class="header" href="#part-3-crafting-the-solution">[Part 3] Crafting the Solution</a></h2>
+<ul>
+<li>With revised GDB script, try a <strong>non-repeating pattern</strong> as input, but change the 0xec to 0x2e:</li>
+</ul>
+<blockquote>
+<p>$ <code>python -c &quot;import sys; sys.stdout.buffer.write(b'\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\x2e\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff')&quot; | gdb /level14_testing1 -batch -x /tmp/rev_level14_testing1.gdb | grep -B3 -A3 &quot;CMP&quot;</code></p>
+</blockquote>
+<ul>
+<li>This time the output is different, there are more comparisons:</li>
+</ul>
+<pre><code>Breakpoint 7, 0x0000563eab40e698 in interpret_cmp ()
+[V] a:0x2e b:0x2e c:0xc d:0xff s:0xe i:0x60 f:0
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+
+Breakpoint 4, 0x0000563eab40e527 in interpret_stk ()
+[V] a:0x2e b:0x2e c:0xc d:0xff s:0xe i:0x61 f:0x2
+--
+Breakpoint 7, 0x0000563eab40e698 in interpret_cmp ()
+[V] a:0x4b b:0x8f c:0xb d:0 s:0xc i:0x68 f:0x2
+[I] op:0x20 arg1:0x10 arg2:0x1
+[s] CMP c d 
+
+Breakpoint 2, 0x0000563eab40e491 in interpret_imm ()
+[V] a:0x4b b:0x8f c:0xb d:0 s:0xc i:0x69 f:0x5
+--
+Breakpoint 7, 0x0000563eab40e698 in interpret_cmp ()
+[V] a:0xeb b:0x90 c:0xb d:0xff s:0xe i:0x60 f:0x5
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+
+Breakpoint 4, 0x0000563eab40e527 in interpret_stk ()
+[V] a:0xeb b:0x90 c:0xb d:0xff s:0xe i:0x61 f:0x5
+[...]
+</code></pre>
+<ul>
+<li>Now try changing the 0xeb to 0x90 and only grep for &quot;CMP a b&quot; as this looks like the important comparison:</li>
+</ul>
+<blockquote>
+<p>$ <code>python -c &quot;import sys; sys.stdout.buffer.write(b'\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\x90\x2e\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff')&quot; | gdb /level14_testing1 -batch -x /tmp/rev_level14_testing1.gdb | grep -B3 -A3 &quot;CMP a b&quot;</code></p>
+</blockquote>
+<ul>
+<li>Again the output is different as there's also a comparison between 0xea and 0x3b, looks like we're making progress:</li>
+</ul>
+<pre><code>Breakpoint 7, 0x0000562fa1832698 in interpret_cmp ()
+[V] a:0x2e b:0x2e c:0xc d:0xff s:0xe i:0x60 f:0
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+
+Breakpoint 4, 0x0000562fa1832527 in interpret_stk ()
+[V] a:0x2e b:0x2e c:0xc d:0xff s:0xe i:0x61 f:0x2
+--
+Breakpoint 7, 0x0000562fa1832698 in interpret_cmp ()
+[V] a:0x90 b:0x90 c:0xb d:0xff s:0xe i:0x60 f:0x5
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+
+Breakpoint 4, 0x0000562fa1832527 in interpret_stk ()
+[V] a:0x90 b:0x90 c:0xb d:0xff s:0xe i:0x61 f:0x2
+--
+Breakpoint 7, 0x0000562fa1832698 in interpret_cmp ()
+[V] a:0xea b:0x3b c:0xa d:0xff s:0xe i:0x60 f:0x5
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+
+Breakpoint 4, 0x0000562fa1832527 in interpret_stk ()
+[V] a:0xea b:0x3b c:0xa d:0xff s:0xe i:0x61 f:0x5
+</code></pre>
+<ul>
+<li>As it seems like our input from 0xed onward is being discarded, let's continue on this basis and also keep updating the compared value to what it seems like the program wants (also don't bother <code>grep</code>ping for the lines after the specifed criteria):</li>
+</ul>
+<blockquote>
+<p>$ <code>python -c &quot;import sys; sys.stdout.buffer.write(b'\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\x3b\x90\x2e')&quot; | gdb /level14_testing1 -batch -x /tmp/rev_level14_testing1.gdb | grep -B3 &quot;CMP a b&quot;</code></p>
+</blockquote>
+<pre><code>Breakpoint 7, 0x000055d923803698 in interpret_cmp ()
+[V] a:0x2e b:0x2e c:0xc d:0xff s:0xe i:0x60 f:0
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+--
+Breakpoint 7, 0x000055d923803698 in interpret_cmp ()
+[V] a:0x90 b:0x90 c:0xb d:0xff s:0xe i:0x60 f:0x5
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+--
+Breakpoint 7, 0x000055d923803698 in interpret_cmp ()
+[V] a:0x3b b:0x3b c:0xa d:0xff s:0xe i:0x60 f:0x5
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+--
+Breakpoint 7, 0x000055d923803698 in interpret_cmp ()
+[V] a:0xe9 b:0xc2 c:0x9 d:0xff s:0xe i:0x60 f:0x5
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+</code></pre>
+<ul>
+<li>Keep going, change 0xe9 to 0xc2</li>
+</ul>
+<blockquote>
+<p>$ <code>python -c &quot;import sys; sys.stdout.buffer.write(b'\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xc2\x3b\x90\x2e')&quot; | gdb /level14_testing1 -batch -x /tmp/rev_level14_testing1.gdb | grep -B3 &quot;CMP a b&quot;</code></p>
+</blockquote>
+<pre><code>Breakpoint 7, 0x000055c98537f698 in interpret_cmp ()
+[V] a:0x2e b:0x2e c:0xc d:0xff s:0xe i:0x60 f:0
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+--
+Breakpoint 7, 0x000055c98537f698 in interpret_cmp ()
+[V] a:0x90 b:0x90 c:0xb d:0xff s:0xe i:0x60 f:0x5
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+--
+Breakpoint 7, 0x000055c98537f698 in interpret_cmp ()
+[V] a:0x3b b:0x3b c:0xa d:0xff s:0xe i:0x60 f:0x5
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+--
+Breakpoint 7, 0x000055c98537f698 in interpret_cmp ()
+[V] a:0xc2 b:0xc2 c:0x9 d:0xff s:0xe i:0x60 f:0x5
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+--
+Breakpoint 7, 0x000055c98537f698 in interpret_cmp ()
+[V] a:0xe8 b:0xa8 c:0x8 d:0xff s:0xe i:0x60 f:0x5
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+</code></pre>
+<ul>
+<li>Assuming that the comparisons keep being made until the start of the input, we can either carry on in this manner, or write a script to finish the rest</li>
+<li>Although there aren't many comparisons left to be made, doing this manually doesn't sound interesting, so let's write a Python script to get us the flag</li>
+</ul>
+<h3 id="get-flag-script-using-python"><a class="header" href="#get-flag-script-using-python">Get Flag Script Using Python</a></h3>
+<ul>
+<li><code>vim /tmp/rev_level14_testing1.py</code></li>
+</ul>
+<pre><code>import os
+import re
+import subprocess
+
+elf_binary = '/level14_testing1'
+gdb_script = '/tmp/rev_level14_testing1.gdb'
+
+def bytes_str(bytes_obj: bytes) -&gt; str:
+    # Takes bytes type object as argument and returns string in hex '\x' format
+    return ''.join(f'\\x{byte:02x}' for byte in bytes_obj)
+
+def get_key() -&gt; bytes:
+    key = b''.join(byte.to_bytes(1, 'big') for byte in range(0xe0, 0x100))
+    print('[*] Obtaining key via GDB script:')
+
+    # Loop through key attempt in reverse order as ELF binary does CMP in this order
+    for i in range(len(key)-1, -1, -1):
+        sp = subprocess.run(
+            ['gdb', elf_binary, '-batch', '-x', gdb_script],
+            input = key,
+            stdout = subprocess.PIPE,
+            stderr = subprocess.PIPE,
+        )
+        out = sp.stdout.decode('latin1')
+
+        # Extract a and b from output
+        cmp_ab = re.findall('\[V\] a:0x(.*) b:0x(.*) c:.* d:.* s:.* f:.*\n.*\n\[s\] CMP a b', out)[::-1]
+        a = int(cmp_ab[i][0], 16) if len(cmp_ab)==len(key) else int(cmp_ab[0][0], 16)
+        b = int(cmp_ab[i][1], 16) if len(cmp_ab)==len(key) else int(cmp_ab[0][1], 16)
+        print(f&quot;index={i:02d} a={hex(a)} b={hex(b)} test_key=b'{bytes_str(key)}'&quot;)
+
+        # Update key by overwriting immutable bytes object with b at index i if our input a is found
+        key = key[:i] + b.to_bytes(1, 'big') + key[i+1:] if key[i]==a else key[:i]
+
+    print(f'Key: {bytes_str(key)}', end='\n\n')
+    return key
+
+def get_flag(key: bytes) -&gt; str:
+    print('[*] Obtaining flag from setuid binary:')
+    sp = subprocess.run(
+        [elf_binary],
+        input = key,
+        stdout = subprocess.PIPE,
+        stderr = subprocess.PIPE,
+    )
+    out = sp.stdout.decode('latin1')
+    flag = re.findall('_college{(.*)}', out)
+    return f'pwn_college{{{flag[0]}}}' if len(flag) else ''
+
+def main():
+    assert os.path.isfile(elf_binary), f'Could not find file {elf_binary}'
+    assert os.path.isfile(gdb_script), f'Could not find file {gdb_script}'
+    key = get_key()
+    flag = get_flag(key)
+    print(flag) if flag else print('Error obtaining flag')
+    exit(42)
+
+if __name__=='__main__':
+    main()
+</code></pre>
+<ul>
+<li>Run the script:</li>
+</ul>
+<blockquote>
+<p>$ <code>python /tmp/rev_level14_testing1.py</code></p>
+</blockquote>
+<pre><code>[...]
+Key: \xd2\xab\x34\x27\x97\x47\x57\xa8\xc2\x3b\x90\x2e
+
+[*] Obtaining flag from setuid binary:
+pwn_college{a_secret_fake_flag}
+</code></pre>
+<ul>
+<li>And there's the flag</li>
+<li>We can also <code>echo</code> the key and pipe it to the ELF binary to confirm:</li>
+</ul>
+<blockquote>
+<p>$ <code>echo -ne &quot;\xd2\xab\x34\x27\x97\x47\x57\xa8\xc2\x3b\x90\x2e&quot; | /level14_testing1</code></p>
+</blockquote>
+<pre><code>[+] Welcome to /level14_testing1!
+[+] This challenge is an custom emulator. It emulates a completely custom
+[+] architecture that we call &quot;Yan85&quot;! You'll have to understand the
+[+] emulator to understand the architecture, and you'll have to understand
+[+] the architecture to understand the code being emulated, and you will
+[+] have to understand that code to get the flag. Good luck!
+[+] Starting interpreter loop! Good luck!
+ENTER KEY: CORRECT! Here is your flag:
+pwn_college{a_secret_fake_flag}
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../../../pwn.college/2020/00-Setup/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                            <a rel="next" href="../../../../rop_emporium/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../../../pwn.college/2020/00-Setup/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                    <a rel="next" href="../../../../rop_emporium/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        <script src="../../../../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../../../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../../../searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../../../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../../../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../../../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+    </body>
+</html>

