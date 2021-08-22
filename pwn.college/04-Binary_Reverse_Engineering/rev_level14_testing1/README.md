@@ -178,7 +178,7 @@ INCORRECT!
 #### View interpreter_loop() Function
 - View `sym.interpreter_loop` function to understand if/how either variables are utilised:
 > [0x00001180]> `VV @ sym.interpreter_loop`  
-- Looks like rdi (stack address of the memcpy'd vm_code) is used, but rsi isn't:
+- Looks like rdi (stack address of the memcpy'd vm_code) is used, but rsi isn't:  
 ![interpreter_loop setup](./img/11-interpreter_loop.png)
 - Last block of code is a loop:  
 ![interpreter_loop loop](./img/12-interpreter_loop.png)
@@ -523,10 +523,11 @@ define describe_jmp
     end
 end
 ```
-- Define a function that prints the emulator's register state that can be called at each breakpoint (apologies for the insane casting):
+- Define a function that prints the emulator's register state that can be called at each breakpoint:
 ```
 define vm_state
-    printf "[V] reg_0x3fc:%#x reg_0x3fd:%#x reg_0x3fe:%#x reg_0x3ff:%#x reg_0x400:%#x reg_0x401:%#x reg_0x402:%#x\n", (long int) (*((long int***) ($rsp+$reg_offs)))>>0x00 & 0xff, (long int) (*((long int***) ($rsp+$reg_offs)))>>0x08 & 0xff, (long int) (*((long int***) ($rsp+$reg_offs)))>>0x10 & 0xff, (long int) (*((long int***) ($rsp+$reg_offs)))>>0x18 & 0xff, (long int) (*((long int***) ($rsp+$reg_offs)))>>0x20 & 0xff, (long int) (*((long int***) ($rsp+$reg_offs)))>>0x28 & 0xff, (long int) (*((long int***) ($rsp+$reg_offs)))>>0x30 & 0xff
+    set $reg_state = (long long) *(void**) ($rsp + $reg_offs)
+    printf "[V] reg_0x3fc:%#x reg_0x3fd:%#x reg_0x3fe:%#x reg_0x3ff:%#x reg_0x400:%#x reg_0x401:%#x reg_0x402:%#x\n", $reg_state >> 0x00 & 0xff, $reg_state >> 0x08 & 0xff, $reg_state >> 0x10 & 0xff, $reg_state >> 0x18 & 0xff, $reg_state >> 0x20 & 0xff, $reg_state >> 0x28 & 0xff, $reg_state >> 0x30 & 0xff
 end
 ```
 - Define a function that describes each instruction that can be called at each breakpoint:
@@ -568,11 +569,11 @@ commands
     printf " "
     describe_reg ($rsi>>$shift_a2&0xff)
     printf " \n"
-    printf "[s] ... popping "
-    describe_reg ($rsi>>$shift_a1&0xff)
-    printf "\n"
     printf "[s] ... pushing "
     describe_reg ($rsi>>$shift_a2&0xff)
+    printf "\n"
+    printf "[s] ... popping "
+    describe_reg ($rsi>>$shift_a1&0xff)
     printf "\n"
     continue
 end
@@ -977,7 +978,8 @@ define describe_reg
 end
 [...]
 define vm_state
-    printf "[V] a:%#x b:%#x c:%#x d:%#x s:%#x i:%#x f:%#x\n", (long int) (*((long int***) ($rsp+$reg_offs)))>>0x00 & 0xff, (long int) (*((long int***) ($rsp+$reg_offs)))>>0x08 & 0xff, (long int) (*((long int***) ($rsp+$reg_offs)))>>0x10 & 0xff, (long int) (*((long int***) ($rsp+$reg_offs)))>>0x18 & 0xff, (long int) (*((long int***) ($rsp+$reg_offs)))>>0x20 & 0xff, (long int) (*((long int***) ($rsp+$reg_offs)))>>0x28 & 0xff, (long int) (*((long int***) ($rsp+$reg_offs)))>>0x30 & 0xff
+    set $reg_state = (long long) *(void**) ($rsp + $reg_offs)
+    printf "[V] a:%#x b:%#x c:%#x d:%#x s:%#x i:%#x f:%#x\n", $reg_state >> 0x00 & 0xff, $reg_state >> 0x08 & 0xff, $reg_state >> 0x10 & 0xff, $reg_state >> 0x18 & 0xff, $reg_state >> 0x20 & 0xff, $reg_state >> 0x28 & 0xff, $reg_state >> 0x30 & 0xff
 end
 [...]
 ```
@@ -1161,6 +1163,22 @@ if __name__=='__main__':
 > $ `python /tmp/rev_level14_testing1.py`
 ```
 [...]
+Key: \xd2\xab\x34\x27\x97\x47\x57\xa8\xc2\x3b\x90\x2e
+
+[*] Obtaining flag from setuid binary:
 pwn_college{a_secret_fake_flag}
 ```
 - And there's the flag
+- We can also `echo` the key and pipe it to the ELF binary to confirm:
+> $ `echo -ne "\xd2\xab\x34\x27\x97\x47\x57\xa8\xc2\x3b\x90\x2e" | /level14_testing1`  
+```
+[+] Welcome to /level14_testing1!
+[+] This challenge is an custom emulator. It emulates a completely custom
+[+] architecture that we call "Yan85"! You'll have to understand the
+[+] emulator to understand the architecture, and you'll have to understand
+[+] the architecture to understand the code being emulated, and you will
+[+] have to understand that code to get the flag. Good luck!
+[+] Starting interpreter loop! Good luck!
+ENTER KEY: CORRECT! Here is your flag:
+pwn_college{a_secret_fake_flag}
+```
