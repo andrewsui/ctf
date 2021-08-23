@@ -15,3 +15,6 @@
     - [fluff](./rop_emporium/solutions/x86_64/06-fluff/README.md)
     - [pivot](./rop_emporium/solutions/x86_64/07-pivot/README.md)
     - [ret2csu](./rop_emporium/solutions/x86_64/08-ret2csu/README.md)
+
+- [OverTheWire](./overthewire/README.md)
+    - [Natas](./overthewire/natas/solutions.md)

